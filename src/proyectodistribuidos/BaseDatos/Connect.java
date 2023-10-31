@@ -19,7 +19,7 @@ public class Connect {
             // db parameters
             
             // create a connection to the database
-            conn = DriverManager.getConnection("jdbc:sqlite:aaa.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:BasesDatos.db");
             
             System.out.println("Connection to SQLite has been established.");
             

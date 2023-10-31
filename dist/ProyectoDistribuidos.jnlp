@@ -8,16 +8,8 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="ProyectoDistribuidos.jar" size="13811" download="eager" />
-    <jar href="lib\ant-javafx.jar" size="1500582" download="eager" />
-    <jar href="lib\dt.jar" size="163047" download="eager" />
-    <jar href="lib\javafx-mx.jar" size="36038" download="eager" />
-    <jar href="lib\jconsole.jar" size="407728" download="eager" />
-    <jar href="lib\packager.jar" size="4646" download="eager" />
-    <jar href="lib\sa-jdi.jar" size="2415574" download="eager" />
-    <jar href="lib\sqlite-jdbc-3.43.2.1.jar" size="13210269" download="eager" />
-    <jar href="lib\sqlite-jdbc-3.43.2.2.jar" size="13210271" download="eager" />
-    <jar href="lib\tools.jar" size="18266269" download="eager" />
+    <jar href="ProyectoDistribuidos.jar" size="13430" download="eager" />
+    <jar href="lib\sqlite-jdbc-3.36.0.3.jar" size="9731064" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="ProyectoDistribuidos" >
     <param name="requiredFXVersion" value="8.0+"/>
