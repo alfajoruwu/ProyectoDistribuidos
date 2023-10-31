@@ -73,10 +73,18 @@ public class Login implements Initializable {
         this.salida = salida;
         this.entrada = entrada;
     }
-
+    
+    @FXML
+     public void irAVistaAdministracion(ActionEvent event) throws IOException {
+        leerDatos(event);
+        root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrativo.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
     private boolean validarUsuario(String usuario, String contraseña) {
         try {
-
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
             // el destinatario da igual (solo si tiene el prefijo Login)
@@ -100,6 +108,20 @@ public class Login implements Initializable {
             e.printStackTrace();
             return false;
         }
+        
+        @FXML
+    private Button irAVistaAdministrador;
+
+    @FXML
+     public void irAVistaAdministrador(ActionEvent event) throws IOException {
+        leerDatos(event);
+        root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrador.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+    
     }
 
 }
