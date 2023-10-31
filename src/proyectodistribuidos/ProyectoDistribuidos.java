@@ -28,7 +28,7 @@ public class ProyectoDistribuidos extends Application {
         try {
             ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
-            loginController.setSocket(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
+            loginController.enviarInformacion(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
             Scene scene = new Scene(root);
 
             stage.setScene(scene);

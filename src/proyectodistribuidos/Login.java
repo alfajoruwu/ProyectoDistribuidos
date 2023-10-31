@@ -30,6 +30,7 @@ public class Login implements Initializable {
     private Socket socket;
     private ObjectOutputStream salida;
     private ObjectInputStream entrada;
+    private String usuario;
 
     @FXML
     private Button ingresar;
@@ -44,7 +45,10 @@ public class Login implements Initializable {
     public void irAVistaMedico(ActionEvent event) throws IOException {
         String usuario = nombreUsuario.getText();
         String contraseña = this.contraseña.getText();
-        if (validarUsuario(usuario, contraseña)) {
+        String canal = validarUsuario(usuario, contraseña);
+        if (canal != null) {
+            // TODO llamar a la interfaz que corresponda
+
             // Cargar la interfaz gráfica
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Vistas/FXMLVistaMedico.fxml"));
             Parent root = loader.load();
@@ -68,22 +72,22 @@ public class Login implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    public void setSocket(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
+    public void enviarInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
     }
-    
+
     @FXML
-     public void irAVistaAdministracion(ActionEvent event) throws IOException {
-        leerDatos(event);
+    public void irAVistaAdministracion(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrativo.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    private boolean validarUsuario(String usuario, String contraseña) {
+
+    private String validarUsuario(String usuario, String contraseña) {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
@@ -94,34 +98,33 @@ public class Login implements Initializable {
             this.salida.writeObject(mensaje);
 
             Mensaje respuesta = (Mensaje) this.entrada.readObject();
+            String canal = respuesta.getMensaje().split(":")[1];
 
-            if (respuesta.getMensaje().equals(Mensaje.LOGIN_EXITOSO)) {
-                return true;
-            } else if (respuesta.getMensaje().equals(Mensaje.LOGIN_FALLIDO)) {
+            if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_EXITOSO)) {
+                this.usuario = usuario;
+                return canal;
+            } else if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_FALLIDO)) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
             } else {
                 mensajeError.setText("Respuesta inesperada del servidor");
             }
-            return false;
+            return null;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
-        
-        @FXML
+    }
+
+    @FXML
     private Button irAVistaAdministrador;
 
     @FXML
-     public void irAVistaAdministrador(ActionEvent event) throws IOException {
-        leerDatos(event);
+    public void irAVistaAdministrador(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrador.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    
-    }
-
 }

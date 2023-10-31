@@ -10,20 +10,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import proyectodistribuidos.BaseDatos.Connect;
 
-
 public class MainServidor {
     private Observable observable;
     private java.util.HashMap<String, ConexionServidor> usuarios;
 
     public static void main(String[] args) {
 
-        
         new MainServidor();
     }
 
-    public MainServidor()  {
+    public MainServidor() {
         try {
-            
+
             this.observable = new Observable();
             usuarios = new java.util.HashMap<String, ConexionServidor>();
             System.out.println("Servidor iniciado");
@@ -33,14 +31,9 @@ public class MainServidor {
                 Socket cliente = socketServidor.accept();
                 System.out.println("Cliente conectado: " + cliente.getPort());
 
-                String canal = Observable.CANAL_MEDICOS;
+                String usuario = "Usuario Anonimo " + cliente.getPort();
+                Runnable nuevoCliente = new ConexionServidor(cliente, this, usuario);
 
-                // TODO: Pedir y validar usuario (hay que sincronizarlo con el cliente)
-                String usuario = "Usuario Test" + cliente.getPort();
-                Runnable nuevoCliente = new ConexionServidor(cliente, this, canal, usuario);
-
-                usuarios.put(usuario, (ConexionServidor) nuevoCliente);
-                agregarCanalUsuario(canal, usuario);
                 Thread hilo = new Thread(nuevoCliente);
                 hilo.start();
 
@@ -51,39 +44,41 @@ public class MainServidor {
         }
     }
 
-    //temporalmente despues morira dlskafjdsf
-    public boolean validarUsuario(String usuario, String contraseña) {
-    Connection connection = Connect.connect();
-    String rol = null;
+    // temporalmente despues morira dlskafjdsf
+    public String validarUsuario(String usuario, String contraseña) {
+        Connection connection = Connect.connect();
+        String rol = null;
 
-    try {
-        String sql = "SELECT rol FROM Usuarios WHERE rut = ? AND Contraseña = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, usuario);
-        preparedStatement.setString(2, contraseña);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        try {
+            String sql = "SELECT rol FROM Usuarios WHERE rut = ? AND Contraseña = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            preparedStatement.setString(2, contraseña);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            rol = resultSet.getString("rol");
+            if (resultSet.next()) {
+                rol = resultSet.getString("rol");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
-        Connect.disconnect();
+
+        // Verificar si se encontró un rol
+        if (rol != null) {
+            System.out.println("Usuario válido. Rol: " + rol);
+            return rol;
+        } else {
+            System.out.println("Usuario no válido.");
+            return null;
+        }
     }
 
-    // Verificar si se encontró un rol
-    if (rol != null) {
-        System.out.println("Usuario válido. Rol: " + rol);
-        return true;
-    } else {
-        System.out.println("Usuario no válido.");
-        return false;
+    public void agregarUsuario(String usuario, ConexionServidor conexion) {
+        usuarios.put(usuario, conexion);
     }
-}
 
-    
-    
     // usuarios conectados
     public ConexionServidor getUsuario(String usuario) {
         return usuarios.get(usuario);
@@ -108,6 +103,5 @@ public class MainServidor {
     public void notificar(String tipo, Object valorNuevo) {
         this.observable.notificar(tipo, valorNuevo);
     }
-    
- 
+
 }

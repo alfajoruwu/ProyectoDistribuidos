@@ -18,11 +18,10 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     private ObjectInputStream entrada;
     private ObjectOutputStream salida;
 
-    public ConexionServidor(Socket socket, MainServidor servidor, String canal, String usuario) {
+    public ConexionServidor(Socket socket, MainServidor servidor, String usuario) {
         this.socket = socket;
         this.servidor = servidor;
         this.usuario = usuario;
-        this.canal = canal;
         try {
             this.salida = new ObjectOutputStream(socket.getOutputStream());
             this.entrada = new ObjectInputStream(socket.getInputStream());
@@ -53,9 +52,13 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     respuesta.setEmisor(Mensaje.SERVIDOR);
                     respuesta.setDestinatario(Mensaje.PREFIJO_USUARIO, mensaje.getEmisor());
                     System.out.println(mensaje.getEmisor() + " -> login ");
-
-                    if (servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje())) {
-                        respuesta.setMensaje(Mensaje.LOGIN_EXITOSO);
+                    String canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
+                    if (canal != null) {
+                        this.canal = canal;
+                        this.usuario = mensaje.getEmisor();
+                        servidor.agregarUsuario(mensaje.getEmisor(), this);
+                        servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
+                        respuesta.setMensaje(Mensaje.LOGIN_EXITOSO + ":" + canal);
                     } else {
                         respuesta.setMensaje(Mensaje.LOGIN_FALLIDO);
                     }

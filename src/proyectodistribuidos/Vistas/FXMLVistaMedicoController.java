@@ -81,7 +81,7 @@ public class FXMLVistaMedicoController implements Initializable, Runnable {
 
         // Obtener el controlador de la clase Login
         Login loginController = loader.getController();
-        loginController.setSocket(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
+        loginController.enviarInformacion(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
