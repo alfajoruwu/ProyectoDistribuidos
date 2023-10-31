@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="proyectodistribuidos.Login">
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyectodistribuidos.Login">
     <children>
       <Button fx:id="ingresar" layoutX="171.0" layoutY="222.0" mnemonicParsing="false" onAction="#irAVistaMedico" text="Ingresar" />
       <TextField fx:id="nombreUsuario" layoutX="133.0" layoutY="109.0" promptText="Usuario" />
