@@ -55,7 +55,31 @@ public class Login implements Initializable {
         stage.show();
     }
 
+    @FXML
+    private Button irAVistaAdministracion;
 
+    @FXML
+     public void irAVistaAdministracion(ActionEvent event) throws IOException {
+        leerDatos(event);
+        root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrativo.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private Button irAVistaAdministrador;
+
+    @FXML
+     public void irAVistaAdministrador(ActionEvent event) throws IOException {
+        leerDatos(event);
+        root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaAdministrador.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
     private Label label;
