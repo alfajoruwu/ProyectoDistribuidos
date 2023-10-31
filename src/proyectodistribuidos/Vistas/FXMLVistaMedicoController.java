@@ -131,6 +131,7 @@ public class FXMLVistaMedicoController implements Initializable, Runnable {
 
     @FXML
     private void handleSendButtonAction() {
+        // TODO: hay que borrar el usuario al salir
         String message = messageField.getText();
         if (!message.isEmpty()) {
             Mensaje mensaje = new Mensaje();

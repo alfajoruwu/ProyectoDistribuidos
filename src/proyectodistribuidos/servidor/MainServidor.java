@@ -46,6 +46,9 @@ public class MainServidor {
 
     // temporalmente despues morira dlskafjdsf
     public String validarUsuario(String usuario, String contraseña) {
+        if (getUsuario(usuario) != null) {
+            return null;
+        }
         Connection connection = Connect.connect();
         String rol = null;
 
