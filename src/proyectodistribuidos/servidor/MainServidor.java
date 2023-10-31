@@ -4,17 +4,26 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import proyectodistribuidos.BaseDatos.Connect;
+
 
 public class MainServidor {
     private Observable observable;
     private java.util.HashMap<String, ConexionServidor> usuarios;
 
     public static void main(String[] args) {
+
+        
         new MainServidor();
     }
 
-    public MainServidor() {
+    public MainServidor()  {
         try {
+            
             this.observable = new Observable();
             usuarios = new java.util.HashMap<String, ConexionServidor>();
             System.out.println("Servidor iniciado");
@@ -42,6 +51,39 @@ public class MainServidor {
         }
     }
 
+    //temporalmente despues morira dlskafjdsf
+    public boolean validarUsuario(String usuario, String contraseña) {
+    Connection connection = Connect.connect();
+    String rol = null;
+
+    try {
+        String sql = "SELECT rol FROM Usuarios WHERE rut = ? AND Contraseña = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, usuario);
+        preparedStatement.setString(2, contraseña);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            rol = resultSet.getString("rol");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        Connect.disconnect();
+    }
+
+    // Verificar si se encontró un rol
+    if (rol != null) {
+        System.out.println("Usuario válido. Rol: " + rol);
+        return true;
+    } else {
+        System.out.println("Usuario no válido.");
+        return false;
+    }
+}
+
+    
+    
     // usuarios conectados
     public ConexionServidor getUsuario(String usuario) {
         return usuarios.get(usuario);
@@ -66,14 +108,6 @@ public class MainServidor {
     public void notificar(String tipo, Object valorNuevo) {
         this.observable.notificar(tipo, valorNuevo);
     }
-
-    // validacion de usuarios
-    public boolean validarUsuario(String usuario, String contraseña) {
-        // TODO: validar usuario (funcion actual solo para test)
-        if (usuario.startsWith("TEST") && !contraseña.equals("")) {
-            return true;
-        }
-        return false;
-    }
-
+    
+ 
 }
