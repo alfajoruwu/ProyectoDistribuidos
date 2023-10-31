@@ -39,6 +39,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             Mensaje mensaje;
             while (true) {
                 mensaje = (Mensaje) entrada.readObject();
+
                 if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_CANAL)) {
                     servidor.notificar(mensaje.getDestinatario(), mensaje);
 
@@ -47,6 +48,19 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                             "-> Enviando mensaje a usuario " +
                             mensaje.getDestinatario());
 
+                } else if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_LOGIN)) {
+                    Mensaje respuesta = new Mensaje();
+                    respuesta.setEmisor(Mensaje.SERVIDOR);
+                    respuesta.setDestinatario(Mensaje.PREFIJO_USUARIO, mensaje.getEmisor());
+                    System.out.println(mensaje.getEmisor() + " -> login ");
+
+                    if (servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje())) {
+                        respuesta.setMensaje(Mensaje.LOGIN_EXITOSO);
+                    } else {
+                        respuesta.setMensaje(Mensaje.LOGIN_FALLIDO);
+                    }
+                    salida.writeObject(respuesta);
+
                 } else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
@@ -54,6 +68,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Cliente desconectado: " + socket.getPort());
             servidor.removerCanalUsuario(canal, usuario);
             servidor.removerUsuario(usuario);

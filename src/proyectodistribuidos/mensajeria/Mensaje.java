@@ -1,8 +1,17 @@
 package proyectodistribuidos.mensajeria;
 
 public class Mensaje implements java.io.Serializable {
+
+    // prefijos para los tipos de destinatario
     public static final String PREFIJO_CANAL = "Canal";
     public static final String PREFIJO_USUARIO = "Usuario";
+    public static final String PREFIJO_LOGIN = "Login";
+
+    public static final String LOGIN_EXITOSO = "Login exitoso";
+    public static final String LOGIN_FALLIDO = "Login fallido";
+
+    public static final String SERVIDOR = "Servidor";
+
     private String mensaje;
     private String emisor;
     private String[] destinatario = new String[2];
