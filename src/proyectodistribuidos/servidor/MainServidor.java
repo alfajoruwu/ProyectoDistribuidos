@@ -4,17 +4,22 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
+
 
 public class MainServidor {
     private Observable observable;
     private java.util.HashMap<String, ConexionServidor> usuarios;
 
     public static void main(String[] args) {
+
+        
         new MainServidor();
     }
 
-    public MainServidor() {
+    public MainServidor()  {
         try {
+            
             this.observable = new Observable();
             usuarios = new java.util.HashMap<String, ConexionServidor>();
             System.out.println("Servidor iniciado");
