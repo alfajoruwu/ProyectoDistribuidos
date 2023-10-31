@@ -67,4 +67,13 @@ public class MainServidor {
         this.observable.notificar(tipo, valorNuevo);
     }
 
+    // validacion de usuarios
+    public boolean validarUsuario(String usuario, String contraseña) {
+        // TODO: validar usuario (funcion actual solo para test)
+        if (usuario.startsWith("TEST") && !contraseña.equals("")) {
+            return true;
+        }
+        return false;
+    }
+
 }
