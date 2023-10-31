@@ -30,7 +30,6 @@ public class Login implements Initializable {
     private Socket socket;
     private ObjectOutputStream salida;
     private ObjectInputStream entrada;
-    private String usuario;
 
     @FXML
     private Button ingresar;
@@ -101,7 +100,6 @@ public class Login implements Initializable {
             String canal = respuesta.getMensaje().split(":")[1];
 
             if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_EXITOSO)) {
-                this.usuario = usuario;
                 return canal;
             } else if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_FALLIDO)) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
