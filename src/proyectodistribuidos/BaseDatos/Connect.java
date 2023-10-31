@@ -4,41 +4,50 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- *
- * @author sqlitetutorial.net
- */
 public class Connect {
-     /**
-     * Connect to a sample database
+    private static Connection conn = null;
+
+    /**
+     * Connect to the database
      */
-    public static void connect(){
-        Connection conn = null;
+    public static Connection connect() {
         try {
-            
-            // db parameters
-            
-            // create a connection to the database
-            conn = DriverManager.getConnection("jdbc:sqlite:BasesDatos.db");
-            
-            System.out.println("Connection to SQLite has been established.");
-            
+            // Check if the connection is already established
+            if (conn == null || conn.isClosed()) {
+                // Database parameters
+                String dbUrl = "jdbc:sqlite:BasesDatos.db";
+                // Create a connection to the database
+                conn = DriverManager.getConnection(dbUrl);
+                System.out.println("Connection to SQLite has been established.");
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+        }
+        return conn;
+    }
+
+    /**
+     * Disconnect from the database
+     */
+    public static void disconnect() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Connection to SQLite has been closed.");
             }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
     }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        connect();
+        Connection connection = connect();
+        // Perform database operations here using the 'connection' object
+
+        // Close the connection when done
+        disconnect();
     }
 }
