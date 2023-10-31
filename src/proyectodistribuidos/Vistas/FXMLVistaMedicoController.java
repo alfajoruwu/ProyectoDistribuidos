@@ -13,17 +13,26 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import proyectodistribuidos.Login;
+import proyectodistribuidos.mensajeria.Mensaje;
+import proyectodistribuidos.servidor.Observable;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class FXMLVistaMedicoController implements Initializable {
+public class FXMLVistaMedicoController implements Initializable, Runnable {
 
     private Stage stage;
     private Scene scene;
-    private Parent root;
 
+    private Socket socket;
+    private ObjectOutputStream salida;
+    private ObjectInputStream entrada;
+    private String usuario;
 
     @FXML
     private ListView<String> listaContactos;
@@ -65,24 +74,32 @@ public class FXMLVistaMedicoController implements Initializable {
     private Button botonSalidar;
 
     @FXML
-     public void irAVistaLogin(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("/proyectodistribuidos/Login.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    public void irAVistaLogin(ActionEvent event) throws IOException {
+        // Cargar la interfaz gráfica
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/proyectodistribuidos/Login.fxml"));
+        Parent root = loader.load();
+
+        // Obtener el controlador de la clase Login
+        Login loginController = loader.getController();
+        loginController.setSocket(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
+
         stage.setScene(scene);
         stage.show();
     }
 
     private ObservableList<String> contactList = FXCollections.observableArrayList(
-        "Pabellón",
-        "Exámenes",
-        "Médico 1",
-        "Médico 2",
-        "Médico 3"
-    );
+            "Pabellón",
+            "Exámenes",
+            "Médico 1",
+            "Médico 2",
+            "Médico 3");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        chatArea.setEditable(false);
         listaContactos.setItems(contactList);
 
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
@@ -107,15 +124,50 @@ public class FXMLVistaMedicoController implements Initializable {
             }
             listaContactos.setItems(filteredList);
         });
+
+        Thread hilo = new Thread(this);
+        hilo.start();
     }
 
     @FXML
     private void handleSendButtonAction() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
-            chatArea.appendText("Tú: " + message + "\n");
-            messageField.clear();
+            Mensaje mensaje = new Mensaje();
+            mensaje.setEmisor(this.usuario);
+            mensaje.setMensaje(message);
+            mensaje.setDestinatario(Mensaje.PREFIJO_CANAL, Observable.CANAL_MEDICOS);
+            try {
+                salida.writeObject(mensaje);
+            } catch (Exception excepcion) {
+                excepcion.printStackTrace();
+            }
+        }
+    }
 
+    public void enviarInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
+        this.socket = socket;
+        this.salida = salida;
+        this.entrada = entrada;
+        this.usuario = usuario;
+    }
+
+    @Override
+    public void run() {
+        chatArea.appendText("Bienvenido al chat\n");
+        try {
+            Mensaje mensaje;
+            while (true) {
+                mensaje = (Mensaje) entrada.readObject();
+                if (mensaje.getEmisor().equals(this.usuario)) {
+                    chatArea.appendText("TU: " + mensaje.getMensaje());
+                } else {
+                    chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                }
+                chatArea.appendText("\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

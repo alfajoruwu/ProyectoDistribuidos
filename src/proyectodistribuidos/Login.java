@@ -18,9 +18,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import proyectodistribuidos.Vistas.FXMLVistaMedicoController;
 import proyectodistribuidos.mensajeria.Mensaje;
 import javafx.scene.Node;
-
 
 public class Login implements Initializable {
 
@@ -45,9 +45,17 @@ public class Login implements Initializable {
         String usuario = nombreUsuario.getText();
         String contraseña = this.contraseña.getText();
         if (validarUsuario(usuario, contraseña)) {
-            root = FXMLLoader.load(getClass().getResource("Vistas/FXMLVistaMedico.fxml"));
+            // Cargar la interfaz gráfica
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Vistas/FXMLVistaMedico.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador de la clase FXMLVistaMedicoController
+            FXMLVistaMedicoController medicoController = loader.getController();
+            medicoController.enviarInformacion(socket, salida, entrada, usuario);
+
             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             scene = new Scene(root);
+
             stage.setScene(scene);
             stage.show();
         }
@@ -60,14 +68,10 @@ public class Login implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    public void setSocket(Socket socket) {
+    public void setSocket(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
         this.socket = socket;
-        try {
-            this.salida = new ObjectOutputStream(socket.getOutputStream());
-            this.entrada = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.salida = salida;
+        this.entrada = entrada;
     }
 
     private boolean validarUsuario(String usuario, String contraseña) {

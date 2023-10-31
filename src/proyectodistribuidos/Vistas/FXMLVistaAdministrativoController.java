@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -23,7 +26,9 @@ public class FXMLVistaAdministrativoController implements Initializable {
     private Stage stage;
     private Scene scene;
     private Parent root;
-
+    private Socket socket;
+    private ObjectOutputStream salida;
+    private ObjectInputStream entrada;
 
     @FXML
     private ListView<String> listaContactos;
@@ -65,24 +70,24 @@ public class FXMLVistaAdministrativoController implements Initializable {
     private Button botonSalidar;
 
     @FXML
-     public void irAVistaLogin(ActionEvent event) throws IOException {
+    public void irAVistaLogin(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("/proyectodistribuidos/Login.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
 
     private ObservableList<String> contactList = FXCollections.observableArrayList(
-        "Pabellón",
-        "Exámenes",
-        "Médico 1",
-        "Médico 2",
-        "Médico 3"
-    );
+            "Pabellón",
+            "Exámenes",
+            "Médico 1",
+            "Médico 2",
+            "Médico 3");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        chatArea.setEditable(false);
         listaContactos.setItems(contactList);
 
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
@@ -116,6 +121,16 @@ public class FXMLVistaAdministrativoController implements Initializable {
             chatArea.appendText("Tú: " + message + "\n");
             messageField.clear();
 
+        }
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+        try {
+            this.salida = new ObjectOutputStream(socket.getOutputStream());
+            this.entrada = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
