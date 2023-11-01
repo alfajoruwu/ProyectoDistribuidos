@@ -19,6 +19,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import proyecto2.Mensajeria.Mensaje;
+import proyecto2.Servidor.Observable;
 import javafx.scene.Node;
 
 public class Login implements Initializable {
@@ -40,27 +41,36 @@ public class Login implements Initializable {
     private PasswordField contraseña;
 
     @FXML
-    public void irAVistaMedico(ActionEvent event) throws IOException {
+    public void irAVistaMedico(ActionEvent event) throws IOException { // TODO: nombre a ingresar o algo asi
         String usuario = nombreUsuario.getText();
         String contraseña = this.contraseña.getText();
         String canal = validarUsuario(usuario, contraseña);
         if (canal != null) {
-            // TODO llamar a la interfaz que corresponda
-
-            // Cargar la interfaz gráfica
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLVistaMedico.fxml"));
-            Parent root = loader.load();
-
-            // Obtener el controlador de la clase FXMLVistaMedicoController
-            FXMLVistaMedicoController medicoController = loader.getController();
-            medicoController.enviarInformacion(socket, salida, entrada, usuario);
-
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-
-            stage.setScene(scene);
-            stage.show();
+            if (canal.equals(Observable.CANAL_MEDICOS)) {
+                irVista(event, "FXMLVistaMedico.fxml", usuario);
+            } else if (canal.equals(Observable.CANAL_ADMISION) || canal.equals(Observable.CANAL_AUXILIAR)
+                    || canal.equals(Observable.CANAL_EXAMENES) || canal.equals(Observable.CANAL_PABELLON)) {
+                irVista(event, "FXMLVistaAdministrativo.fxml", usuario);
+            } else if (canal.equals(Observable.CANAL_ADMINISTRADOR)) {
+                irVista(event, "FXMLVistaAdministrador.fxml", usuario);
+            }
         }
+    }
+
+    private void irVista(ActionEvent event, String vista, String usuario) throws IOException {
+        // Cargar la interfaz gráfica
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
+        Parent root = loader.load();
+
+        // Obtener el controlador de la vista
+        VistaPadre controladorVista = loader.getController();
+        controladorVista.setInformacion(socket, salida, entrada, usuario);
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
@@ -70,7 +80,7 @@ public class Login implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    public void enviarInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
+    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;

@@ -7,29 +7,13 @@ import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
-import java.net.Socket;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-public class FXMLVistaAdministradorController implements Initializable {
-
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
-    private Socket socket;
-    private ObjectOutputStream salida;
-    private ObjectInputStream entrada;
+public class FXMLVistaAdministradorController extends VistaPadre implements Initializable {
 
     @FXML
     private Label tituloEncabezadoAdministrador;
@@ -57,11 +41,7 @@ public class FXMLVistaAdministradorController implements Initializable {
 
     @FXML
     public void irAVistaLogin(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        super.irAVistaLogin(event);
     }
 
     public void initialize() {
@@ -81,15 +61,4 @@ public class FXMLVistaAdministradorController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         chatArea.setEditable(false);
     }
-
-    public void setSocket(Socket socket) {
-        this.socket = socket;
-        try {
-            this.salida = new ObjectOutputStream(socket.getOutputStream());
-            this.entrada = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

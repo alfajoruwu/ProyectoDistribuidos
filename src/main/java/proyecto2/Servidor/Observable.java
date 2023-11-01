@@ -9,6 +9,7 @@ public class Observable {
     public static final String CANAL_PABELLON = "pabellon";
     public static final String CANAL_EXAMENES = "examenes";
     public static final String CANAL_AUXILIAR = "auxiliar";
+    public static final String CANAL_ADMINISTRADOR = "administrador";
 
     private PropertyChangeSupport notificador;
 

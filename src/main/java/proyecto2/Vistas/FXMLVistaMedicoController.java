@@ -4,34 +4,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Servidor.Observable;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class FXMLVistaMedicoController implements Initializable, Runnable {
-
-    private Stage stage;
-    private Scene scene;
-
-    private Socket socket;
-    private ObjectOutputStream salida;
-    private ObjectInputStream entrada;
-    private String usuario;
+public class FXMLVistaMedicoController extends VistaPadre implements Initializable, Runnable {
 
     @FXML
     private ListView<String> listaContactos;
@@ -74,19 +58,7 @@ public class FXMLVistaMedicoController implements Initializable, Runnable {
 
     @FXML
     public void irAVistaLogin(ActionEvent event) throws IOException {
-        // Cargar la interfaz gráfica
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        Parent root = loader.load();
-
-        // Obtener el controlador de la clase Login
-        Login loginController = loader.getController();
-        loginController.enviarInformacion(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
-
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.show();
+        super.irAVistaLogin(event);
     }
 
     private ObservableList<String> contactList = FXCollections.observableArrayList(
@@ -143,13 +115,6 @@ public class FXMLVistaMedicoController implements Initializable, Runnable {
                 excepcion.printStackTrace();
             }
         }
-    }
-
-    public void enviarInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
-        this.socket = socket;
-        this.salida = salida;
-        this.entrada = entrada;
-        this.usuario = usuario;
     }
 
     @Override
