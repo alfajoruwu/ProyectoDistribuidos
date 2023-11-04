@@ -116,4 +116,25 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void run() {
+
+    }
+
+    // historial
+    @Override
+    public String getHistorial() {
+        return chatArea.getText();
+    }
+
+    @Override
+    public void borrarHistorial() {
+        chatArea.clear();
+    }
+
+    @Override
+    public void setHistorial(String historial) {
+        chatArea.setText(historial);
+    }
 }

@@ -1,6 +1,7 @@
 package proyecto2.Servidor;
 
 import java.net.Socket;
+import java.net.SocketException;
 
 import proyecto2.Mensajeria.Mensaje;
 
@@ -64,6 +65,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     }
                     salida.writeObject(respuesta);
 
+                } else if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_LOGOUT)) {
+                    System.out.println(mensaje.getEmisor() + " -> logout ");
+                    servidor.removerCanalUsuario(canal, usuario);
+                    servidor.removerUsuario(usuario);
+                    this.canal = MainServidor.USIARIO_ANONIMO + socket.getPort();
+                    this.usuario = MainServidor.USIARIO_ANONIMO + socket.getPort();
                 } else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
@@ -71,30 +78,24 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Cliente desconectado: " + socket.getPort());
+            System.out.println("Cliente desconectado: " + usuario);
             servidor.removerCanalUsuario(canal, usuario);
             servidor.removerUsuario(usuario);
+            if (e.getClass() != SocketException.class) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Observable.CANAL_MEDICOS) && this.canal.equals("medico")) {
+        if (evt.getPropertyName().equals(this.canal)) {
             try {
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 salida.writeObject(mensaje);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (evt.getPropertyName().equals(Observable.CANAL_ADMISION) && this.canal.equals("admision")) {
-            System.out.println("Admision: " + evt.getNewValue());
-        } else if (evt.getPropertyName().equals(Observable.CANAL_PABELLON) && this.canal.equals("pabellon")) {
-            System.out.println("Pabellon: " + evt.getNewValue());
-        } else if (evt.getPropertyName().equals(Observable.CANAL_EXAMENES) && this.canal.equals("examenes")) {
-            System.out.println("Examenes: " + evt.getNewValue());
-        } else if (evt.getPropertyName().equals(Observable.CANAL_AUXILIAR) && this.canal.equals("auxiliar")) {
-            System.out.println("Auxiliar: " + evt.getNewValue());
         } else {
             System.err.println("Error al notificar: " + evt.getPropertyName());
             System.err.println("Tipo de usuario: " + this.canal);

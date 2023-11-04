@@ -28,6 +28,8 @@ public class Observable {
             this.notificador.addPropertyChangeListener(CANAL_EXAMENES, observador);
         } else if (tipo.equals(CANAL_AUXILIAR)) {
             this.notificador.addPropertyChangeListener(CANAL_AUXILIAR, observador);
+        } else if (tipo.equals(CANAL_ADMINISTRADOR)) {
+            this.notificador.addPropertyChangeListener(CANAL_ADMINISTRADOR, observador);
         } else {
             throw new IllegalArgumentException("Tipo de usuario no válido: " + tipo);
         }

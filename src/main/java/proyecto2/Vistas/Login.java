@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,8 +44,8 @@ public class Login implements Initializable {
     @FXML
     public void irAVistaMedico(ActionEvent event) throws IOException { // TODO: nombre a ingresar o algo asi
         String usuario = nombreUsuario.getText();
-        String contraseña = this.contraseña.getText();
-        String canal = validarUsuario(usuario, contraseña);
+        String contrasenna = this.contraseña.getText();
+        String canal = validarUsuario(usuario, contrasenna);
         if (canal != null) {
             if (canal.equals(Observable.CANAL_MEDICOS)) {
                 irVista(event, "FXMLVistaMedico.fxml", usuario);
@@ -80,10 +81,14 @@ public class Login implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada) {
-        this.socket = socket;
-        this.salida = salida;
-        this.entrada = entrada;
+    public void setInformacion(String ip, String puerto) {
+        try {
+            this.socket = new Socket(ip, Integer.parseInt(puerto));
+            this.salida = new ObjectOutputStream(socket.getOutputStream());
+            this.entrada = new ObjectInputStream(socket.getInputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -105,7 +110,27 @@ public class Login implements Initializable {
 
             this.salida.writeObject(mensaje);
 
-            Mensaje respuesta = (Mensaje) this.entrada.readObject();
+            // Antes de leer el objeto, verifica que la conexión de red sigue siendo válida
+            if (this.entrada == null) {
+                System.err.println("El objeto de entrada no se ha inicializado");
+                return null;
+            }
+
+            Object object = null;
+            try {
+                object = this.entrada.readObject();
+            } catch (IOException e) {
+                System.err.println("Error al leer el objeto: " + e.getMessage());
+                return null;
+            }
+
+            if (!(object instanceof Mensaje)) {
+                System.err.println("El objeto leído es: " + object.getClass().getName());
+                throw new ClassCastException("El objeto leído no es de tipo Mensaje");
+            }
+
+            Mensaje respuesta = (Mensaje) object;
+
             String canal = respuesta.getMensaje().split(":")[1];
 
             if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_EXITOSO)) {

@@ -1,10 +1,6 @@
 
 package proyecto2.Cliente;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,9 +13,6 @@ public class MainCliente extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Crear el objeto Socket
-        Socket socket = new Socket("127.0.0.1", 5000);
-
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/proyecto2/Vistas/Login.fxml"));
         Parent root = loader.load();
@@ -28,9 +21,7 @@ public class MainCliente extends Application {
         Login loginController = loader.getController();
 
         try {
-            ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
-            loginController.setInformacion(socket, salida, entrada); // Pasar el objeto Socket a la clase Login
+            loginController.setInformacion("localhost", "5000"); // Pasar el objeto Socket a la clase Login
             Scene scene = new Scene(root);
 
             stage.setScene(scene);

@@ -61,4 +61,25 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     public void initialize(URL url, ResourceBundle rb) {
         chatArea.setEditable(false);
     }
+
+    @Override
+    public void run() {
+
+    }
+
+    // historial
+    @Override
+    public String getHistorial() {
+        return chatArea.getText();
+    }
+
+    @Override
+    public void borrarHistorial() {
+        chatArea.clear();
+    }
+
+    @Override
+    public void setHistorial(String historial) {
+        chatArea.setText(historial);
+    }
 }

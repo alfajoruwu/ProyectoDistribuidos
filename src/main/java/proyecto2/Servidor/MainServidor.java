@@ -13,6 +13,7 @@ import proyecto2.BaseDatos.Connect;
 public class MainServidor {
     private Observable observable;
     private java.util.HashMap<String, ConexionServidor> usuarios;
+    public static final String USIARIO_ANONIMO = "Usuario Anonimo";
 
     public static void main(String[] args) {
 
@@ -31,7 +32,7 @@ public class MainServidor {
                 Socket cliente = socketServidor.accept();
                 System.out.println("Cliente conectado: " + cliente.getPort());
 
-                String usuario = "Usuario Anonimo " + cliente.getPort();
+                String usuario = USIARIO_ANONIMO + cliente.getPort();
                 Runnable nuevoCliente = new ConexionServidor(cliente, this, usuario);
 
                 Thread hilo = new Thread(nuevoCliente);
@@ -88,6 +89,7 @@ public class MainServidor {
     }
 
     public void removerUsuario(String usuario) {
+        System.out.println("Removiendo usuario " + usuario);
         usuarios.remove(usuario);
     }
 

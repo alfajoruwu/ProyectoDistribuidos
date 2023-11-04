@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class FXMLVistaMedicoController extends VistaPadre implements Initializable, Runnable {
+public class FXMLVistaMedicoController extends VistaPadre implements Initializable {
 
     @FXML
     private ListView<String> listaContactos;
@@ -96,19 +96,19 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             listaContactos.setItems(filteredList);
         });
 
-        Thread hilo = new Thread(this);
+        hilo = new Thread(this);
         hilo.start();
     }
 
     @FXML
     private void handleSendButtonAction() {
-        // TODO: hay que borrar el usuario al salir
         String message = messageField.getText();
         if (!message.isEmpty()) {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(this.usuario);
             mensaje.setMensaje(message);
             mensaje.setDestinatario(Mensaje.PREFIJO_CANAL, Observable.CANAL_MEDICOS);
+            messageField.clear();
             try {
                 salida.writeObject(mensaje);
             } catch (Exception excepcion) {
@@ -122,7 +122,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         chatArea.appendText("Bienvenido al chat\n");
         try {
             Mensaje mensaje;
-            while (true) {
+            while (!hilo.isInterrupted()) {
                 mensaje = (Mensaje) entrada.readObject();
                 if (mensaje.getEmisor().equals(this.usuario)) {
                     chatArea.appendText("TU: " + mensaje.getMensaje());
@@ -134,5 +134,20 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getHistorial() {
+        return chatArea.getText();
+    }
+
+    @Override
+    public void borrarHistorial() {
+        chatArea.clear();
+    }
+
+    @Override
+    public void setHistorial(String historial) {
+        chatArea.setText(historial);
     }
 }

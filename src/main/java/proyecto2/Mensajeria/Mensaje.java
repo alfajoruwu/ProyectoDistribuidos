@@ -6,6 +6,7 @@ public class Mensaje implements java.io.Serializable {
     public static final String PREFIJO_CANAL = "Canal";
     public static final String PREFIJO_USUARIO = "Usuario";
     public static final String PREFIJO_LOGIN = "Login";
+    public static final String PREFIJO_LOGOUT = "Logout";
 
     public static final String LOGIN_EXITOSO = "Login exitoso";
     public static final String LOGIN_FALLIDO = "Login fallido";

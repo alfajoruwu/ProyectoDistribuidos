@@ -18,7 +18,6 @@ public class Connect {
                 String dbUrl = "jdbc:sqlite:./src/main/java/proyecto2/BaseDatos/BaseDatos.db";
                 // Create a connection to the database
                 conn = DriverManager.getConnection(dbUrl);
-                System.out.println("Connection to SQLite has been established.");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -33,7 +32,6 @@ public class Connect {
         try {
             if (conn != null && !conn.isClosed()) {
                 conn.close();
-                System.out.println("Connection to SQLite has been closed.");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
