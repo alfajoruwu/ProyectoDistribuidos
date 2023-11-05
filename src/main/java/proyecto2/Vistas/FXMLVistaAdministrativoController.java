@@ -8,8 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
-import proyecto2.Mensajeria.Constantes;
-import proyecto2.Mensajeria.Mensaje;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -36,12 +34,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @FXML
     private Button botonMedicos;
-
-    @FXML
-    private TextArea chatArea;
-
-    @FXML
-    private TextField messageField;
 
     @FXML
     private Button botonEnviarMensaje;
@@ -112,21 +104,5 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @Override
     public void run() {
 
-    }
-
-    // historial
-    @Override
-    public String getHistorial() {
-        return chatArea.getText();
-    }
-
-    @Override
-    public void borrarHistorial() {
-        chatArea.clear();
-    }
-
-    @Override
-    public void setHistorial(String historial) {
-        chatArea.setText(historial);
     }
 }

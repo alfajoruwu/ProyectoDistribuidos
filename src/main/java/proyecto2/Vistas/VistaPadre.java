@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
@@ -28,17 +29,21 @@ public abstract class VistaPadre implements Runnable {
 
     @FXML
     protected TextField messageField;
+    @FXML
+    protected TextArea chatArea;
+
     protected Constantes.Canales canal;
 
     protected Thread hilo;
 
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
-            Constantes.Canales canal) {
+            Constantes.Canales canal, String historial) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
         this.canal = canal;
+        this.setHistorial(historial);
     }
 
     public void irAVistaLogin(ActionEvent event) throws IOException {
@@ -55,13 +60,15 @@ public abstract class VistaPadre implements Runnable {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
             mensaje.setDestinatario(Constantes.TipoDestino.LOGOUT, Constantes.Nombres.SERVIDOR.toString());
-            mensaje.setMensaje(this.getHistorial());
 
             salida.writeObject(mensaje);
         } catch (Exception e) {
             System.err.println("Error al enviar el mensaje de logout");
             e.printStackTrace();
         }
+        this.entrada.close();
+        this.salida.close();
+        this.socket.close();
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -70,13 +77,13 @@ public abstract class VistaPadre implements Runnable {
         stage.show();
     }
 
-    // el historial lo implementan las vistas hijas
-    // (porque usan @FXML y no se si lo podria declarar aqui)
-    public abstract String getHistorial();
+    protected void borrarHistorial() {
+        chatArea.clear();
+    }
 
-    public abstract void setHistorial(String historial);
-
-    public abstract void borrarHistorial();
+    private void setHistorial(String historial) {
+        chatArea.setText(historial);
+    }
 
     @FXML
     protected void handleSendButtonAction() {

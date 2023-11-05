@@ -32,9 +32,9 @@ public class MainServidor {
                 ServerSocket socketServidor = new ServerSocket(5000);
 
                 Socket cliente = socketServidor.accept();
-                System.out.println("Conectado: " + Constantes.Nombres.USUARIO_ANONIMO + " " + cliente.getPort());
 
                 String usuario = Nombres.USUARIO_ANONIMO + " " + cliente.getPort();
+                System.out.println("Conectado: " + usuario);
                 Runnable nuevoCliente = new ConexionServidor(cliente, this, usuario);
 
                 Thread hilo = new Thread(nuevoCliente);
@@ -85,7 +85,62 @@ public class MainServidor {
         }
     }
 
+    public String getHistorial(String usuario) {
+        if (getUsuario(usuario) == null) {
+            if (!usuario.startsWith(Nombres.USUARIO_ANONIMO.toString())) {
+                System.err.println("gethistorial: usuario no conectado: " + usuario);
+            }
+            return "";
+        }
+        Connection connection = Connect.connect();
+        String historial = "";
+        try {
+            String sql = "SELECT mensaje FROM Mensajes WHERE idUsuarioenvia = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                historial = resultSet.getString("mensaje");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+        return historial;
+    }
+
+    public void setHistorial(String usuario, String historial) {
+        if (getUsuario(usuario) == null) {
+            if (!usuario.startsWith(Nombres.USUARIO_ANONIMO.toString())) {
+                System.err.println("setHistorial: usuario no conectado: " + usuario);
+            }
+            return;
+        }
+        Connection connection = Connect.connect();
+        try {
+            // borrar historial si existe
+            String sql = "DELETE FROM Mensajes WHERE idUsuarioenvia = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            preparedStatement.executeUpdate();
+
+            // agregar historial
+            sql = "INSERT INTO Mensajes (idUsuarioenvia, mensaje) VALUES (?, ?)";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            preparedStatement.setString(2, historial);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+    }
+
     public void agregarUsuario(String usuario, ConexionServidor conexion) {
+        System.out.println("Agregando usuario " + usuario);
         usuarios.put(usuario, conexion);
     }
 

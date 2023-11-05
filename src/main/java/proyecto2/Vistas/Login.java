@@ -6,7 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +20,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
-import proyecto2.Servidor.Observable;
 import javafx.scene.Node;
 
 public class Login implements Initializable {
@@ -32,6 +30,7 @@ public class Login implements Initializable {
     private Socket socket;
     private ObjectOutputStream salida;
     private ObjectInputStream entrada;
+    private String historial;
 
     @FXML
     private Button ingresar;
@@ -49,24 +48,25 @@ public class Login implements Initializable {
         Constantes.Canales canal = validarUsuario(usuario, contrasenna);
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
-                irVista(event, "FXMLVistaMedico.fxml", usuario, canal);
+                irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
             } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
                     || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
-                irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal);
+                irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal, historial);
             } else if (canal.equals(Constantes.Canales.ADMINISTRADOR)) {
-                irVista(event, "FXMLVistaAdministrador.fxml", usuario, canal);
+                irVista(event, "FXMLVistaAdministrador.fxml", usuario, canal, historial);
             }
         }
     }
 
-    private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal) throws IOException {
+    private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial)
+            throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
         Parent root = loader.load();
 
         // Obtener el controlador de la vista
         VistaPadre controladorVista = loader.getController();
-        controladorVista.setInformacion(socket, salida, entrada, usuario, canal);
+        controladorVista.setInformacion(socket, salida, entrada, usuario, canal, historial);
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -116,23 +116,15 @@ public class Login implements Initializable {
                 System.err.println("El objeto de entrada no se ha inicializado");
                 return null;
             }
+            Mensaje respuesta = (Mensaje) this.entrada.readObject();
 
-            Object object = null;
-            try {
-                object = this.entrada.readObject();
-            } catch (IOException e) {
-                System.err.println("Error al leer el objeto: " + e.getMessage());
-                return null;
-            }
-
-            if (!(object instanceof Mensaje)) {
-                System.err.println("El objeto leído es: " + object.getClass().getName());
-                throw new ClassCastException("El objeto leído no es de tipo Mensaje");
-            }
-
-            Mensaje respuesta = (Mensaje) object;
-
+            // quitar el prefijo de la respuesta
             String canal = respuesta.getMensaje().split(":")[1];
+            if (respuesta.getMensaje().split(":").length > 2) {
+                historial = respuesta.getMensaje().split(":", 3)[2];
+            } else {
+                historial = "";
+            }
 
             if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_EXITOSO.toString())) {
                 Constantes.Canales aux = Constantes.Canales.valueOf(canal);

@@ -10,8 +10,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 
 public class FXMLVistaAdministradorController extends VistaPadre implements Initializable {
 
@@ -26,9 +24,6 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     @FXML
     private Button botonReiniciarContraseña;
-
-    @FXML
-    private TextArea chatArea;
 
     @FXML
     private Button sendButton;
@@ -53,21 +48,5 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     @Override
     public void run() {
 
-    }
-
-    // historial
-    @Override
-    public String getHistorial() {
-        return chatArea.getText();
-    }
-
-    @Override
-    public void borrarHistorial() {
-        chatArea.clear();
-    }
-
-    @Override
-    public void setHistorial(String historial) {
-        chatArea.setText(historial);
     }
 }

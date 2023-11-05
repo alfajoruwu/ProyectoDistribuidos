@@ -8,12 +8,14 @@ import proyecto2.Mensajeria.Constantes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class ConexionServidor implements Runnable, PropertyChangeListener {
     private String usuario;
+    private String historial;
     private Constantes.Canales canal;
     private Socket socket;
     private MainServidor servidor;
@@ -55,17 +57,18 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGIN)) {
                     Mensaje respuesta = new Mensaje();
                     respuesta.setEmisor(Constantes.Nombres.SERVIDOR.toString());
-                    respuesta.setDestinatario(Constantes.TipoDestino.USUARIO, mensaje.getEmisor());
                     System.out.println(mensaje.getEmisor() + " -> login ");
                     Constantes.Canales canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
+                    respuesta.setDestinatario(Constantes.TipoDestino.USUARIO, mensaje.getEmisor());
                     if (canal != null) {
                         this.canal = canal;
                         this.usuario = mensaje.getEmisor();
                         servidor.agregarUsuario(mensaje.getEmisor(), this);
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
-                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal);
+                        this.historial = servidor.getHistorial(usuario);
+                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal + ":" + historial);
                     } else {
-                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null");
+                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null" + ":null");
                     }
                     salida.writeObject(respuesta);
                     // ----------------------------------------------------------------------------
@@ -73,6 +76,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     // mensaje al servidor para logout
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGOUT)) {
                     System.out.println(mensaje.getEmisor() + " -> logout ");
+                    servidor.setHistorial(usuario, historial);
                     servidor.removerCanalUsuario(canal, usuario);
                     servidor.removerUsuario(usuario);
                     this.canal = null;
@@ -85,10 +89,15 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 // --------------------------------------------------------------------------------
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
-            System.out.println("Cliente desconectado: " + usuario);
+            servidor.setHistorial(usuario, historial);
             servidor.removerCanalUsuario(canal, usuario);
-            servidor.removerUsuario(usuario);
-            if (e.getClass() != SocketException.class) {
+            if (usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
+                System.out.println("Desconectado : " + usuario);
+            } else {
+                servidor.removerUsuario(usuario);
+            }
+            // si es un error de socket, no se imprime
+            if (e.getClass() != SocketException.class && e.getClass() != EOFException.class) {
                 e.printStackTrace();
             }
         }
@@ -98,9 +107,8 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
-                System.out.println("Notificando a " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
-                salida.writeObject(mensaje);
+                recibirMensaje(mensaje);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -110,9 +118,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
         }
     }
 
-    // mensaje privado
     public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
         try {
+            historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
             salida.writeObject(mensaje);
         } catch (IOException e) {
             System.err.println(usuario + " -> Error al enviar mensaje privado");

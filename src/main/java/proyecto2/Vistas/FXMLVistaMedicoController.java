@@ -9,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Mensaje;
-import proyecto2.Mensajeria.Constantes;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,12 +35,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     private Button botonMedicos;
 
     @FXML
-    private TextArea chatArea;
-
-    @FXML
-    private TextField messageField;
-
-    @FXML
     private Button botonEnviarMensaje;
 
     @FXML
@@ -49,9 +42,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @FXML
     private Label tituloEncabezadoMedico;
-
-    @FXML
-    private Label chatGeneral;
 
     @FXML
     private Button botonSalidar;
@@ -102,7 +92,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @Override
     public void run() {
-        chatArea.appendText("Bienvenido al chat\n");
         try {
             Mensaje mensaje;
             while (!hilo.isInterrupted()) {
@@ -115,22 +104,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 chatArea.appendText("\n");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!hilo.isInterrupted()) {
+                e.printStackTrace();
+            }
         }
-    }
-
-    @Override
-    public String getHistorial() {
-        return chatArea.getText();
-    }
-
-    @Override
-    public void borrarHistorial() {
-        chatArea.clear();
-    }
-
-    @Override
-    public void setHistorial(String historial) {
-        chatArea.setText(historial);
     }
 }
