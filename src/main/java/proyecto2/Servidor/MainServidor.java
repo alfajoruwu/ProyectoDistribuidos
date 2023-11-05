@@ -9,11 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import proyecto2.BaseDatos.Connect;
+import proyecto2.Mensajeria.Constantes;
+import proyecto2.Mensajeria.Constantes.Nombres;
+import proyecto2.Mensajeria.Mensaje;
 
 public class MainServidor {
     private Observable observable;
     private java.util.HashMap<String, ConexionServidor> usuarios;
-    public static final String USIARIO_ANONIMO = "Usuario Anonimo";
 
     public static void main(String[] args) {
 
@@ -30,9 +32,9 @@ public class MainServidor {
                 ServerSocket socketServidor = new ServerSocket(5000);
 
                 Socket cliente = socketServidor.accept();
-                System.out.println("Cliente conectado: " + cliente.getPort());
+                System.out.println("Conectado: " + Constantes.Nombres.USUARIO_ANONIMO + " " + cliente.getPort());
 
-                String usuario = USIARIO_ANONIMO + cliente.getPort();
+                String usuario = Nombres.USUARIO_ANONIMO + " " + cliente.getPort();
                 Runnable nuevoCliente = new ConexionServidor(cliente, this, usuario);
 
                 Thread hilo = new Thread(nuevoCliente);
@@ -46,7 +48,7 @@ public class MainServidor {
     }
 
     // temporalmente despues morira dlskafjdsf
-    public String validarUsuario(String usuario, String contraseña) {
+    public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
             return null;
         }
@@ -72,7 +74,11 @@ public class MainServidor {
         // Verificar si se encontró un rol
         if (rol != null) {
             System.out.println("Usuario válido. Rol: " + rol);
-            return rol;
+            if (rol.equals("administrativo")) {
+                return Constantes.Canales.AUXILIAR;
+            }
+            Constantes.Canales canal = Constantes.Canales.valueOf(rol.toUpperCase());
+            return canal;
         } else {
             System.out.println("Usuario no válido.");
             return null;
@@ -93,19 +99,30 @@ public class MainServidor {
         usuarios.remove(usuario);
     }
 
+    // mensaje privado
+    public void enviarMensaje(Mensaje mensaje, String usuario) {
+        ConexionServidor conexion = usuarios.get(usuario);
+        if (conexion != null) {
+            conexion.recibirMensaje(mensaje);
+        }
+    }
+
     // notificaciones
-    public void agregarCanalUsuario(String canal, String usuario) {
+    public void agregarCanalUsuario(Constantes.Canales canal, String usuario) {
         PropertyChangeListener observador = usuarios.get(usuario);
         this.observable.agregarObservador(canal, observador);
     }
 
-    public void removerCanalUsuario(String canal, String usuario) {
+    public void removerCanalUsuario(Constantes.Canales canal, String usuario) {
+        if (canal == null) {
+            return;
+        }
         PropertyChangeListener observador = usuarios.get(usuario);
         this.observable.removerObservador(canal, observador);
         System.out.println("Removiendo canal " + canal + " a usuario " + usuario);
     }
 
-    public void notificar(String tipo, Object valorNuevo) {
+    public void notificar(Constantes.Canales tipo, Object valorNuevo) {
         this.observable.notificar(tipo, valorNuevo);
     }
 

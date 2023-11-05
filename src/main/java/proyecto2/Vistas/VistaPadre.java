@@ -1,12 +1,15 @@
 package proyecto2.Vistas;
 
 import javafx.stage.Stage;
+import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,13 +26,19 @@ public abstract class VistaPadre implements Runnable {
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
 
+    @FXML
+    protected TextField messageField;
+    protected Constantes.Canales canal;
+
     protected Thread hilo;
 
-    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
+    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
+            Constantes.Canales canal) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
+        this.canal = canal;
     }
 
     public void irAVistaLogin(ActionEvent event) throws IOException {
@@ -45,7 +54,7 @@ public abstract class VistaPadre implements Runnable {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
-            mensaje.setDestinatario(Mensaje.PREFIJO_LOGOUT, null);
+            mensaje.setDestinatario(Constantes.TipoDestino.LOGOUT, Constantes.Nombres.SERVIDOR.toString());
             mensaje.setMensaje(this.getHistorial());
 
             salida.writeObject(mensaje);
@@ -68,4 +77,21 @@ public abstract class VistaPadre implements Runnable {
     public abstract void setHistorial(String historial);
 
     public abstract void borrarHistorial();
+
+    @FXML
+    protected void handleSendButtonAction() {
+        String message = messageField.getText();
+        if (!message.isEmpty()) {
+            Mensaje mensaje = new Mensaje();
+            mensaje.setEmisor(this.usuario);
+            mensaje.setMensaje(message);
+            mensaje.setDestinatario(Constantes.TipoDestino.CANAL, canal);
+            messageField.clear();
+            try {
+                salida.writeObject(mensaje);
+            } catch (Exception excepcion) {
+                excepcion.printStackTrace();
+            }
+        }
+    }
 }

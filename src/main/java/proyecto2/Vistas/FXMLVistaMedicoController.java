@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Mensaje;
-import proyecto2.Servidor.Observable;
+import proyecto2.Mensajeria.Constantes;
 
 import java.io.IOException;
 import java.net.URL;
@@ -98,23 +98,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
         hilo = new Thread(this);
         hilo.start();
-    }
-
-    @FXML
-    private void handleSendButtonAction() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            Mensaje mensaje = new Mensaje();
-            mensaje.setEmisor(this.usuario);
-            mensaje.setMensaje(message);
-            mensaje.setDestinatario(Mensaje.PREFIJO_CANAL, Observable.CANAL_MEDICOS);
-            messageField.clear();
-            try {
-                salida.writeObject(mensaje);
-            } catch (Exception excepcion) {
-                excepcion.printStackTrace();
-            }
-        }
     }
 
     @Override

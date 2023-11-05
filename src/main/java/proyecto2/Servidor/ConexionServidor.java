@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import proyecto2.Mensajeria.Mensaje;
+import proyecto2.Mensajeria.Constantes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -13,7 +14,7 @@ import java.io.ObjectOutputStream;
 
 public class ConexionServidor implements Runnable, PropertyChangeListener {
     private String usuario;
-    private String canal;
+    private Constantes.Canales canal;
     private Socket socket;
     private MainServidor servidor;
     private ObjectInputStream entrada;
@@ -40,44 +41,50 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             while (true) {
                 mensaje = (Mensaje) entrada.readObject();
 
-                if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_CANAL)) {
-                    servidor.notificar(mensaje.getDestinatario(), mensaje);
+                // mensaje a un canal
+                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
+                    servidor.notificar(Constantes.Canales.valueOf(mensaje.getDestinatario()), mensaje);
+                    // ----------------------------------------------------------------------------
 
-                } else if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_USUARIO)) {
-                    System.out.println(mensaje.getEmisor() +
-                            "-> Enviando mensaje a usuario " +
-                            mensaje.getDestinatario());
+                    // mensaje a un usuario
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                    servidor.enviarMensaje(mensaje, mensaje.getDestinatario());
+                    // ----------------------------------------------------------------------------
 
-                } else if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_LOGIN)) {
+                    // mensaje al servidor para login
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGIN)) {
                     Mensaje respuesta = new Mensaje();
-                    respuesta.setEmisor(Mensaje.SERVIDOR);
-                    respuesta.setDestinatario(Mensaje.PREFIJO_USUARIO, mensaje.getEmisor());
+                    respuesta.setEmisor(Constantes.Nombres.SERVIDOR.toString());
+                    respuesta.setDestinatario(Constantes.TipoDestino.USUARIO, mensaje.getEmisor());
                     System.out.println(mensaje.getEmisor() + " -> login ");
-                    String canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
+                    Constantes.Canales canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
                     if (canal != null) {
                         this.canal = canal;
                         this.usuario = mensaje.getEmisor();
                         servidor.agregarUsuario(mensaje.getEmisor(), this);
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
-                        respuesta.setMensaje(Mensaje.LOGIN_EXITOSO + ":" + canal);
+                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal);
                     } else {
-                        respuesta.setMensaje(Mensaje.LOGIN_FALLIDO + ":null");
+                        respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null");
                     }
                     salida.writeObject(respuesta);
+                    // ----------------------------------------------------------------------------
 
-                } else if (mensaje.getTipoDestinatario().equals(Mensaje.PREFIJO_LOGOUT)) {
+                    // mensaje al servidor para logout
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGOUT)) {
                     System.out.println(mensaje.getEmisor() + " -> logout ");
                     servidor.removerCanalUsuario(canal, usuario);
                     servidor.removerUsuario(usuario);
-                    this.canal = MainServidor.USIARIO_ANONIMO + socket.getPort();
-                    this.usuario = MainServidor.USIARIO_ANONIMO + socket.getPort();
+                    this.canal = null;
+                    this.usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + socket.getPort();
                 } else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
                             mensaje.getDestinatarioFull() + " -> Destinatario no reconocido");
                 }
+                // --------------------------------------------------------------------------------
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // si algo falla, se desconecta el usuario
             System.out.println("Cliente desconectado: " + usuario);
             servidor.removerCanalUsuario(canal, usuario);
             servidor.removerUsuario(usuario);
@@ -88,9 +95,10 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(this.canal)) {
+    public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
+        if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
+                System.out.println("Notificando a " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 salida.writeObject(mensaje);
             } catch (Exception e) {
@@ -99,6 +107,15 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
         } else {
             System.err.println("Error al notificar: " + evt.getPropertyName());
             System.err.println("Tipo de usuario: " + this.canal);
+        }
+    }
+
+    // mensaje privado
+    public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
+        try {
+            salida.writeObject(mensaje);
+        } catch (IOException e) {
+            System.err.println(usuario + " -> Error al enviar mensaje privado");
         }
     }
 }

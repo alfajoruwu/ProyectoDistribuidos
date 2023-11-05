@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Servidor.Observable;
 import javafx.scene.Node;
@@ -42,30 +43,30 @@ public class Login implements Initializable {
     private PasswordField contraseña;
 
     @FXML
-    public void irAVistaMedico(ActionEvent event) throws IOException { // TODO: nombre a ingresar o algo asi
+    public void irAVistaMedico(ActionEvent event) throws IOException { // TODO: cambiar nombre
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
-        String canal = validarUsuario(usuario, contrasenna);
+        Constantes.Canales canal = validarUsuario(usuario, contrasenna);
         if (canal != null) {
-            if (canal.equals(Observable.CANAL_MEDICOS)) {
-                irVista(event, "FXMLVistaMedico.fxml", usuario);
-            } else if (canal.equals(Observable.CANAL_ADMISION) || canal.equals(Observable.CANAL_AUXILIAR)
-                    || canal.equals(Observable.CANAL_EXAMENES) || canal.equals(Observable.CANAL_PABELLON)) {
-                irVista(event, "FXMLVistaAdministrativo.fxml", usuario);
-            } else if (canal.equals(Observable.CANAL_ADMINISTRADOR)) {
-                irVista(event, "FXMLVistaAdministrador.fxml", usuario);
+            if (canal.equals(Constantes.Canales.MEDICO)) {
+                irVista(event, "FXMLVistaMedico.fxml", usuario, canal);
+            } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
+                    || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
+                irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal);
+            } else if (canal.equals(Constantes.Canales.ADMINISTRADOR)) {
+                irVista(event, "FXMLVistaAdministrador.fxml", usuario, canal);
             }
         }
     }
 
-    private void irVista(ActionEvent event, String vista, String usuario) throws IOException {
+    private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal) throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
         Parent root = loader.load();
 
         // Obtener el controlador de la vista
         VistaPadre controladorVista = loader.getController();
-        controladorVista.setInformacion(socket, salida, entrada, usuario);
+        controladorVista.setInformacion(socket, salida, entrada, usuario, canal);
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -100,12 +101,12 @@ public class Login implements Initializable {
         stage.show();
     }
 
-    private String validarUsuario(String usuario, String contraseña) {
+    private Constantes.Canales validarUsuario(String usuario, String contraseña) {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
             // el destinatario da igual (solo si tiene el prefijo Login)
-            mensaje.setDestinatario(Mensaje.PREFIJO_LOGIN, "Servidor");
+            mensaje.setDestinatario(Constantes.TipoDestino.LOGIN, "Servidor");
             mensaje.setMensaje(contraseña);
 
             this.salida.writeObject(mensaje);
@@ -133,9 +134,10 @@ public class Login implements Initializable {
 
             String canal = respuesta.getMensaje().split(":")[1];
 
-            if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_EXITOSO)) {
-                return canal;
-            } else if (respuesta.getMensaje().startsWith(Mensaje.LOGIN_FALLIDO)) {
+            if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_EXITOSO.toString())) {
+                Constantes.Canales aux = Constantes.Canales.valueOf(canal);
+                return aux;
+            } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
             } else {
                 mensajeError.setText("Respuesta inesperada del servidor");

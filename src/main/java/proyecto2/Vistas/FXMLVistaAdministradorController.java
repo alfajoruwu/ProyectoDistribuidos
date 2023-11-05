@@ -31,9 +31,6 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     private TextArea chatArea;
 
     @FXML
-    private TextField messageField;
-
-    @FXML
     private Button sendButton;
 
     @FXML
@@ -46,15 +43,6 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     public void initialize() {
 
-    }
-
-    @FXML
-    private void handleSendButtonAction() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            chatArea.appendText("Tú: " + message + "\n");
-            messageField.clear();
-        }
     }
 
     @Override

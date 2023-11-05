@@ -8,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
+import proyecto2.Mensajeria.Constantes;
+import proyecto2.Mensajeria.Mensaje;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -95,16 +97,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             }
             listaContactos.setItems(filteredList);
         });
-    }
-
-    @FXML
-    private void handleSendButtonAction() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            chatArea.appendText("Tú: " + message + "\n");
-            messageField.clear();
-
-        }
     }
 
     public void setSocket(Socket socket) {
