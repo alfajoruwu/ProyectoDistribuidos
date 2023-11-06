@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import proyecto2.BaseDatos.Connect;
 import proyecto2.Mensajeria.Constantes;
-import proyecto2.Mensajeria.Constantes.Nombres;
 import proyecto2.Mensajeria.Mensaje;
 
 public class MainServidor {
@@ -33,7 +32,7 @@ public class MainServidor {
 
                 Socket cliente = socketServidor.accept();
 
-                String usuario = Nombres.USUARIO_ANONIMO + " " + cliente.getPort();
+                String usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + cliente.getPort();
                 System.out.println("Conectado: " + usuario);
                 Runnable nuevoCliente = new ConexionServidor(cliente, this, usuario);
 
@@ -87,7 +86,7 @@ public class MainServidor {
 
     public String getHistorial(String usuario) {
         if (getUsuario(usuario) == null) {
-            if (!usuario.startsWith(Nombres.USUARIO_ANONIMO.toString())) {
+            if (!usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
                 System.err.println("gethistorial: usuario no conectado: " + usuario);
             }
             return "";
@@ -113,7 +112,7 @@ public class MainServidor {
 
     public void setHistorial(String usuario, String historial) {
         if (getUsuario(usuario) == null) {
-            if (!usuario.startsWith(Nombres.USUARIO_ANONIMO.toString())) {
+            if (!usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
                 System.err.println("setHistorial: usuario no conectado: " + usuario);
             }
             return;
@@ -160,6 +159,7 @@ public class MainServidor {
     public void agregarUsuario(String usuario, ConexionServidor conexion) {
         System.out.println("Agregando usuario " + usuario);
         usuarios.put(usuario, conexion);
+        actualizarUsuarios(usuario);
     }
 
     // usuarios conectados
@@ -170,6 +170,7 @@ public class MainServidor {
     public void removerUsuario(String usuario) {
         System.out.println("Removiendo usuario " + usuario);
         usuarios.remove(usuario);
+        actualizarUsuarios(usuario);
     }
 
     // mensaje privado
@@ -199,4 +200,21 @@ public class MainServidor {
         this.observable.notificar(tipo, valorNuevo);
     }
 
+    public String getUsuariosConectados(Constantes.Canales canal) {
+        String usuariosConectados = "";
+        for (String usuario : usuarios.keySet()) {
+            if (usuarios.get(usuario).getCanal() == canal) {
+                usuariosConectados += usuario + ", ";
+            }
+        }
+        return usuariosConectados;
+    }
+
+    public void actualizarUsuarios(String usuario) {
+        for (ConexionServidor conexion : usuarios.values()) {
+            if (!conexion.getUsuario().equals(usuario)) {
+                conexion.actualizarContactos();
+            }
+        }
+    }
 }
