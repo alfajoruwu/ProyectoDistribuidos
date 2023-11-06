@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -29,8 +30,12 @@ public abstract class VistaPadre implements Runnable {
 
     @FXML
     protected TextField messageField;
+
     @FXML
     protected TextArea chatArea;
+
+    @FXML
+    private Button botonBorrarHistorial;
 
     protected Constantes.Canales canal;
 
@@ -66,6 +71,7 @@ public abstract class VistaPadre implements Runnable {
             System.err.println("Error al enviar el mensaje de logout");
             e.printStackTrace();
         }
+
         this.entrada.close();
         this.salida.close();
         this.socket.close();
@@ -77,6 +83,7 @@ public abstract class VistaPadre implements Runnable {
         stage.show();
     }
 
+    @FXML
     protected void borrarHistorial() {
         chatArea.clear();
     }

@@ -42,7 +42,7 @@ public class Login implements Initializable {
     private PasswordField contraseña;
 
     @FXML
-    public void irAVistaMedico(ActionEvent event) throws IOException { // TODO: cambiar nombre
+    public void irAVistaMedico(ActionEvent event) throws IOException { 
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
         Constantes.Canales canal = validarUsuario(usuario, contrasenna);
