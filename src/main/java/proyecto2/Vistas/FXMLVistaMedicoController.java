@@ -1,5 +1,6 @@
 package proyecto2.Vistas;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
+import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 
 import java.io.IOException;
@@ -93,15 +95,30 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     @Override
     public void run() {
         try {
-            Mensaje mensaje;
             while (!hilo.isInterrupted()) {
+                Mensaje mensaje;
                 mensaje = (Mensaje) entrada.readObject();
-                if (mensaje.getEmisor().equals(this.usuario)) {
-                    chatArea.appendText("TU: " + mensaje.getMensaje());
+                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    String[] contactos = mensaje.getMensaje().split(",");
+                    System.out.println("Contactos recibidos: " + mensaje.getMensaje());
+                    Platform.runLater(() -> {
+                        listaContactos.setItems(FXCollections.observableArrayList(contactos));
+                    });
+                    System.out.println("Contactos actualizados");
                 } else {
-                    chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                    if (mensaje.getEmisor().equals(this.usuario)) {
+                        Platform.runLater(() -> {
+                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                        });
+                    }
+                    Platform.runLater(() -> {
+                        chatArea.appendText("\n");
+                    });
                 }
-                chatArea.appendText("\n");
             }
         } catch (Exception e) {
             if (!hilo.isInterrupted()) {

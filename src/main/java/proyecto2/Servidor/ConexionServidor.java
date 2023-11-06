@@ -67,10 +67,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
                         this.historial = servidor.getHistorial(usuario);
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal + ":" + historial);
+                        salida.writeObject(respuesta);
+                        actualizarContactos();
                     } else {
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null" + ":null");
+                        salida.writeObject(respuesta);
                     }
-                    salida.writeObject(respuesta);
                     // ----------------------------------------------------------------------------
 
                     // mensaje al servidor para logout
@@ -107,6 +109,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
+                System.out.println("Notificando a " + usuario + " -> " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 recibirMensaje(mensaje);
             } catch (Exception e) {
@@ -129,5 +132,29 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
         } catch (IOException e) {
             System.err.println(usuario + " -> Error al enviar mensaje privado");
         }
+    }
+
+    public void actualizarContactos() {
+        try {
+            if (canal == null) {
+                return;
+            }
+            Mensaje mensaje = new Mensaje();
+            mensaje.setEmisor(Constantes.Nombres.SERVIDOR.toString());
+            mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS, usuario);
+            mensaje.setMensaje(servidor.getUsuariosConectados(canal));
+            salida.writeObject(mensaje);
+        } catch (Exception e) {
+            System.err.println("Error al enviar el mensaje de actualizar contactos");
+            e.printStackTrace();
+        }
+    }
+
+    public Constantes.Canales getCanal() {
+        return canal;
+    }
+
+    public String getUsuario() {
+        return usuario;
     }
 }

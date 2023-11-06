@@ -47,7 +47,12 @@ public abstract class VistaPadre implements Runnable {
     }
 
     public void irAVistaLogin(ActionEvent event) throws IOException {
-        hilo.interrupt();
+        try {
+            hilo.interrupt();
+        } catch (Exception e) {
+            System.err.println("Error al interrumpir el hilo de escucha de mensajes");
+            e.printStackTrace();
+        }
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
         Parent root = loader.load();
