@@ -64,8 +64,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     public void initialize(URL location, ResourceBundle resources) {
         chatArea.setEditable(false);
         listaContactos.setItems(contactList);
-        
-        
+
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
             @Override
             public String toString(String contact) {
@@ -103,7 +102,10 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                     String[] contactos = mensaje.getMensaje().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
                     Platform.runLater(() -> {
-                        listaContactos.setItems(FXCollections.observableArrayList(contactos));
+                        contactList.clear();
+                        for (String contacto : contactos) {
+                            contactList.add(contacto);
+                        }
                     });
                     System.out.println("Contactos actualizados");
                 } else {
