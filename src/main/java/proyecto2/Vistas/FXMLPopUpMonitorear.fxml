@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="531.0" prefWidth="853.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLPopUpMonitorearController">
+   <children>
+      <Label layoutX="28.0" layoutY="14.0" prefHeight="29.0" prefWidth="290.0" text="Monitoreo" />
+      <TextField fx:id="BuscarUsuario" layoutX="28.0" layoutY="72.0" prefHeight="26.0" prefWidth="262.0" />
+      <Label layoutX="28.0" layoutY="45.0" prefHeight="26.0" prefWidth="290.0" text="Buscar Usuario" />
+      <ListView fx:id="ListaUsuarios" layoutX="28.0" layoutY="110.0" prefHeight="383.0" prefWidth="262.0" />
+      <ListView fx:id="MensajesEnviados" layoutX="330.0" layoutY="71.0" prefHeight="235.0" prefWidth="506.0" />
+      <Label layoutX="330.0" layoutY="50.0" text="Mensajes Enviados a:" />
+      <Label layoutX="330.0" layoutY="325.0" text="Tiempo de uso:" />
+      <Label fx:id="tiempoUsoTotal" layoutX="417.0" layoutY="325.0" prefHeight="18.0" prefWidth="143.0" text="99:99:99" />
+   </children>
+</AnchorPane>

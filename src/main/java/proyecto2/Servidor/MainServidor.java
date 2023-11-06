@@ -139,6 +139,21 @@ public class MainServidor {
         }
     }
 
+    //incert 
+    public void CrearUsuario(String Nombre,String Rut,String Correo,String Rol){
+        String sql = "INSERT INTO Usuarios(name,capacity) VALUES(?,?)";
+
+        try (Connection conn = Connect.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setDouble(2, capacity);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public void agregarUsuario(String usuario, ConexionServidor conexion) {
         System.out.println("Agregando usuario " + usuario);
         usuarios.put(usuario, conexion);
