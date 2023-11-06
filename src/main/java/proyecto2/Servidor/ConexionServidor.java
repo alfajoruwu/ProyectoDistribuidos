@@ -120,7 +120,11 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
     public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
         try {
-            historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
+            if (mensaje.getEmisor().equals(usuario)) {
+                historial += "TU: " + mensaje.getMensaje() + "\n";
+            } else {
+                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
+            }
             salida.writeObject(mensaje);
         } catch (IOException e) {
             System.err.println(usuario + " -> Error al enviar mensaje privado");
