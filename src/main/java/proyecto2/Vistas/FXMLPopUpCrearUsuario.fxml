@@ -11,7 +11,7 @@
       <Label layoutX="24.0" layoutY="26.0" prefHeight="18.0" prefWidth="276.0" text="Crear Usuario" />
       <ChoiceBox fx:id="rol" layoutX="24.0" layoutY="284.0" prefHeight="26.0" prefWidth="242.0" />
       <Label layoutX="24.0" layoutY="258.0" text="Rol" />
-      <Button layoutX="101.0" layoutY="420.0" mnemonicParsing="false" text="Crear Usuario" />
+      <Button layoutX="101.0" layoutY="420.0" mnemonicParsing="false" onAction="#enviarCrearUsuario" text="Crear Usuario" />
       <TextField fx:id="Nombre" layoutX="24.0" layoutY="73.0" prefHeight="26.0" prefWidth="242.0" />
       <Label layoutX="24.0" layoutY="55.0" text="Nombre" />
       <Label layoutX="24.0" layoutY="111.0" text="Rut" />
@@ -19,5 +19,6 @@
       <TextField fx:id="Correo" layoutX="24.0" layoutY="206.0" prefHeight="26.0" prefWidth="242.0" />
       <Label layoutX="24.0" layoutY="179.0" text="Correo electronico" />
       <Label layoutX="19.0" layoutY="344.0" text="La Contraseña por defecto es el rut del Usuario" />
+      <Label fx:id="texto" layoutX="122.0" layoutY="380.0" />
    </children>
 </AnchorPane>

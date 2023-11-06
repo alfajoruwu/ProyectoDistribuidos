@@ -81,12 +81,26 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.removerUsuario(usuario);
                     this.canal = null;
                     this.usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + socket.getPort();
-                } else {
+
+                
+
+                
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)){
+                    System.out.println("añadir usuarios");
+                    System.out.println(mensaje.getMensaje());
+                    String[] aux = mensaje.getMensaje().split(":");
+                    servidor.CrearUsuario(aux[0] ,aux[1],aux[2],aux[3]);
+                }
+                
+                
+                else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
                             mensaje.getDestinatarioFull() + " -> Destinatario no reconocido");
                 }
                 // --------------------------------------------------------------------------------
+
+                
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
             servidor.setHistorial(usuario, historial);

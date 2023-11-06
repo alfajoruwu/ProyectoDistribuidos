@@ -60,7 +60,7 @@ public class Login implements Initializable {
     }
 
     private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial)
-            throws IOException {
+        throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
         Parent root = loader.load();

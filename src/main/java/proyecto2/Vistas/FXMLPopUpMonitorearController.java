@@ -32,6 +32,7 @@ public class FXMLPopUpMonitorearController implements Initializable {
     
     @FXML
     private Label tiempoUsoTotal;
+        
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {

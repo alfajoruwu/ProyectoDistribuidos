@@ -141,12 +141,15 @@ public class MainServidor {
 
     //incert 
     public void CrearUsuario(String Nombre,String Rut,String Correo,String Rol){
-        String sql = "INSERT INTO Usuarios(name,capacity) VALUES(?,?)";
+        String sql = "INSERT INTO Usuarios(Usuario,Contraseña,rol,rut,Correo) VALUES(?,?,?,?,?)";
 
         try (Connection conn = Connect.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
-            pstmt.setDouble(2, capacity);
+            pstmt.setString(1, Nombre);
+            pstmt.setString(2, Rut);
+            pstmt.setString(3, Rol);
+            pstmt.setString(4, Rut);
+            pstmt.setString(5, Correo);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
