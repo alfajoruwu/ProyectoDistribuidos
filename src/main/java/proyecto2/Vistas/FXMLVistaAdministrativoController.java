@@ -8,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
+import proyecto2.Mensajeria.Constantes;
+import proyecto2.Mensajeria.Mensaje;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,20 +25,14 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     private Button botonPabellon;
 
-    @FXML
-    private Button botonAdmision;
-
-    @FXML
-    private Button botonExamenes;
-
-    @FXML
-    private Button botonAuxiliar;
-
-    @FXML
-    private Button botonMedicos;
+    @FXML 
+    private TextField textoMensajePrivado;
 
     @FXML
     private Button botonEnviarMensaje;
+
+    @FXML
+    private Button botonEnviarMensajePrivado;
 
     @FXML
     private TextField textoBuscarContacto;
@@ -56,8 +52,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     }
 
     private ObservableList<String> contactList = FXCollections.observableArrayList(
-            "Pabellón",
-            "Exámenes",
             "Médico 1",
             "Médico 2",
             "Médico 3");
@@ -104,5 +98,32 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @Override
     public void run() {
 
+    }
+
+    @FXML
+    public void enviarMensajePrivado(ActionEvent event) {
+        String mensaje = textoMensajePrivado.getText();
+        
+        // Verifica si se ha seleccionado un contacto de la lista
+        String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
+        
+        if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
+            Mensaje mensajeAEnviar = new Mensaje();
+            mensajeAEnviar.setEmisor(usuario);
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+            mensajeAEnviar.setMensaje(mensaje);
+
+            // Muestra el mensaje en el área de chat
+            chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
+            
+            try {
+                salida.writeObject(mensajeAEnviar);
+            } catch (Exception e) {
+                System.err.println("Error al enviar el mensaje");
+                e.printStackTrace();
+            }
+            
+            textoMensajePrivado.clear();
+        }
     }
 }
