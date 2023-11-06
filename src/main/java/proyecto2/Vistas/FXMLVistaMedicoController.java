@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.layout.FlowPane;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
@@ -52,10 +51,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @FXML
     private Label tituloBuscadorCanal;
-    
-    @FXML
-    private FlowPane chatArea;
-
 
     @FXML
     public void irAVistaLogin(ActionEvent event) throws IOException {
@@ -166,11 +161,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
 
-            Text mensajeText = new Text("Privado para " + usuarioSeleccionado + ": " + mensajeTexto + "\n");
-            mensajeText.setStyle("-fx-fill: blue;"); // Estilo para mensajes privados
-            
             // Muestra el mensaje en el área de chat
-            chatArea.getChildren().add(mensajeText);
+            chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
             
             try {
                 salida.writeObject(mensajeAEnviar);
