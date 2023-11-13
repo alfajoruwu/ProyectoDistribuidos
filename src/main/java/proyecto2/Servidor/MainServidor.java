@@ -46,7 +46,7 @@ public class MainServidor {
         }
     }
 
-    // temporalmente despues morira dlskafjdsf
+    
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
             return null;

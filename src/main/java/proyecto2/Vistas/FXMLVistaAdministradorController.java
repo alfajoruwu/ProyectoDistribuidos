@@ -15,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import proyecto2.Mensajeria.Constantes;
+import proyecto2.Mensajeria.Mensaje;
 
 public class FXMLVistaAdministradorController extends VistaPadre implements Initializable {
 
@@ -78,6 +80,24 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
         stage2.show();
     }
     
+    @FXML
+    public void MensajeUrgente(ActionEvent event){
+        String message = messageField.getText();
+        if (!message.isEmpty()) {
+            Mensaje mensaje = new Mensaje();
+            mensaje.setEmisor(this.usuario);
+            mensaje.setMensaje(message);
+            mensaje.setDestinatario(Constantes.TipoDestino.TODOS, canal);
+            messageField.clear();
+            try {
+                salida.writeObject(mensaje);
+            } catch (Exception excepcion) {
+                excepcion.printStackTrace();
+            }
+        }
+    }
+
+
     public void initialize() {
 
     }
