@@ -127,7 +127,6 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
-                System.out.println("Notificando a " + usuario + " -> " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 recibirMensaje(mensaje);
             } catch (Exception e) {
@@ -160,7 +159,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(Constantes.Nombres.SERVIDOR.toString());
             mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS, usuario);
-            mensaje.setMensaje(servidor.getUsuariosConectados(canal));
+            mensaje.setMensaje(servidor.getMedicosConectados(canal));
             salida.writeObject(mensaje);
         } catch (Exception e) {
             System.err.println("Error al enviar el mensaje de actualizar contactos");
