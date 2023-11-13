@@ -46,10 +46,23 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 // mensaje a un canal
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
                     servidor.notificar(Constantes.Canales.valueOf(mensaje.getDestinatario()), mensaje);
-                    // ----------------------------------------------------------------------------
+                // ----------------------------------------------------------------------------
+                
+                
+                // mensaje a un usuario
+                
+                }else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.TODOS))
+                {
+                    System.out.println("uwu a todos");
+                    servidor.notificar(Constantes.Canales.ADMINISTRADOR, mensaje);
+                    servidor.notificar(Constantes.Canales.ADMISION, mensaje);
+                    servidor.notificar(Constantes.Canales.AUXILIAR, mensaje);
+                    servidor.notificar(Constantes.Canales.EXAMENES, mensaje);
+                    servidor.notificar(Constantes.Canales.MEDICO, mensaje);
+                    servidor.notificar(Constantes.Canales.PABELLON, mensaje);
+                }
 
-                    // mensaje a un usuario
-                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
                     servidor.enviarMensaje(mensaje, mensaje.getDestinatario());
                     // ----------------------------------------------------------------------------
 
