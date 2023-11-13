@@ -23,10 +23,16 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private ListView<String> listaContactos;
 
     @FXML
+    private ListView<String> listaContactosCanal;
+
+    @FXML
     private Button botonPabellon;
 
     @FXML 
     private TextField textoMensajePrivado;
+
+    @FXML
+    private TextField textoMensajePrivadoCanal;
 
     @FXML
     private Button botonEnviarMensaje;
@@ -35,13 +41,22 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private Button botonEnviarMensajePrivado;
 
     @FXML
+    private Button botonEnviarMensajeCanal;
+
+    @FXML
     private TextField textoBuscarContacto;
+
+    @FXML
+    private TextField textoBuscadorCanal;
 
     @FXML
     private Label tituloEncabezadoMedico;
 
     @FXML
     private Label chatGeneral;
+
+    @FXML
+    private Label tituloBuscadorCanal;
 
     @FXML
     private Button botonSalidar;
@@ -56,10 +71,14 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             "Médico 2",
             "Médico 3");
 
+    private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
+            "Auxiliar");
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chatArea.setEditable(false);
         listaContactos.setItems(contactList);
+        listaContactosCanal.setItems(contactListCanal);
 
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
             @Override
@@ -67,6 +86,18 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                 return contact;
             }
 
+            @Override
+            public String fromString(String string) {
+                return string;
+            }
+        }));
+
+        listaContactosCanal.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
+            @Override
+            public String toString(String contact) {
+                return contact;
+            }
+    
             @Override
             public String fromString(String string) {
                 return string;
@@ -83,6 +114,20 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             }
             listaContactos.setItems(filteredList);
         });
+
+        textoBuscadorCanal.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchTerm = newValue.toLowerCase();
+            ObservableList<String> filteredList = FXCollections.observableArrayList();
+        
+            for (String contact : contactListCanal) {
+                if (contact.toLowerCase().contains(searchTerm)) {
+                    filteredList.add(contact);
+                }
+            }
+        
+            listaContactosCanal.setItems(filteredList);
+        });
+
     }
 
     public void setSocket(Socket socket) {
@@ -124,6 +169,32 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             }
             
             textoMensajePrivado.clear();
+        }
+    }
+
+    public void enviarMensajePrivadoCanal(ActionEvent event) {
+        String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
+
+        // Verifica si se ha seleccionado un contacto del canal
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de canal
+
+        if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
+            Mensaje mensajeAEnviar = new Mensaje();
+            mensajeAEnviar.setEmisor(usuario);
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el destino sea un usuario
+            mensajeAEnviar.setMensaje(mensaje);
+
+            // Muestra el mensaje en el área de chat del canal
+            chatArea.appendText("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje + "\n");
+
+            try {
+                salida.writeObject(mensajeAEnviar);
+            } catch (Exception e) {
+                System.err.println("Error al enviar el mensaje");
+                e.printStackTrace();
+            }
+
+            textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
         }
     }
 }
