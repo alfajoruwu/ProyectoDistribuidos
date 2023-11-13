@@ -48,6 +48,7 @@ public class Login implements Initializable {
         Constantes.Canales canal = validarUsuario(usuario, contrasenna);
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
+                PopUp(event);
                 irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
             } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
                     || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
@@ -59,7 +60,7 @@ public class Login implements Initializable {
     }
 
     private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial)
-            throws IOException {
+        throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
         Parent root = loader.load();
@@ -74,6 +75,15 @@ public class Login implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+    
+    private void PopUp(ActionEvent event) throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpSetearContraseña.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage2 = new Stage();
+        stage2.setScene(new Scene(root1));  
+        stage2.show();
+    }
+    
 
     @FXML
     private Label mensajeError;

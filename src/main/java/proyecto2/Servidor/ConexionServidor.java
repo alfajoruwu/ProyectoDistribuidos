@@ -67,10 +67,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
                         this.historial = servidor.getHistorial(usuario);
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal + ":" + historial);
+                        salida.writeObject(respuesta);
+                        actualizarContactos();
                     } else {
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null" + ":null");
+                        salida.writeObject(respuesta);
                     }
-                    salida.writeObject(respuesta);
                     // ----------------------------------------------------------------------------
 
                     // mensaje al servidor para logout
@@ -81,12 +83,26 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.removerUsuario(usuario);
                     this.canal = null;
                     this.usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + socket.getPort();
-                } else {
+
+                
+
+                
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)){
+                    System.out.println("añadir usuarios");
+                    System.out.println(mensaje.getMensaje());
+                    String[] aux = mensaje.getMensaje().split(":");
+                    servidor.CrearUsuario(aux[0] ,aux[1],aux[2],aux[3]);
+                }
+                
+                
+                else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
                             mensaje.getDestinatarioFull() + " -> Destinatario no reconocido");
                 }
                 // --------------------------------------------------------------------------------
+
+                
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
             servidor.setHistorial(usuario, historial);
@@ -107,6 +123,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
+                System.out.println("Notificando a " + usuario + " -> " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 recibirMensaje(mensaje);
             } catch (Exception e) {
@@ -120,10 +137,38 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
     public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
         try {
-            historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
+            if (mensaje.getEmisor().equals(usuario)) {
+                historial += "TU: " + mensaje.getMensaje() + "\n";
+            } else {
+                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
+            }
             salida.writeObject(mensaje);
         } catch (IOException e) {
             System.err.println(usuario + " -> Error al enviar mensaje privado");
         }
+    }
+
+    public void actualizarContactos() {
+        try {
+            if (canal == null) {
+                return;
+            }
+            Mensaje mensaje = new Mensaje();
+            mensaje.setEmisor(Constantes.Nombres.SERVIDOR.toString());
+            mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS, usuario);
+            mensaje.setMensaje(servidor.getUsuariosConectados(canal));
+            salida.writeObject(mensaje);
+        } catch (Exception e) {
+            System.err.println("Error al enviar el mensaje de actualizar contactos");
+            e.printStackTrace();
+        }
+    }
+
+    public Constantes.Canales getCanal() {
+        return canal;
+    }
+
+    public String getUsuario() {
+        return usuario;
     }
 }

@@ -9,9 +9,9 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLVistaAdministradorController">
    <children>
-      <Button fx:id="botonCrearUsuario" layoutX="83.0" layoutY="165.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="170.0" text="Crear usuario" />
-      <Button fx:id="botonMonitorearComunicaciones" layoutX="83.0" layoutY="243.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="170.0" text="Monitorear comunicaciones" />
-      <Button fx:id="botonReiniciarContraseña" layoutX="83.0" layoutY="325.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="170.0" text="Reiniciar contraseñas" />
+      <Button fx:id="botonCrearUsuario" layoutX="83.0" layoutY="165.0" mnemonicParsing="false" onAction="#AñadirUsuario" prefHeight="50.0" prefWidth="170.0" text="Crear usuario" />
+      <Button fx:id="botonMonitorearComunicaciones" layoutX="83.0" layoutY="243.0" mnemonicParsing="false" onAction="#Monitoreo" prefHeight="50.0" prefWidth="170.0" text="Monitorear comunicaciones" />
+      <Button fx:id="botonReiniciarContraseña" layoutX="83.0" layoutY="325.0" mnemonicParsing="false" onAction="#ReiniciarContraseñaPopup" prefHeight="50.0" prefWidth="170.0" text="Reiniciar contraseñas" />
       <TextArea fx:id="chatArea" layoutX="381.0" layoutY="121.0" prefHeight="344.0" prefWidth="366.0" />
       <TextField fx:id="messageField" layoutX="381.0" layoutY="494.0" prefHeight="41.0" prefWidth="268.0" />
       <Button fx:id="sendButton" layoutX="661.0" layoutY="494.0" mnemonicParsing="false" onAction="#handleSendButtonAction" prefHeight="41.0" prefWidth="80.0" text="Enviar" />
