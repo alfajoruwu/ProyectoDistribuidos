@@ -204,7 +204,7 @@ public class MainServidor {
         String usuariosConectados = "";
         for (String usuario : usuarios.keySet()) {
             if (usuarios.get(usuario).getCanal() == canal) {
-                usuariosConectados += usuario + ", ";
+                usuariosConectados += usuario + ",";
             }
         }
         return usuariosConectados;

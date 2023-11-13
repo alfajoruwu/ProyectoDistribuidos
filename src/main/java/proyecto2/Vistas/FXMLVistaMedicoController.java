@@ -58,12 +58,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         super.irAVistaLogin(event);
     }
 
-    private ObservableList<String> contactList = FXCollections.observableArrayList(
-            "Médico 1",
-            "Médico 2",
-            "Médico 3");
+    private ObservableList<String> contactList = FXCollections.observableArrayList();
 
-        private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
+    private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Pabellón",
             "Exámenes");
 
