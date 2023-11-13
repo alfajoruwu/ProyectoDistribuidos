@@ -96,19 +96,23 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.removerUsuario(usuario);
                     this.canal = null;
                     this.usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + socket.getPort();
+                    // ----------------------------------------------------------------------------
 
-                
-
-                //añadir usuarios
-                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)){
+                    // mensaje al servidor para registrar usuario
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)) {
                     System.out.println("añadir usuarios");
                     System.out.println(mensaje.getMensaje());
                     String[] aux = mensaje.getMensaje().split(":");
-                    servidor.CrearUsuario(aux[0] ,aux[1],aux[2],aux[3]);
+                    servidor.CrearUsuario(aux[0], aux[1], aux[2], aux[3]);
+                    // ----------------------------------------------------------------------------
+
+                    // mensaje al servidor para borrar usuario
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.BORRAR_HISTORIAL)) {
+                    this.historial = "";
                 }
-                
-                
-                
+                // ----------------------------------------------------------------------------
+
+                // mensaje a un destinatario no reconocido
                 else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
@@ -116,7 +120,6 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
                 // --------------------------------------------------------------------------------
 
-                
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
             servidor.setHistorial(usuario, historial);

@@ -40,7 +40,7 @@
          </font>
       </Label>
       <TextField fx:id="textoMensajePrivado" layoutX="439.0" layoutY="510.0" onAction="#enviarMensajePrivado" prefHeight="25.0" prefWidth="283.0" promptText="Enviar mensaje privado" />
-      <ListView fx:id="listaContactosCanal" layoutX="440.0" layoutY="149.0" prefHeight="113.0" prefWidth="343.0" />
+      <ListView fx:id="listaContactosCanal" layoutX="440.0" layoutY="149.0" prefHeight="113.0" prefWidth="343.0" onMouseClicked="#handleSeleccionAuxiliar" />
       <TextField fx:id="textoMensajePrivadoCanal" layoutX="439.0" layoutY="275.0" onAction="#enviarMensajePrivadoCanal" prefHeight="25.0" prefWidth="283.0" promptText="Enviar mensaje a un canal" />
       <TextField fx:id="textoBuscadorCanal" layoutX="623.0" layoutY="108.0" prefHeight="25.0" prefWidth="163.0" promptText="Buscar" />
       <Button fx:id="botonBorrarHistorial" layoutX="45.0" layoutY="550.0" mnemonicParsing="false" onAction="#borrarHistorial" prefHeight="25.0" prefWidth="96.0" text="Borrar historial" />

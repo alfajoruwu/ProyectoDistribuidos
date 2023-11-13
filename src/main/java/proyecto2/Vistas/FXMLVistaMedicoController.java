@@ -58,11 +58,21 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         super.irAVistaLogin(event);
     }
 
+    @FXML
+    public void handleSeleccionAuxiliar(ActionEvent event) {
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
+
+        if ("Auxiliar".equals(usuarioSeleccionado)) {
+            mostrarMensajeEmergente("Mensaje para Auxiliar", "Recuerda añadir un motivo al mensaje");
+        }
+    }
+
     private ObservableList<String> contactList = FXCollections.observableArrayList();
 
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Pabellón",
-            "Exámenes");
+            "Exámenes",
+            "Auxiliar");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -96,6 +106,10 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 return string;
             }
         }));
+
+        listaContactosCanal.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> handleSeleccionAuxiliar(new ActionEvent()));
+
     
         textoBuscarContacto.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
@@ -125,8 +139,14 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         hilo.start();
     }
 
-
-
+    private void mostrarMensajeEmergente(String titulo, String contenido) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(contenido);
+        alert.showAndWait();
+    }
+    
     @Override
     public void run() {
         try {

@@ -90,6 +90,15 @@ public abstract class VistaPadre implements Runnable {
 
     @FXML
     protected void borrarHistorial() {
+        Mensaje mensaje = new Mensaje();
+        mensaje.setEmisor(this.usuario);
+        mensaje.setMensaje(null);
+        mensaje.setDestinatario(Constantes.TipoDestino.BORRAR_HISTORIAL, Constantes.Nombres.SERVIDOR.toString());
+        try {
+            salida.writeObject(mensaje);
+        } catch (Exception excepcion) {
+            excepcion.printStackTrace();
+        }
         chatArea.clear();
     }
 
