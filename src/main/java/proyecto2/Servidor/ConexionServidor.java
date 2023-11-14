@@ -125,6 +125,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.BORRAR_HISTORIAL)) {
                     this.historial = "";
                 }
+
+                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)){
+                    System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
+                    System.out.println(mensaje.getMensaje());
+                    servidor.ReiniciarContraseña(mensaje.getMensaje());
+                }
                 // ----------------------------------------------------------------------------
 
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA)) {
@@ -189,7 +195,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
         try {
             LocalDateTime fechaYHoraActual = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             mensaje.setFechaHora(fechaYHoraFormateada);
             historial += fechaYHoraFormateada + ": ";

@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
@@ -17,14 +19,12 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import proyecto2.Mensajeria.TextoEnriquecido;
 
 public class FXMLVistaMedicoController extends VistaPadre implements Initializable {
 
     @FXML
     private ListView<String> listaContactos;
-
-    @FXML
-    private ListView<String> listaChatGeneral;
 
     @FXML
     private ListView<String> listaContactosCanal;
@@ -101,6 +101,21 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
         ));
 
+        listaChatGeneral.setCellFactory(lv -> new ListCell<TextoEnriquecido>() {
+            @Override
+            protected void updateItem(TextoEnriquecido item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item.getTexto());
+                    text.setStyle(item.getEstilo());
+                    TextFlow textFlow = new TextFlow(text);
+                    setGraphic(textFlow);
+                }
+            }
+        });
+
         listaContactosCanal.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
             @Override
             public String toString(String contact) {
@@ -174,35 +189,59 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                     if (mensaje.getEmisor().equals(this.usuario)) {
                         if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
                             Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje privado)
                                 listaChatGeneral.getItems()
-                                        .add(mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje());
+                                        .add(textoEnriquecido);
                             });
-                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL) {
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
+                                && mensaje.getDestinatario() != canal.toString()) {
                             Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a un canal externo)
                                 listaChatGeneral.getItems()
-                                        .add(mensaje.getFechaHora() + ": (" + mensaje.getDestinatario() + ") TU:  "
-                                                + mensaje.getMensaje());
+                                        .add(textoEnriquecido);
                             });
                         }
 
                         else {
                             Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a mi canal)
                                 listaChatGeneral.getItems()
-                                        .add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
+                                        .add(textoEnriquecido);
                             });
                         }
 
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                    mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
+                                            + mensaje.getMensaje(),
+                                    "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo (esto
+                                                                                  // es cuando yo recibo un mensaje
+                                                                                  // privado)
                             Platform.runLater(() -> {
-                                listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": (privado) "
-                                        + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                                listaChatGeneral.getItems().add(textoEnriquecido);
                             });
                         } else {
                             Platform.runLater(() -> {
-                                listaChatGeneral.getItems().add(
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
                                         mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
-                                                + mensaje.getMensaje());
+                                                + mensaje.getMensaje(),
+                                        "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo recibo un
+                                                                                      // mensaje de un canal externo)
+                                listaChatGeneral.getItems().add(textoEnriquecido);
                             });
                         }
                     }
@@ -266,8 +305,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
-            Constantes.Canales canal, String historial) {
-        super.setInformacion(socket, salida, entrada, usuario, canal, historial);
+            Constantes.Canales canal, String historial, String estilos) {
+        super.setInformacion(socket, salida, entrada, usuario, canal, historial, estilos);
         tituloEncabezadoMedico.setText("Bienvenido " + usuario);
     }
 }
