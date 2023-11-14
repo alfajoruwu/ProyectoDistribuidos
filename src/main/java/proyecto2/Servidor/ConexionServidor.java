@@ -172,11 +172,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             mensaje.setFechaHora(fechaYHoraFormateada);
+            historial += fechaYHoraFormateada + ": ";
 
             if (mensaje.getEmisor().equals(usuario)) {
-                historial += "TU: " + mensaje.getMensaje() + "\n";
+                historial += "TU: " + mensaje.getMensaje();
             } else {
-                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
+                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje();
             }
             salida.writeObject(mensaje);
         } catch (IOException e) {

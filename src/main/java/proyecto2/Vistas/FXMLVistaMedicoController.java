@@ -180,12 +180,10 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                             listaChatGeneral.getItems().add("mensaje privado de ");
                         }
                         Platform.runLater(() -> {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            listaChatGeneral.getItems().add(
+                                    mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
                     }
-                    Platform.runLater(() -> {
-                        listaChatGeneral.getItems().add("\n");
-                    });
                 }
             }
         } catch (Exception e) {
@@ -198,26 +196,26 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     @FXML
     public void enviarMensajePrivado(ActionEvent event) {
         String mensaje = textoMensajePrivado.getText();
-    
+
         // Verifica si se ha seleccionado un contacto de la lista
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-    
+
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
-    
+
             // Muestra el mensaje en el área de chat
-            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
-    
+            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje);
+
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-    
+
             textoMensajePrivado.clear();
         }
     }
@@ -225,26 +223,29 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     @FXML
     public void enviarMensajePrivadoCanal(ActionEvent event) {
         String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
-    
+
         // Verifica si se ha seleccionado un contacto del canal
-        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de canal
-    
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de
+                                                                                                // canal
+
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el destino sea un usuario
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el
+                                                                                                 // destino sea un
+                                                                                                 // usuario
             mensajeAEnviar.setMensaje(mensaje);
-    
+
             // Muestra el mensaje en el área de chat del canal
-            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje + "\n");
-    
+            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje);
+
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-    
+
             textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
         }
     }
