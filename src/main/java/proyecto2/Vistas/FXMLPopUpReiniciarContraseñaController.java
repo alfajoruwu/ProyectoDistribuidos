@@ -46,8 +46,8 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
     protected Socket socket;
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
-
-
+ 
+    
 
 
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
@@ -85,8 +85,6 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
                         ListaUsuariosObserbable.add(contacto);
                         
                     }});
-
-
             }  
             else{
                 System.out.println("jaja funaste");
