@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
+import proyecto2.Mensajeria.TextoEnriquecido;
 
 // clase padre de las vistas de los usuarios (medico, administrativo, administrador)
 public abstract class VistaPadre implements Runnable {
@@ -33,7 +33,7 @@ public abstract class VistaPadre implements Runnable {
     protected TextField messageField;
 
     @FXML
-    private ListView<String> listaChatGeneral;
+    protected ListView<TextoEnriquecido> listaChatGeneral;
 
     @FXML
     private Button botonBorrarHistorial;
@@ -43,14 +43,14 @@ public abstract class VistaPadre implements Runnable {
     protected Thread hilo;
 
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
-            Constantes.Canales canal, String historial) {
+            Constantes.Canales canal, String historial, String estilos) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
         this.canal = canal;
         if (historial != null && !historial.isEmpty()) {
-            this.setHistorial(historial);
+            this.setHistorial(historial, estilos);
         }
     }
 
@@ -105,8 +105,11 @@ public abstract class VistaPadre implements Runnable {
         listaChatGeneral.getItems().clear();
     }
 
-    private void setHistorial(String historial) {
-        listaChatGeneral.getItems().setAll(Arrays.asList(historial.split("\n")));
+    private void setHistorial(String historial, String estilos) {
+        for (String mensaje : historial.split("\n")) {
+            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(mensaje, estilos);
+            listaChatGeneral.getItems().add(textoEnriquecido);
+        }
     }
 
     @FXML

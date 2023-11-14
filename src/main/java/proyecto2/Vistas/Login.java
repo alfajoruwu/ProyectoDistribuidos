@@ -33,6 +33,7 @@ public class Login implements Initializable {
     private ObjectOutputStream salida;
     private ObjectInputStream entrada;
     private String historial;
+    private String estilos;
 
     @FXML
     private Button ingresar;
@@ -47,20 +48,21 @@ public class Login implements Initializable {
     public void irAVistaMedico(ActionEvent event) throws IOException {
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
-        Constantes.Canales canal = validarUsuario(usuario, contrasenna, event );
+        Constantes.Canales canal = validarUsuario(usuario, contrasenna, event);
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
-                    irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
+                irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial, estilos);
             } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
                     || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
-                irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal, historial);
+                irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal, historial, estilos);
             } else if (canal.equals(Constantes.Canales.ADMINISTRADOR)) {
-                irVista(event, "FXMLVistaAdministrador.fxml", usuario, canal, historial);
+                irVista(event, "FXMLVistaAdministrador.fxml", usuario, canal, historial, estilos);
             }
         }
     }
 
-    private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial)
+    private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial,
+            String estilos)
             throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
@@ -68,7 +70,7 @@ public class Login implements Initializable {
 
         // Obtener el controlador de la vista
         VistaPadre controladorVista = loader.getController();
-        controladorVista.setInformacion(socket, salida, entrada, usuario, canal, historial);
+        controladorVista.setInformacion(socket, salida, entrada, usuario, canal, historial, estilos);
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
@@ -77,19 +79,18 @@ public class Login implements Initializable {
         stage.show();
         stage.setOnCloseRequest(jaja -> {
             System.out.println("Cerrando...");
-            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar
+            // la aplicación
             System.exit(0);
         });
     }
-    
-    private void PopUp(ActionEvent event, String usuario) throws IOException{
+
+    private void PopUp(ActionEvent event, String usuario) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpSetearContraseña.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
 
         FXMLPopUpSetearContraseñaController controladorVista = fxmlLoader.getController();
         controladorVista.setInformacion(socket, salida, entrada, usuario);
-        
-
 
         Stage stage2 = new Stage();
         stage2.setScene(new Scene(root1));
@@ -122,12 +123,13 @@ public class Login implements Initializable {
         stage.show();
         stage.setOnCloseRequest(jaja -> {
             System.out.println("Cerrando...");
-            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar
+            // la aplicación
             System.exit(0);
         });
     }
 
-    private Constantes.Canales validarUsuario(String usuario, String contraseña,ActionEvent event) {
+    private Constantes.Canales validarUsuario(String usuario, String contraseña, ActionEvent event) {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
@@ -148,6 +150,7 @@ public class Login implements Initializable {
             String canal = respuesta.getMensaje().split(":")[1];
             if (respuesta.getMensaje().split(":").length > 2) {
                 historial = respuesta.getMensaje().split(":", 3)[2];
+                estilos = respuesta.getEmisor();
             } else {
                 historial = "";
             }
@@ -157,9 +160,9 @@ public class Login implements Initializable {
                 return aux;
             } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
-            
-            } else if(respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())){
-                PopUp(event,usuario);
+
+            } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())) {
+                PopUp(event, usuario);
                 Constantes.Canales aux = Constantes.Canales.valueOf(canal);
                 return aux;
             } else {
@@ -185,7 +188,8 @@ public class Login implements Initializable {
         stage.show();
         stage.setOnCloseRequest(jaja -> {
             System.out.println("Cerrando...");
-            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar
+            // la aplicación
             System.exit(0);
         });
     }

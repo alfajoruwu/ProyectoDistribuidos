@@ -8,9 +8,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
+import proyecto2.Mensajeria.TextoEnriquecido;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,9 +28,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @FXML
     private ListView<String> listaContactosCanal;
-
-    @FXML
-    private ListView<String> listaChatGeneral;
 
     @FXML
     private Button botonPabellon;
@@ -104,6 +105,21 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             }
         }));
 
+        listaChatGeneral.setCellFactory(lv -> new ListCell<TextoEnriquecido>() {
+            @Override
+            protected void updateItem(TextoEnriquecido item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item.getTexto());
+                    text.setStyle(item.getEstilo());
+                    TextFlow textFlow = new TextFlow(text);
+                    setGraphic(textFlow);
+                }
+            }
+        });
+
         textoBuscarContacto.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
             ObservableList<String> filteredList = FXCollections.observableArrayList();
@@ -149,6 +165,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                 Mensaje mensaje;
                 mensaje = (Mensaje) entrada.readObject();
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    if (mensaje.getMensaje() == null) {
+                        continue;
+                    }
                     String[] contactos = mensaje.getMensaje().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
                     Platform.runLater(() -> {
@@ -162,18 +181,61 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                     System.out.println("Contactos actualizados");
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
-                        Platform.runLater(() -> {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
-                        });
+                        if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje privado)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
+                                && mensaje.getDestinatario() != canal.toString()) {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a un canal externo)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        }
+
+                        else {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a mi canal)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        }
+
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": (privado) "
-                                    + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                    mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
+                                            + mensaje.getMensaje(),
+                                    "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo (esto
+                                                                                  // es cuando yo recibo un mensaje
+                                                                                  // privado)
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems().add(textoEnriquecido);
+                            });
                         } else {
                             Platform.runLater(() -> {
-                                listaChatGeneral.getItems().add(
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
                                         mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
-                                                + mensaje.getMensaje());
+                                                + mensaje.getMensaje(),
+                                        "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto es cuando yo recibo un
+                                                                                      // mensaje de un canal externo)
+                                listaChatGeneral.getItems().add(textoEnriquecido);
                             });
                         }
                     }
@@ -199,9 +261,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
 
-            // Muestra el mensaje en el área de chat
-            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje);
-
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
@@ -213,20 +272,19 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         }
     }
 
+    @FXML
     public void enviarMensajePrivadoCanal(ActionEvent event) {
         String mensaje = textoMensajePrivadoCanal.getText();
 
-        // Verifica si se ha seleccionado un contacto del canal
+        // Verifica si se ha seleccionado un contacto de la lista
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
+                    Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
             mensajeAEnviar.setMensaje(mensaje);
-
-            // Muestra el mensaje en el área de chat del canal
-            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
@@ -241,8 +299,8 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
-            Constantes.Canales canal, String historial) {
-        super.setInformacion(socket, salida, entrada, usuario, canal, historial);
+            Constantes.Canales canal, String historial, String estilos) {
+        super.setInformacion(socket, salida, entrada, usuario, canal, historial, estilos);
         tituloEncabezadoMedico.setText("Bienvenido " + usuario);
 
         if (canal == Constantes.Canales.AUXILIAR) {

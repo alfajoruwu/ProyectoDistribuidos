@@ -50,13 +50,13 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     }
 
     @FXML
-    public void ReiniciarContraseñaPopup(ActionEvent event) throws IOException{
+    public void ReiniciarContraseñaPopup(ActionEvent event) throws IOException {
         FXMLLoader Loader = new FXMLLoader(getClass().getResource("FXMLPopUpReiniciarContraseña.fxml"));
         Parent root1 = Loader.load();
 
         FXMLPopUpReiniciarContraseñaController controladorVista = Loader.getController();
         controladorVista.setInformacion(socket, salida, entrada, usuario);
-        
+
         Stage stage2 = new Stage();
         stage2.setScene(new Scene(root1));
         stage2.show();
@@ -108,7 +108,6 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
         }
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         listaChatGeneral.setEditable(false);
@@ -118,8 +117,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     public void run() {
         try {
             while (!hilo.isInterrupted()) {
-                                 
-            
+
             }
         } catch (Exception e) {
             if (!hilo.isInterrupted()) {
@@ -130,36 +128,32 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
-            Constantes.Canales canal, String historial){
-                super.setInformacion(socket, salida, entrada, usuario, canal, historial);
+            Constantes.Canales canal, String historial, String estilos) {
+        super.setInformacion(socket, salida, entrada, usuario, canal, historial, estilos);
 
-                Mensaje mensaje = new Mensaje();
-                mensaje.setEmisor(usuario);
-                mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
-                mensaje.setMensaje("uwu");
-                
-                try {
-                    salida.writeObject(mensaje);
-                    Usuarios respuesta;
-                    
-                     
-                    respuesta = (Usuarios) entrada.readObject();
-                    
-                    if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
-                        System.out.println("wuwuuwuw");
-                        System.out.println("usuarios:"+respuesta.getsMensaje().toString());
-                        
-                    }  
-                    else{
-                        System.out.println("jaja funaste");
-                    }
+        Mensaje mensaje = new Mensaje();
+        mensaje.setEmisor(usuario);
+        mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
+        mensaje.setMensaje("uwu");
 
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+        try {
+            salida.writeObject(mensaje);
+            Usuarios respuesta;
 
-                
+            respuesta = (Usuarios) entrada.readObject();
 
-            };
+            if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
+                System.out.println("wuwuuwuw");
+                System.out.println("usuarios:" + respuesta.getsMensaje().toString());
+
+            } else {
+                System.out.println("jaja funaste");
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    };
 }
