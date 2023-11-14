@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import proyecto2.BaseDatos.Connect;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
@@ -202,7 +204,7 @@ public class MainServidor {
 
     public void CambiarContraseña(String nuevaContraseña,String usuario){
         Connection connection = Connect.connect();
-        
+
         try {
             // Actualizar la contraseña en la base de datos
             String sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
@@ -257,6 +259,30 @@ public class MainServidor {
         
     } 
 
+    public ArrayList<String> ObtenerUsuarios(){
+       ArrayList<String> usuarios = new ArrayList<String>();
+        
+        Connection connection = Connect.connect();
+        
+
+        try {
+            String sql = "select Usuario from Usuarios";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+           
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                usuarios.add(resultSet.getString("Usuario"));
+            }
+        
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+        return usuarios;
+    }
     
     public String getMedicosConectados(Constantes.Canales canal) {
         if (canal == Constantes.Canales.AUXILIAR) {

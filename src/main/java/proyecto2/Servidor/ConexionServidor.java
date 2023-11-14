@@ -5,9 +5,10 @@ import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
 
 import proyecto2.Mensajeria.Mensaje;
+import proyecto2.Mensajeria.Usuarios;
 import proyecto2.Mensajeria.Constantes;
 
 import java.beans.PropertyChangeEvent;
@@ -131,6 +132,21 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.CambiarContraseña(mensaje.getMensaje().split(":")[0], mensaje.getMensaje().split(":")[1]);
                 }
 
+                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)){
+                    System.out.println("Obtener usuarios");
+                    
+                    ArrayList<String> usuarios = servidor.ObtenerUsuarios();
+                    
+                    Usuarios respuesta = new Usuarios();
+                    respuesta.setEmisor(Constantes.Nombres.SERVIDOR.toString());
+                    respuesta.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, mensaje.getEmisor());
+                    
+                    respuesta.setMensaje(usuarios);
+                    salida.writeObject(respuesta);
+
+                }
+
+
                 // mensaje a un destinatario no reconocido
                 else {
                     System.err.println(mensaje.getEmisor() +
@@ -192,7 +208,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
     public void actualizarContactos() {
         try {
-            if (canal == null) {
+            if (canal == null || canal == Constantes.Canales.ADMINISTRADOR ) {
                 return;
             }
             Mensaje mensaje = new Mensaje();
