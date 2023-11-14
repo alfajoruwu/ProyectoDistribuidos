@@ -242,5 +242,21 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             Constantes.Canales canal, String historial) {
         super.setInformacion(socket, salida, entrada, usuario, canal, historial);
         tituloEncabezadoMedico.setText("Bienvenido " + usuario);
+
+        if (canal == Constantes.Canales.AUXILIAR) {
+            listaContactosCanal.setVisible(false);
+            textoBuscadorCanal.setVisible(false);
+            textoMensajePrivadoCanal.setVisible(false);
+            botonEnviarMensajeCanal.setVisible(false);
+            tituloBuscadorCanal.setVisible(false);
+            tituloEncabezadoMedico.setText("Bienvenido Auxiliar " + usuario);
+        } else {
+            listaContactos.setVisible(true);
+            textoBuscadorCanal.setVisible(true);
+            textoMensajePrivadoCanal.setVisible(true);
+            botonEnviarMensajeCanal.setVisible(true);
+            tituloBuscadorCanal.setVisible(true);
+            tituloEncabezadoMedico.setText("Bienvenido " + usuario);
+        }
     }
 }
