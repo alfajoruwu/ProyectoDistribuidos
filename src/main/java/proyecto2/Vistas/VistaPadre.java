@@ -11,13 +11,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-
+import javafx.scene.control.ListView;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 // clase padre de las vistas de los usuarios (medico, administrativo, administrador)
 public abstract class VistaPadre implements Runnable {
@@ -33,7 +33,7 @@ public abstract class VistaPadre implements Runnable {
     protected TextField messageField;
 
     @FXML
-    protected TextArea chatArea;
+    private ListView<String> listaChatGeneral;
 
     @FXML
     private Button botonBorrarHistorial;
@@ -100,11 +100,11 @@ public abstract class VistaPadre implements Runnable {
         } catch (Exception excepcion) {
             excepcion.printStackTrace();
         }
-        chatArea.clear();
+        listaChatGeneral.getItems().clear(); 
     }
 
     private void setHistorial(String historial) {
-        chatArea.setText(historial);
+        listaChatGeneral.getItems().setAll(Arrays.asList(historial.split("\n")));
     }
 
     @FXML

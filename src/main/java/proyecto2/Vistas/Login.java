@@ -44,7 +44,7 @@ public class Login implements Initializable {
     private PasswordField contraseña;
 
     @FXML
-    public void irAVistaMedico(ActionEvent event) throws IOException { 
+    public void irAVistaMedico(ActionEvent event) throws IOException {
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
         Constantes.Canales canal = validarUsuario(usuario, contrasenna, event );
@@ -61,7 +61,7 @@ public class Login implements Initializable {
     }
 
     private void irVista(ActionEvent event, String vista, String usuario, Constantes.Canales canal, String historial)
-        throws IOException {
+            throws IOException {
         // Cargar la interfaz gráfica
         FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
         Parent root = loader.load();
@@ -92,10 +92,9 @@ public class Login implements Initializable {
 
 
         Stage stage2 = new Stage();
-        stage2.setScene(new Scene(root1));  
+        stage2.setScene(new Scene(root1));
         stage2.show();
     }
-    
 
     @FXML
     private Label mensajeError;

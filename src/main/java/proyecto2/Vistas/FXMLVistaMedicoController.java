@@ -24,6 +24,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     private ListView<String> listaContactos;
 
     @FXML
+    private ListView<String> listaChatGeneral;
+
+    @FXML
     private ListView<String> listaContactosCanal;
 
     @FXML
@@ -79,7 +82,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        chatArea.setEditable(false);
+        listaChatGeneral.setEditable(false);
         listaContactos.setItems(contactList);
         listaContactosCanal.setItems(contactListCanal);
 
@@ -170,19 +173,17 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
                         Platform.runLater(() -> {
-                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
                         });
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                            chatArea.appendText("mensaje privado de ");
+                            listaChatGeneral.getItems().add("mensaje privado de ");
                         }
                         Platform.runLater(() -> {
-                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            listaChatGeneral.getItems().add(
+                                    mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
                     }
-                    Platform.runLater(() -> {
-                        chatArea.appendText("\n");
-                    });
                 }
             }
         } catch (Exception e) {
@@ -206,7 +207,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat
-            chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
+            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
@@ -236,7 +237,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat del canal
-            chatArea.appendText("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje + "\n");
+            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
@@ -248,8 +249,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
         }
     }
-
-    
 
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,

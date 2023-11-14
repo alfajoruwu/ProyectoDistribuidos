@@ -11,7 +11,6 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,6 +24,10 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @FXML
     private ListView<String> listaContactosCanal;
+
+    @FXML
+    private ListView<String> listaChatGeneral;
+
 
     @FXML
     private Button botonPabellon;
@@ -74,7 +77,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        chatArea.setEditable(false);
+        listaChatGeneral.setEditable(false);
         listaContactos.setItems(contactList);
         listaContactosCanal.setItems(contactListCanal);
 
@@ -162,16 +165,19 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
                         Platform.runLater(() -> {
-                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
                         });
+    
                     } else {
                         Platform.runLater(() -> {
-                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
+    
                     }
                     Platform.runLater(() -> {
-                        chatArea.appendText("\n");
+                        listaChatGeneral.getItems().add("\n");
                     });
+    
                 }
             }
         } catch (Exception e) {
@@ -184,56 +190,53 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     public void enviarMensajePrivado(ActionEvent event) {
         String mensaje = textoMensajePrivado.getText();
-
+    
         // Verifica si se ha seleccionado un contacto de la lista
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-
+    
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
-
+    
             // Muestra el mensaje en el área de chat
-            chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
-
+            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje);
+    
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-
+    
             textoMensajePrivado.clear();
         }
     }
-
+    
     public void enviarMensajePrivadoCanal(ActionEvent event) {
-        String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
-
+        String mensaje = textoMensajePrivadoCanal.getText();
+    
         // Verifica si se ha seleccionado un contacto del canal
-        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de
-                                                                                                // canal
-
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
+    
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el
-                                                                                                 // destino sea un
-                                                                                                 // usuario
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
-
+    
             // Muestra el mensaje en el área de chat del canal
-            chatArea.appendText("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje + "\n");
-
+            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje);
+    
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-
-            textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
+    
+            textoMensajePrivadoCanal.clear();
         }
     }
 
