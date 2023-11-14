@@ -98,7 +98,7 @@ public class MainServidor {
         Connection connection = Connect.connect();
         String historial = "";
         try {
-            String sql = "SELECT mensaje FROM Mensajes WHERE idUsuarioenvia = ?";
+            String sql = "SELECT mensaje FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -121,16 +121,22 @@ public class MainServidor {
             }
             return;
         }
+
         Connection connection = Connect.connect();
+        
+        System.out.println(historial);
+
+
+
         try {
             // borrar historial si existe
-            String sql = "DELETE FROM Mensajes WHERE idUsuarioenvia = ?";
+            String sql = "DELETE FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             preparedStatement.executeUpdate();
 
             // agregar historial
-            sql = "INSERT INTO Mensajes (idUsuarioenvia, mensaje) VALUES (?, ?)";
+            sql = "INSERT INTO Mensajes (Usuario, mensaje) VALUES (?, ?)";
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             preparedStatement.setString(2, historial);
@@ -309,7 +315,7 @@ public class MainServidor {
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             
             // Insertar el mensaje en la base de datos
-            String sql = "INSERT INTO Mensajes (mensaje, idUsuarioenvia, fecha, tipoDestinatario, destinatario) " +
+            String sql = "INSERT INTO Mensajes (mensaje, Usuario, fecha, tipoDestinatario, destinatario) " +
                          "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, mensaje);
