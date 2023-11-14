@@ -11,7 +11,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLVistaAdministrativoController">
    <children>
-      <TextArea fx:id="chatArea" layoutX="44.0" layoutY="105.0" prefHeight="390.0" prefWidth="376.0" />
+      <ListView fx:id="listaChatGeneral" layoutX="44.0" layoutY="105.0" prefHeight="390.0" prefWidth="376.0" />
       <TextField fx:id="messageField" layoutX="44.0" layoutY="514.0" prefHeight="25.0" prefWidth="283.0" promptText="Enviar mensaje general" />
       <Button fx:id="botonEnviarMensaje" layoutX="365.0" layoutY="514.0" mnemonicParsing="false" onAction="#handleSendButtonAction" prefHeight="25.0" prefWidth="55.0" text="Enviar" />
       <TitledPane animated="false" layoutX="93.0" layoutY="-36.0" text="untitled" />
