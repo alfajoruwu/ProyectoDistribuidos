@@ -44,5 +44,6 @@
       <Button fx:id="botonEnviarMensajePrivado" layoutX="731.0" layoutY="510.0" mnemonicParsing="false" onAction="#enviarMensajePrivado" prefHeight="25.0" prefWidth="55.0" text="Enviar" />
       <Button fx:id="botonEnviarMensajeCanal" layoutX="733.0" layoutY="275.0" mnemonicParsing="false" onAction="#enviarMensajePrivadoCanal" text="Enviar" />
       <ListView fx:id="listaChatGeneral" layoutX="41.0" layoutY="120.0" prefHeight="379.0" prefWidth="375.0" />
+      <Button layoutX="367.0" layoutY="550.0" mnemonicParsing="false" text="Responder" />
    </children>
 </AnchorPane>
