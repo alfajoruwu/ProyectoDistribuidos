@@ -46,10 +46,23 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 // mensaje a un canal
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
                     servidor.notificar(Constantes.Canales.valueOf(mensaje.getDestinatario()), mensaje);
-                    // ----------------------------------------------------------------------------
+                // ----------------------------------------------------------------------------
+                
+                
+                // mensaje a un usuario
+                
+                }else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.TODOS))
+                {
+                    System.out.println("uwu a todos");
+                    servidor.notificar(Constantes.Canales.ADMINISTRADOR, mensaje);
+                    servidor.notificar(Constantes.Canales.ADMISION, mensaje);
+                    servidor.notificar(Constantes.Canales.AUXILIAR, mensaje);
+                    servidor.notificar(Constantes.Canales.EXAMENES, mensaje);
+                    servidor.notificar(Constantes.Canales.MEDICO, mensaje);
+                    servidor.notificar(Constantes.Canales.PABELLON, mensaje);
+                }
 
-                    // mensaje a un usuario
-                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
                     servidor.enviarMensaje(mensaje, mensaje.getDestinatario());
                     // ----------------------------------------------------------------------------
 
@@ -83,18 +96,23 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.removerUsuario(usuario);
                     this.canal = null;
                     this.usuario = Constantes.Nombres.USUARIO_ANONIMO + " " + socket.getPort();
+                    // ----------------------------------------------------------------------------
 
-                
-
-                
-                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)){
+                    // mensaje al servidor para registrar usuario
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)) {
                     System.out.println("añadir usuarios");
                     System.out.println(mensaje.getMensaje());
                     String[] aux = mensaje.getMensaje().split(":");
-                    servidor.CrearUsuario(aux[0] ,aux[1],aux[2],aux[3]);
+                    servidor.CrearUsuario(aux[0], aux[1], aux[2], aux[3]);
+                    // ----------------------------------------------------------------------------
+
+                    // mensaje al servidor para borrar usuario
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.BORRAR_HISTORIAL)) {
+                    this.historial = "";
                 }
-                
-                
+                // ----------------------------------------------------------------------------
+
+                // mensaje a un destinatario no reconocido
                 else {
                     System.err.println(mensaje.getEmisor() +
                             " -> Error al enviar mensaje a " +
@@ -102,7 +120,6 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
                 // --------------------------------------------------------------------------------
 
-                
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
             servidor.setHistorial(usuario, historial);
@@ -123,7 +140,6 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
-                System.out.println("Notificando a " + usuario + " -> " + evt.getPropertyName());
                 Mensaje mensaje = (Mensaje) evt.getNewValue();
                 recibirMensaje(mensaje);
             } catch (Exception e) {
@@ -156,7 +172,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(Constantes.Nombres.SERVIDOR.toString());
             mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS, usuario);
-            mensaje.setMensaje(servidor.getUsuariosConectados(canal));
+            mensaje.setMensaje(servidor.getMedicosConectados(canal));
             salida.writeObject(mensaje);
         } catch (Exception e) {
             System.err.println("Error al enviar el mensaje de actualizar contactos");

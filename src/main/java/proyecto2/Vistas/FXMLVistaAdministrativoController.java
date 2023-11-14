@@ -1,5 +1,6 @@
 package proyecto2.Vistas;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,7 +29,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     private Button botonPabellon;
 
-    @FXML 
+    @FXML
     private TextField textoMensajePrivado;
 
     @FXML
@@ -66,10 +67,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         super.irAVistaLogin(event);
     }
 
-    private ObservableList<String> contactList = FXCollections.observableArrayList(
-            "Médico 1",
-            "Médico 2",
-            "Médico 3");
+    private ObservableList<String> contactList = FXCollections.observableArrayList();
 
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Auxiliar");
@@ -97,7 +95,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             public String toString(String contact) {
                 return contact;
             }
-    
+
             @Override
             public String fromString(String string) {
                 return string;
@@ -118,16 +116,18 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         textoBuscadorCanal.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
             ObservableList<String> filteredList = FXCollections.observableArrayList();
-        
+
             for (String contact : contactListCanal) {
                 if (contact.toLowerCase().contains(searchTerm)) {
                     filteredList.add(contact);
                 }
             }
-        
+
             listaContactosCanal.setItems(filteredList);
         });
 
+        hilo = new Thread(this);
+        hilo.start();
     }
 
     public void setSocket(Socket socket) {
@@ -142,16 +142,52 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @Override
     public void run() {
-
+        try {
+            while (!hilo.isInterrupted()) {
+                Mensaje mensaje;
+                mensaje = (Mensaje) entrada.readObject();
+                if (mensaje.getMensaje() == null) {
+                    continue;
+                }
+                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    String[] contactos = mensaje.getMensaje().split(",");
+                    System.out.println("Contactos recibidos: " + mensaje.getMensaje());
+                    Platform.runLater(() -> {
+                        contactList.clear();
+                        for (String contacto : contactos) {
+                            contactList.add(contacto);
+                        }
+                    });
+                    System.out.println("Contactos actualizados");
+                } else {
+                    if (mensaje.getEmisor().equals(this.usuario)) {
+                        Platform.runLater(() -> {
+                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                        });
+                    }
+                    Platform.runLater(() -> {
+                        chatArea.appendText("\n");
+                    });
+                }
+            }
+        } catch (Exception e) {
+            if (!hilo.isInterrupted()) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
     public void enviarMensajePrivado(ActionEvent event) {
         String mensaje = textoMensajePrivado.getText();
-        
+
         // Verifica si se ha seleccionado un contacto de la lista
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-        
+
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
@@ -160,14 +196,14 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
             // Muestra el mensaje en el área de chat
             chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
-            
+
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-            
+
             textoMensajePrivado.clear();
         }
     }
@@ -176,12 +212,15 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
 
         // Verifica si se ha seleccionado un contacto del canal
-        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de canal
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de
+                                                                                                // canal
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el destino sea un usuario
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el
+                                                                                                 // destino sea un
+                                                                                                 // usuario
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat del canal
@@ -196,5 +235,12 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
             textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
         }
+    }
+
+    @Override
+    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
+            Constantes.Canales canal, String historial) {
+        super.setInformacion(socket, salida, entrada, usuario, canal, historial);
+        tituloEncabezadoMedico.setText("Bienvenido " + usuario);
     }
 }
