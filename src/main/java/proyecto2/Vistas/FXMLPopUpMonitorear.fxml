@@ -9,7 +9,7 @@
 <AnchorPane id="AnchorPane" prefHeight="531.0" prefWidth="853.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLPopUpMonitorearController">
    <children>
       <Label layoutX="28.0" layoutY="14.0" prefHeight="29.0" prefWidth="290.0" text="Monitoreo" />
-      <TextField fx:id="BuscarUsuario" layoutX="28.0" layoutY="72.0" prefHeight="26.0" prefWidth="262.0" />
+      <TextField fx:id="BuscarUsuario" layoutX="28.0" layoutY="72.0" prefHeight="26.0" prefWidth="262.0" promptText="Buscar" />
       <Label layoutX="28.0" layoutY="45.0" prefHeight="26.0" prefWidth="290.0" text="Buscar Usuario" />
       <ListView fx:id="ListaUsuarios" layoutX="28.0" layoutY="110.0" prefHeight="383.0" prefWidth="262.0" />
       <ListView fx:id="MensajesEnviados" layoutX="333.0" layoutY="221.0" prefHeight="235.0" prefWidth="506.0" />

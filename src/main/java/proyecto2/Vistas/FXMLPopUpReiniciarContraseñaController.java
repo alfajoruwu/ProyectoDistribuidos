@@ -29,7 +29,7 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
     private TextField BuscarUsuario;
     
     @FXML
-    private ListView ListarUsuarios;    
+    private ListView<String> ListarUsuarios;    
     
     
     private  String usuario;

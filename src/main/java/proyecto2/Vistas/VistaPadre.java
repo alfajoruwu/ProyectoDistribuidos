@@ -49,7 +49,9 @@ public abstract class VistaPadre implements Runnable {
         this.entrada = entrada;
         this.usuario = usuario;
         this.canal = canal;
-        this.setHistorial(historial);
+        if (historial != null && !historial.isEmpty()) {
+            this.setHistorial(historial);
+        }
     }
 
     public void irAVistaLogin(ActionEvent event) throws IOException {
@@ -100,7 +102,7 @@ public abstract class VistaPadre implements Runnable {
         } catch (Exception excepcion) {
             excepcion.printStackTrace();
         }
-        listaChatGeneral.getItems().clear(); 
+        listaChatGeneral.getItems().clear();
     }
 
     private void setHistorial(String historial) {
@@ -110,7 +112,8 @@ public abstract class VistaPadre implements Runnable {
     @FXML
     private void cerrar(ActionEvent event) {
         System.out.println("Cerrando la aplicación");
-        // Puedes agregar aquí cualquier lógica adicional antes de cerrar la aplicación si es necesario
+        // Puedes agregar aquí cualquier lógica adicional antes de cerrar la aplicación
+        // si es necesario
         Platform.exit();
     }
 
