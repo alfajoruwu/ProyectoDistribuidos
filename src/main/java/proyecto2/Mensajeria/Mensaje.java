@@ -6,7 +6,7 @@ public class Mensaje implements java.io.Serializable {
     private String fechaHora;
     // el destinatario es un arreglo de Constantes.TipoDestino y String
     private Object[] destinatario = new Object[2];
-
+    
     public String getMensaje() {
         return mensaje;
     }
