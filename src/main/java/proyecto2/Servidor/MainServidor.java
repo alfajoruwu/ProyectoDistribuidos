@@ -50,41 +50,36 @@ public class MainServidor {
 
     public void ReiniciarContraseña(String usuario) {
         Connection connection = Connect.connect();
-    
+
         try {
             System.out.println("rut si");
             // Obtener el rut del usuario de la base de datos
-            String rut="";
-           
-            
+            String rut = "";
+
             // Verificar si se encontró el rut
-                String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
+            String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
-    
+
             if (resultSet.next()) {
                 rut = resultSet.getString("rut");
             }
 
-                // Actualizar la contraseña en la base de datos
-                 sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
-                 preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1,rut);
-                preparedStatement.setString(2,usuario);
-                preparedStatement.executeUpdate();
-    
-                System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
-            }
-        catch (Exception e) {
+            // Actualizar la contraseña en la base de datos
+            sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, rut);
+            preparedStatement.setString(2, usuario);
+            preparedStatement.executeUpdate();
+
+            System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
+        } catch (Exception e) {
             // TODO: handle exception
         }
-        
-    }
-    
-    
 
-    
+    }
+
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
             return null;
@@ -155,7 +150,35 @@ public class MainServidor {
         return historial;
     }
 
-    public void setHistorial(String usuario, String historial) {
+    public String getEstilos(String usuario) {
+        if (getUsuario(usuario) == null) {
+            if (!usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
+                System.err.println("gethistorial: usuario no conectado: " + usuario);
+            }
+            return "";
+        }
+        Connection connection = Connect.connect();
+        String historial = "";
+        try {
+            String sql = "SELECT estilo FROM Mensajes WHERE Usuario = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                historial += resultSet.getString("estilo");
+                historial += "\n";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+        return historial;
+
+    }
+
+    public void setHistorial(String usuario, String historial, String estilos) {
         if (getUsuario(usuario) == null) {
             if (!usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
                 System.err.println("setHistorial: usuario no conectado: " + usuario);
@@ -176,6 +199,7 @@ public class MainServidor {
 
             // agregar historial
             String[] mensajes = historial.split("\n");
+            String[] estilosMensajes = estilos.split("\n");
             String fecha;
             String hora;
             String emisor;
@@ -183,14 +207,17 @@ public class MainServidor {
             if (mensajes.length == 0 || mensajes[0].isEmpty()) {
                 return;
             }
-            for (String mensaje : mensajes) {
+
+            for (int i = 0; i < estilosMensajes.length; i++) {
+                String mensaje = mensajes[i];
+                String estilo = estilosMensajes[i];
                 System.out.println(mensaje);
                 String[] partes = mensaje.split(" ", 4);
                 fecha = partes[0];
                 hora = partes[1];
                 emisor = partes[2];
                 mensajew = partes[3];
-                ingresarMensajeBD(connection, usuario, fecha, hora, emisor, mensajew);
+                ingresarMensajeBD(connection, usuario, fecha, hora, emisor, mensajew, estilo);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -354,18 +381,19 @@ public class MainServidor {
     }
 
     public void ingresarMensajeBD(Connection connection, String usuario, String fecha, String hora, String emisor,
-            String mensaje) {
+            String mensaje, String estilo) {
 
         try {
             // Insertar el mensaje en la base de datos
-            String sql = "INSERT INTO Mensajes (usuario, fecha, hora, emisor, mensaje) " +
-                    "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Mensajes (usuario, fecha, hora, emisor, mensaje, estilo) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             preparedStatement.setString(2, fecha);
             preparedStatement.setString(3, hora);
             preparedStatement.setString(4, emisor);
             preparedStatement.setString(5, mensaje);
+            preparedStatement.setString(6, estilo);
             preparedStatement.executeUpdate();
 
             System.out.println("Mensaje ingresado en la base de datos correctamente.");

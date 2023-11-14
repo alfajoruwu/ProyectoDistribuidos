@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 public class ConexionServidor implements Runnable, PropertyChangeListener {
     private String usuario;
     private String historial;
+    private String estilos;
     private Constantes.Canales canal;
     private Socket socket;
     private MainServidor servidor;
@@ -76,7 +77,6 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     // mensaje al servidor para login
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGIN)) {
                     Mensaje respuesta = new Mensaje();
-                    respuesta.setEmisor(Constantes.Nombres.SERVIDOR.toString());
                     System.out.println(mensaje.getEmisor() + " -> login ");
                     Constantes.Canales canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
                     respuesta.setDestinatario(Constantes.TipoDestino.USUARIO, mensaje.getEmisor());
@@ -86,7 +86,8 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                         servidor.agregarUsuario(mensaje.getEmisor(), this);
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
                         this.historial = servidor.getHistorial(usuario);
-
+                        this.estilos = servidor.getEstilos(usuario);
+                        respuesta.setEmisor(this.estilos);
                         if (servidor.primerinicio(mensaje.getEmisor()) == 1) {
                             respuesta.setMensaje(Constantes.Respuestas.LOGIN_PRIMERO + ":" + canal + ":" + historial);
                         } else {
@@ -106,7 +107,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     // mensaje al servidor para logout
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGOUT)) {
                     System.out.println(mensaje.getEmisor() + " -> logout ");
-                    servidor.setHistorial(usuario, historial);
+                    servidor.setHistorial(usuario, historial, estilos);
                     servidor.removerCanalUsuario(canal, usuario);
                     servidor.removerUsuario(usuario);
                     this.canal = null;
@@ -124,9 +125,10 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     // mensaje al servidor para borrar usuario
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.BORRAR_HISTORIAL)) {
                     this.historial = "";
+                    this.estilos = "";
                 }
 
-                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)){
+                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)) {
                     System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
                     System.out.println(mensaje.getMensaje());
                     servidor.ReiniciarContraseña(mensaje.getMensaje());
@@ -163,7 +165,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
-            servidor.setHistorial(usuario, historial);
+            servidor.setHistorial(usuario, historial, estilos);
             servidor.removerCanalUsuario(canal, usuario);
             if (usuario.startsWith(Constantes.Nombres.USUARIO_ANONIMO.toString())) {
                 System.out.println("Desconectado : " + usuario);
@@ -199,6 +201,21 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             mensaje.setFechaHora(fechaYHoraFormateada);
             historial += fechaYHoraFormateada + ": ";
+            if (mensaje.getEmisor().equals(usuario) && mensaje.getDestinatario().equals(usuario)) {
+                estilos += "-fx-fill: #ffff00; -fx-font-weight: bold;" + "\n";
+            } else if (mensaje.getEmisor().equals(usuario)
+                    && mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)
+                    && !mensaje.getDestinatario().equals(canal.toString())) {
+                estilos += "-fx-fill: #00ffff; -fx-font-weight: bold;" + "\n";
+            } else if (mensaje.getEmisor().equals(usuario)
+                    && mensaje.getDestinatario().equals(Constantes.TipoDestino.CANAL)) {
+                estilos += "-fx-fill: #ff0000; -fx-font-weight: bold;" + "\n";
+            } else if (mensaje.getDestinatario().equals(usuario)
+                    && mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                estilos += "-fx-fill: #00ff00; -fx-font-weight: bold;" + "\n";
+            } else {
+                estilos += "-fx-fill: #ff00ff; -fx-font-weight: bold;" + "\n";
+            }
 
             if (mensaje.getEmisor().equals(usuario)) {
                 historial += "TU: " + mensaje.getMensaje() + "\n";

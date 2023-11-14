@@ -106,8 +106,10 @@ public abstract class VistaPadre implements Runnable {
     }
 
     private void setHistorial(String historial, String estilos) {
-        for (String mensaje : historial.split("\n")) {
-            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(mensaje, estilos);
+        String[] mensaje = historial.split("\n");
+        String[] estilo = estilos.split("\n");
+        for (int i = 0; i < mensaje.length; i++) {
+            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(mensaje[i], estilo[i]);
             listaChatGeneral.getItems().add(textoEnriquecido);
         }
     }
