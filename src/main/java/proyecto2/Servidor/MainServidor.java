@@ -200,6 +200,26 @@ public class MainServidor {
         this.observable.notificar(tipo, valorNuevo);
     }
 
+    public void CambiarContraseña(String nuevaContraseña,String usuario){
+        Connection connection = Connect.connect();
+        
+        try {
+            // Actualizar la contraseña en la base de datos
+            String sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, nuevaContraseña);
+            preparedStatement.setString(2, usuario);
+            preparedStatement.executeUpdate();
+
+            System.out.println("Contraseña cambiada correctamente para el usuario: " + usuario);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+
+    }
+
     public int primerinicio(String usuario){
         System.out.println("consultar primer inicio");
         String rut = "";

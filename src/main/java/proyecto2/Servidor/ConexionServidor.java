@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.Constantes;
 
@@ -124,6 +125,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
                 // ----------------------------------------------------------------------------
 
+                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA)){
+                    System.out.println("actualizar contraseñaaaaa");
+                    System.out.println(mensaje.getMensaje());
+                    servidor.CambiarContraseña(mensaje.getMensaje().split(":")[0], mensaje.getMensaje().split(":")[1]);
+                }
+
                 // mensaje a un destinatario no reconocido
                 else {
                     System.err.println(mensaje.getEmisor() +
@@ -131,6 +138,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                             mensaje.getDestinatarioFull() + " -> Destinatario no reconocido");
                 }
                 // --------------------------------------------------------------------------------
+                
 
             }
         } catch (Exception e) { // si algo falla, se desconecta el usuario
