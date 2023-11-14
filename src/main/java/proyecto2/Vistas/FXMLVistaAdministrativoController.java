@@ -17,6 +17,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.input.MouseEvent;
 
 public class FXMLVistaAdministrativoController extends VistaPadre implements Initializable {
     @FXML
@@ -41,6 +42,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private Button botonEnviarMensaje;
 
     @FXML
+    private Button botonEnviarMensajeChat;
+
+    @FXML
     private Button botonEnviarMensajePrivado;
 
     @FXML
@@ -52,6 +56,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     private TextField textoBuscadorCanal;
 
+
     @FXML
     private Label tituloEncabezadoMedico;
 
@@ -60,6 +65,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
 
     @FXML
     private Label tituloBuscadorCanal;
+
+    @FXML
+    private Label tituloBuscadorContacto;
 
     @FXML
     private Button botonSalidar;
@@ -74,11 +82,25 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Auxiliar");
 
+
+    @FXML
+    public void handleDoubleClickListaChatGeneral(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            String selectedMessage = listaChatGeneral.getSelectionModel().getSelectedItem();
+            if (selectedMessage != null) {
+                System.out.println("Selected Message: " + selectedMessage);
+            }
+        }
+    }
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         listaChatGeneral.setEditable(false);
         listaContactos.setItems(contactList);
         listaContactosCanal.setItems(contactListCanal);
+        listaChatGeneral.setOnMouseClicked(this::handleDoubleClickListaChatGeneral);
+
 
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
             @Override
@@ -274,6 +296,12 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             textoMensajePrivadoCanal.setVisible(false);
             botonEnviarMensajeCanal.setVisible(false);
             tituloBuscadorCanal.setVisible(false);
+
+            textoBuscarContacto.setVisible(false);
+            listaContactos.setVisible(false);
+            textoMensajePrivado.setVisible(false);
+            botonEnviarMensajePrivado.setVisible(false);
+            tituloBuscadorContacto.setVisible(false);
             tituloEncabezadoMedico.setText("Bienvenido Auxiliar " + usuario);
         } else {
             listaContactos.setVisible(true);
@@ -281,6 +309,11 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             textoMensajePrivadoCanal.setVisible(true);
             botonEnviarMensajeCanal.setVisible(true);
             tituloBuscadorCanal.setVisible(true);
+            textoBuscarContacto.setVisible(true);
+            listaContactos.setVisible(true);
+            textoMensajePrivado.setVisible(true);
+            botonEnviarMensajePrivado.setVisible(true);
+            tituloBuscadorContacto.setVisible(true);
             tituloEncabezadoMedico.setText("Bienvenido " + usuario);
         }
     }
