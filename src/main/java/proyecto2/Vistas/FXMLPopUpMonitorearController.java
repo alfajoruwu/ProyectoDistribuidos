@@ -6,6 +6,9 @@
 package proyecto2.Vistas;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
@@ -19,7 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.util.StringConverter;
+import proyecto2.BaseDatos.Connect;
 
 /**
  * FXML Controller class
@@ -46,10 +49,7 @@ public class FXMLPopUpMonitorearController implements Initializable {
     @FXML
     private DatePicker fechaTermino;
 
-    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList(
-            "Usuario 1",
-            "Usuario 2",
-            "Usuario 3");
+    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList();
 
     private ObservableList<String> MensajesEnviadosObserbable = FXCollections.observableArrayList();
 
@@ -99,4 +99,28 @@ public class FXMLPopUpMonitorearController implements Initializable {
         System.out.println("fecha termino: " + fechaTermino.getValue());
     }
 
+    private void actualizarListaMensajes() {
+        // obtener mensajes de la base de datos
+        MensajesEnviadosObserbable.clear();
+
+        Connection connection = Connect.connect();
+        try {
+            String sql = "SELECT * FROM Mensajes WHERE Emisor = ? AND Fecha BETWEEN ? AND ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, ListaUsuarios.getSelectionModel().getSelectedItem());
+            preparedStatement.setString(2, fechaInicio.getValue().toString());
+            preparedStatement.setString(3, fechaTermino.getValue().toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                MensajesEnviadosObserbable.add(resultSet.getString("Mensaje"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al obtener mensajes de la base de datos");
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+    }
 }
