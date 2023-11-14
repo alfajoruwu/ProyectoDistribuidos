@@ -11,12 +11,17 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldListCell;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
+import proyecto2.Mensajeria.Usuarios;
 
 /**
  * FXML Controller class
@@ -31,6 +36,10 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
     @FXML
     private ListView<String> ListarUsuarios;    
     
+    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList(
+            "Usuario 1",
+            "Usuario 2",
+            "Usuario 3");
     
     private  String usuario;
     protected Socket socket;
@@ -44,23 +53,46 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
-        
-    }
 
-    @FXML
-    public void primeraContraseña() throws IOException{
+        //mensaje para llenar lista
+
+       
         Mensaje mensaje = new Mensaje();
         mensaje.setEmisor(usuario);
-        mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA, Constantes.Nombres.SERVIDOR.toString());
+        mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje("uwu");
         
-        salida.writeObject(mensaje);
+        try {
+            salida.writeObject(mensaje);
+            Usuarios respuesta;
+            
+                
+            respuesta = (Usuarios) entrada.readObject();
+            
+            if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
+                System.out.println("wuwuuwuw");
+                System.out.println("usuarios:"+respuesta.getsMensaje().toString());
+                
+            }  
+            else{
+                System.out.println("jaja funaste");
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
+
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        ListarUsuarios.setCellFactory(TextFieldListCell.forListView());
+        ListarUsuarios.setItems(ListaUsuariosObserbable);
+        BuscarUsuario.textProperty().addListener((observable, oldValue, newValue) -> {
+            ListarUsuarios.setItems(ListaUsuariosObserbable.filtered(s -> s.contains(newValue)));
+        });
     }    
     
 }
