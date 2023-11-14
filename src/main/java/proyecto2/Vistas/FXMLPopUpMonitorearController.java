@@ -176,7 +176,7 @@ public class FXMLPopUpMonitorearController implements Initializable {
 
         Connection connection = Connect.connect();
         try {
-            String sql = "SELECT * FROM Mensajes WHERE Usuario = ? AND Fecha BETWEEN ? AND ?";
+            String sql =  "SELECT Emisor, count(Emisor) as veces FROM Mensajes WHERE Usuario = ? AND Fecha BETWEEN ? AND ? GROUP BY Emisor";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, ListaUsuarios.getSelectionModel().getSelectedItem());
             preparedStatement.setString(2, fecha1);
@@ -185,8 +185,8 @@ public class FXMLPopUpMonitorearController implements Initializable {
             System.out.println("Mensajes obtenidos");
             System.out.println("consulta: " + preparedStatement.toString());
             while (resultSet.next()) {
-                System.out.println(resultSet.getString("Mensaje"));
-                MensajesEnviadosObserbable.add(resultSet.getString("Mensaje"));
+                
+                MensajesEnviadosObserbable.add( resultSet.getString("Emisor").replace("TU:",ListaUsuarios.getSelectionModel().getSelectedItem()+":")+" "+resultSet.getString("veces"));
             }
 
         } catch (Exception e) {

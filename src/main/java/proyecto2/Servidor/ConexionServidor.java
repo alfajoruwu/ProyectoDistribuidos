@@ -125,6 +125,12 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.BORRAR_HISTORIAL)) {
                     this.historial = "";
                 }
+
+                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)){
+                    System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
+                    System.out.println(mensaje.getMensaje());
+                    servidor.ReiniciarContraseña(mensaje.getMensaje());
+                }
                 // ----------------------------------------------------------------------------
 
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA)) {

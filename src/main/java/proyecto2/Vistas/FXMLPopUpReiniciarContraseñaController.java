@@ -75,7 +75,7 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
                 System.out.println("usuarios:"+respuesta.getsMensaje().toString());
                 String usuarios = respuesta.getsMensaje().toString();
                 System.out.println(usuarios);
-                usuarios = usuarios.replaceAll("\\[", "").replaceAll("]", "");
+                usuarios = usuarios.replaceAll("\\[", "").replaceAll("]", "").replaceAll(" ", "");
                 String[] contactos = usuarios.split(",");
                 
                 Platform.runLater(() -> {
@@ -96,6 +96,21 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
         }
     }
 
+    @FXML
+    public void reiniciarContra(){
+        String usuarioElegido = ListarUsuarios.getSelectionModel().getSelectedItem();
+        System.out.println(usuarioElegido);
+
+        Mensaje mensaje = new Mensaje();
+        mensaje.setEmisor(usuario);
+        mensaje.setDestinatario(Constantes.TipoDestino.REINICIAR_CONTRASEÑA, Constantes.Nombres.SERVIDOR.toString());
+        mensaje.setMensaje(ListarUsuarios.getSelectionModel().getSelectedItem());
+        try {
+            salida.writeObject(mensaje);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     
     @Override

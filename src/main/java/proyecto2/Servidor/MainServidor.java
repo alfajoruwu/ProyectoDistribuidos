@@ -48,6 +48,43 @@ public class MainServidor {
         }
     }
 
+    public void ReiniciarContraseña(String usuario) {
+        Connection connection = Connect.connect();
+    
+        try {
+            System.out.println("rut si");
+            // Obtener el rut del usuario de la base de datos
+            String rut="";
+           
+            
+            // Verificar si se encontró el rut
+                String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                rut = resultSet.getString("rut");
+            }
+
+                // Actualizar la contraseña en la base de datos
+                 sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+                 preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1,rut);
+                preparedStatement.setString(2,usuario);
+                preparedStatement.executeUpdate();
+    
+                System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
+            }
+        catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+    }
+    
+    
+
+    
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
             return null;

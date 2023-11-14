@@ -14,7 +14,7 @@
       <Label layoutX="28.0" layoutY="45.0" prefHeight="26.0" prefWidth="290.0" text="Buscar Usuario" />
       <ListView fx:id="ListaUsuarios" layoutX="28.0" layoutY="110.0" prefHeight="383.0" prefWidth="262.0" />
       <ListView fx:id="MensajesEnviados" layoutX="333.0" layoutY="221.0" prefHeight="235.0" prefWidth="506.0" />
-      <Label layoutX="333.0" layoutY="200.0" text="Mensajes Enviados a:" />
+      <Label layoutX="333.0" layoutY="200.0" text="Mensajes Enviados por:" />
       <Label layoutX="333.0" layoutY="475.0" text="Tiempo de uso:" />
       <Label fx:id="tiempoUsoTotal" layoutX="420.0" layoutY="475.0" prefHeight="18.0" prefWidth="143.0" text="99:99:99" />
       <Label layoutX="328.0" layoutY="50.0" text="Filtar por fechas" />
