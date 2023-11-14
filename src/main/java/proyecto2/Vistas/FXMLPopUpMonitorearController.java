@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -35,6 +36,12 @@ public class FXMLPopUpMonitorearController implements Initializable {
     private TextField BuscarUsuario;
 
     @FXML
+    private TextField HoraInicio;
+
+    @FXML
+    private TextField HoraTermino;
+
+    @FXML
     private ListView<String> ListaUsuarios;
 
     @FXML
@@ -48,6 +55,9 @@ public class FXMLPopUpMonitorearController implements Initializable {
 
     @FXML
     private DatePicker fechaTermino;
+
+    @FXML
+    private Button Buscar;
 
     private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList();
 
@@ -65,8 +75,6 @@ public class FXMLPopUpMonitorearController implements Initializable {
         // filtro de busqueda de mensajes
         MensajesEnviados.setCellFactory(TextFieldListCell.forListView());
         MensajesEnviados.setItems(MensajesEnviadosObserbable);
-
-        // filtro de busqueda de usuarios
 
         // quitar numero de semana
         fechaInicio.setShowWeekNumbers(false);
@@ -94,12 +102,17 @@ public class FXMLPopUpMonitorearController implements Initializable {
 
         fechaInicio.setValue(LocalDate.now());
         fechaTermino.setValue(LocalDate.now());
-
-        System.out.println("fecha inicio: " + fechaInicio.getValue());
-        System.out.println("fecha termino: " + fechaTermino.getValue());
     }
 
+    @FXML
     private void actualizarListaMensajes() {
+        String fecha1 = fechaInicio.getValue().toString();
+        String fecha2 = fechaTermino.getValue().toString();
+        if (HoraInicio.getText().matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")
+                && HoraTermino.getText().matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")) {
+            fecha1 += " " + HoraInicio.getText();
+            fecha2 += " " + HoraTermino.getText();
+        }
         // obtener mensajes de la base de datos
         MensajesEnviadosObserbable.clear();
 
@@ -107,9 +120,9 @@ public class FXMLPopUpMonitorearController implements Initializable {
         try {
             String sql = "SELECT * FROM Mensajes WHERE Emisor = ? AND Fecha BETWEEN ? AND ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, ListaUsuarios.getSelectionModel().getSelectedItem());
-            preparedStatement.setString(2, fechaInicio.getValue().toString());
-            preparedStatement.setString(3, fechaTermino.getValue().toString());
+            preparedStatement.setString(1, "M1");
+            preparedStatement.setString(2, fecha1);
+            preparedStatement.setString(3, fecha2);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
