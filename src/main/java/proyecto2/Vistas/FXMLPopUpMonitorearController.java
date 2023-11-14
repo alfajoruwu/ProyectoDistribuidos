@@ -8,6 +8,9 @@ package proyecto2.Vistas;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DateCell;
@@ -15,6 +18,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.util.StringConverter;
 
 /**
  * FXML Controller class
@@ -27,10 +32,10 @@ public class FXMLPopUpMonitorearController implements Initializable {
     private TextField BuscarUsuario;
 
     @FXML
-    private ListView ListaUsuarios;
+    private ListView<String> ListaUsuarios;
 
     @FXML
-    private ListView MensajesEnviados;
+    private ListView<String> MensajesEnviados;
 
     @FXML
     private Label tiempoUsoTotal;
@@ -41,8 +46,28 @@ public class FXMLPopUpMonitorearController implements Initializable {
     @FXML
     private DatePicker fechaTermino;
 
+    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList(
+            "Usuario 1",
+            "Usuario 2",
+            "Usuario 3");
+
+    private ObservableList<String> MensajesEnviadosObserbable = FXCollections.observableArrayList();
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // filtro de busqueda de usuarios
+        ListaUsuarios.setCellFactory(TextFieldListCell.forListView());
+        ListaUsuarios.setItems(ListaUsuariosObserbable);
+        BuscarUsuario.textProperty().addListener((observable, oldValue, newValue) -> {
+            ListaUsuarios.setItems(ListaUsuariosObserbable.filtered(s -> s.contains(newValue)));
+        });
+
+        // filtro de busqueda de mensajes
+        MensajesEnviados.setCellFactory(TextFieldListCell.forListView());
+        MensajesEnviados.setItems(MensajesEnviadosObserbable);
+
+        // filtro de busqueda de usuarios
+
         // quitar numero de semana
         fechaInicio.setShowWeekNumbers(false);
         fechaTermino.setShowWeekNumbers(false);
