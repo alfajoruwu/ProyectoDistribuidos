@@ -8,8 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import proyecto2.BaseDatos.Connect;
@@ -97,13 +95,15 @@ public class MainServidor {
         Connection connection = Connect.connect();
         String historial = "";
         try {
-            String sql = "SELECT fecha,emisor,mensaje FROM Mensajes WHERE Usuario = ?";
+            String sql = "SELECT fecha,hora,emisor,mensaje FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 historial += resultSet.getString("fecha");
+                historial += " ";
+                historial += resultSet.getString("hora");
                 historial += " ";
                 historial += resultSet.getString("emisor");
                 historial += " ";
@@ -127,10 +127,8 @@ public class MainServidor {
         }
 
         Connection connection = Connect.connect();
-        
+
         System.out.println(historial);
-
-
 
         try {
             // borrar historial si existe
@@ -322,13 +320,14 @@ public class MainServidor {
 
         try {
             // Insertar el mensaje en la base de datos
-            String sql = "INSERT INTO Mensajes (usuario, fecha, emisor, mensaje) " +
-                    "VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO Mensajes (usuario, fecha, hora, emisor, mensaje) " +
+                    "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
-            preparedStatement.setString(2, fecha + " " + hora);
-            preparedStatement.setString(3, emisor);
-            preparedStatement.setString(4, mensaje);
+            preparedStatement.setString(2, fecha);
+            preparedStatement.setString(3, hora);
+            preparedStatement.setString(4, emisor);
+            preparedStatement.setString(5, mensaje);
             preparedStatement.executeUpdate();
 
             System.out.println("Mensaje ingresado en la base de datos correctamente.");
