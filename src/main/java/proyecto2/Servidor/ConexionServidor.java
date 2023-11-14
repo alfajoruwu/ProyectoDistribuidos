@@ -64,6 +64,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 }
 
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                    servidor.enviarMensaje(mensaje, mensaje.getEmisor());
                     servidor.enviarMensaje(mensaje, mensaje.getDestinatario());
                     // ----------------------------------------------------------------------------
 
@@ -175,9 +176,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             historial += fechaYHoraFormateada + ": ";
 
             if (mensaje.getEmisor().equals(usuario)) {
-                historial += "TU: " + mensaje.getMensaje();
+                historial += "TU: " + mensaje.getMensaje() + "\n";
             } else {
-                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje();
+                historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
             }
             salida.writeObject(mensaje);
         } catch (IOException e) {

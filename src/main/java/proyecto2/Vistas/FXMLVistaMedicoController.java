@@ -172,17 +172,31 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                     System.out.println("Contactos actualizados");
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
-                        Platform.runLater(() -> {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
-                        });
+                        if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje());
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
+                            });
+                        }
+
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                            listaChatGeneral.getItems().add("mensaje privado de ");
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": (privado) "
+                                        + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems().add(
+                                        mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
+                                                + mensaje.getMensaje());
+                            });
                         }
-                        Platform.runLater(() -> {
-                            listaChatGeneral.getItems().add(
-                                    mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
-                        });
                     }
                 }
             }
@@ -205,9 +219,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
-
-            // Muestra el mensaje en el área de chat
-            listaChatGeneral.getItems().add("Privado para " + usuarioSeleccionado + ": " + mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
@@ -235,9 +246,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                                                                                                  // destino sea un
                                                                                                  // usuario
             mensajeAEnviar.setMensaje(mensaje);
-
-            // Muestra el mensaje en el área de chat del canal
-            listaChatGeneral.getItems().add("Mensaje para el canal " + usuarioSeleccionado + ": " + mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
