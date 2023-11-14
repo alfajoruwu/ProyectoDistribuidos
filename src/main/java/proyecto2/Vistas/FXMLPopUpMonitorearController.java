@@ -6,9 +6,12 @@
 package proyecto2.Vistas;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -20,23 +23,55 @@ import javafx.scene.control.TextField;
  */
 public class FXMLPopUpMonitorearController implements Initializable {
 
-    
     @FXML
     private TextField BuscarUsuario;
-    
+
     @FXML
-    private ListView ListaUsuarios; 
-    
+    private ListView ListaUsuarios;
+
     @FXML
     private ListView MensajesEnviados;
-    
+
     @FXML
     private Label tiempoUsoTotal;
-        
-    
+
+    @FXML
+    private DatePicker fechaInicio;
+
+    @FXML
+    private DatePicker fechaTermino;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
-    
+        // quitar numero de semana
+        fechaInicio.setShowWeekNumbers(false);
+        fechaTermino.setShowWeekNumbers(false);
+
+        // evitar que se pueda seleccionar una fecha futura
+        fechaInicio.valueProperty().addListener((observable, oldValue, newValue) -> {
+            fechaTermino.setDayCellFactory(picker -> new DateCell() {
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    setDisable(empty || date.compareTo(fechaInicio.getValue()) < 0
+                            || date.compareTo(LocalDate.now()) > 0);
+                }
+            });
+        });
+        fechaTermino.valueProperty().addListener((observable, oldValue, newValue) -> {
+            fechaInicio.setDayCellFactory(picker -> new DateCell() {
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    setDisable(empty || date.compareTo(fechaTermino.getValue()) > 0
+                            || date.compareTo(LocalDate.now()) > 0);
+                }
+            });
+        });
+
+        fechaInicio.setValue(LocalDate.now());
+        fechaTermino.setValue(LocalDate.now());
+
+        System.out.println("fecha inicio: " + fechaInicio.getValue());
+        System.out.println("fecha termino: " + fechaTermino.getValue());
+    }
+
 }
