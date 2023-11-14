@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -48,6 +49,7 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
 
 
 
+
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
         this.socket = socket;
         this.salida = salida;
@@ -55,7 +57,6 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
         this.usuario = usuario;
 
         //mensaje para llenar lista
-
        
         Mensaje mensaje = new Mensaje();
         mensaje.setEmisor(usuario);
@@ -72,7 +73,20 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
             if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
                 System.out.println("wuwuuwuw");
                 System.out.println("usuarios:"+respuesta.getsMensaje().toString());
+                String usuarios = respuesta.getsMensaje().toString();
+                System.out.println(usuarios);
+                usuarios = usuarios.replaceAll("\\[", "").replaceAll("]", "");
+                String[] contactos = usuarios.split(",");
                 
+                Platform.runLater(() -> {
+                    ListaUsuariosObserbable.clear();
+                    for (String contacto : contactos) {
+                        
+                        ListaUsuariosObserbable.add(contacto);
+                        
+                    }});
+
+
             }  
             else{
                 System.out.println("jaja funaste");
