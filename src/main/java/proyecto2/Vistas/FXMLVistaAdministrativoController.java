@@ -67,10 +67,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         super.irAVistaLogin(event);
     }
 
-    private ObservableList<String> contactList = FXCollections.observableArrayList(
-            "Médico 1",
-            "Médico 2",
-            "Médico 3");
+    private ObservableList<String> contactList = FXCollections.observableArrayList();
 
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Auxiliar");
@@ -149,6 +146,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             while (!hilo.isInterrupted()) {
                 Mensaje mensaje;
                 mensaje = (Mensaje) entrada.readObject();
+                if (mensaje.getMensaje() == null) {
+                    continue;
+                }
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
                     String[] contactos = mensaje.getMensaje().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
