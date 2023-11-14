@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
@@ -65,7 +66,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     }
 
     @FXML
-    public void handleSeleccionAuxiliar(ActionEvent event) {
+    public void handleSeleccionAuxiliar(MouseEvent event) {
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if ("Auxiliar".equals(usuarioSeleccionado)) {
@@ -76,8 +77,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     private ObservableList<String> contactList = FXCollections.observableArrayList();
 
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
-            "Pabellón",
-            "Exámenes",
+            "Pabellon",
+            "Examenes",
             "Auxiliar");
 
     @Override
@@ -127,9 +128,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 return string;
             }
         }));
-
-        listaContactosCanal.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> handleSeleccionAuxiliar(new ActionEvent()));
 
         textoBuscarContacto.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
