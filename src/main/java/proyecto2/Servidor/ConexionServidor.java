@@ -194,7 +194,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             
             historial+= fechaYHoraFormateada+": ";
-
+            
             if (mensaje.getEmisor().equals(usuario)) {
                 historial += "TU: " + mensaje.getMensaje()+  "\n";
             } else {

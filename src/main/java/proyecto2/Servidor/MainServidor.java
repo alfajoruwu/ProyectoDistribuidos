@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import proyecto2.BaseDatos.Connect;
@@ -295,6 +297,34 @@ public class MainServidor {
             }
         }
         return usuariosConectados;
+    }
+
+    public void ingresarMensajeBD(String mensaje, String idUsuario, String tipoDestinatario, String destinatario) {
+        Connection connection = Connect.connect();
+
+        try {
+            // Obtener la fecha y hora actual
+            LocalDateTime fechaYHoraActual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
+            
+            // Insertar el mensaje en la base de datos
+            String sql = "INSERT INTO Mensajes (mensaje, idUsuarioenvia, fecha, tipoDestinatario, destinatario) " +
+                         "VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, mensaje);
+            preparedStatement.setString(2, idUsuario);
+            preparedStatement.setString(3, fechaYHoraFormateada);
+            preparedStatement.setString(4, tipoDestinatario);
+            preparedStatement.setString(5, destinatario);
+            preparedStatement.executeUpdate();
+
+            System.out.println("Mensaje ingresado en la base de datos correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
     }
 
     public void actualizarUsuarios(String usuario) {
