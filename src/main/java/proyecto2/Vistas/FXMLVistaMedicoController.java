@@ -177,7 +177,15 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                                 listaChatGeneral.getItems()
                                         .add(mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje());
                             });
-                        } else {
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL) {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": (" + mensaje.getDestinatario() + ") TU:  "
+                                                + mensaje.getMensaje());
+                            });
+                        }
+
+                        else {
                             Platform.runLater(() -> {
                                 listaChatGeneral.getItems()
                                         .add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
@@ -233,18 +241,16 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
     @FXML
     public void enviarMensajePrivadoCanal(ActionEvent event) {
-        String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
+        String mensaje = textoMensajePrivadoCanal.getText();
 
-        // Verifica si se ha seleccionado un contacto del canal
-        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de
-                                                                                                // canal
+        // Verifica si se ha seleccionado un contacto de la lista
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el
-                                                                                                 // destino sea un
-                                                                                                 // usuario
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
+                    Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
             mensajeAEnviar.setMensaje(mensaje);
 
             try {
@@ -254,7 +260,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 e.printStackTrace();
             }
 
-            textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
+            textoMensajePrivadoCanal.clear();
         }
     }
 

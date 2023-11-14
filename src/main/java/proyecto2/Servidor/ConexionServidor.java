@@ -50,6 +50,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
                 // mensaje a un canal
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
+                    if (mensaje.getDestinatario() != canal.toString()) {
+                        servidor.enviarMensaje(mensaje, mensaje.getEmisor());
+                    }
                     servidor.notificar(Constantes.Canales.valueOf(mensaje.getDestinatario()), mensaje);
                     // ----------------------------------------------------------------------------
 

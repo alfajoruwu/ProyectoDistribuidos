@@ -222,6 +222,7 @@ public class MainServidor {
 
     public void notificar(Constantes.Canales tipo, Object valorNuevo) {
         this.observable.notificar(tipo, valorNuevo);
+        System.out.println("Notificando a observadores de canal " + tipo);
     }
 
     public void CambiarContraseña(String nuevaContraseña, String usuario) {
