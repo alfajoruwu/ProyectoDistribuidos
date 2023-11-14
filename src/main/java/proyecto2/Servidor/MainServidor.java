@@ -50,6 +50,55 @@ public class MainServidor {
         }
     }
 
+    public void ReiniciarContraseña(String usuario) {
+        Connection connection = Connect.connect();
+    
+        try {
+            // Obtener el rut del usuario de la base de datos
+            String rut = obtenerRutUsuario(usuario);
+            
+            // Verificar si se encontró el rut
+            if (rut != null) {
+                // Actualizar la contraseña en la base de datos
+                String sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1, rut);
+                preparedStatement.setString(2, usuario);
+                preparedStatement.executeUpdate();
+    
+                System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
+            } else {
+                System.out.println("No se encontró el rut para el usuario: " + usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+    }
+    
+    private String obtenerRutUsuario(String usuario) {
+        Connection connection = Connect.connect();
+        String rut = null;
+    
+        try {
+            String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                rut = resultSet.getString("rut");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+    
+        return rut;
+    }
+
     
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
