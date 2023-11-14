@@ -149,6 +149,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                 Mensaje mensaje;
                 mensaje = (Mensaje) entrada.readObject();
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    if (mensaje.getMensaje() == null) {
+                        continue;
+                    }
                     String[] contactos = mensaje.getMensaje().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
                     Platform.runLater(() -> {
@@ -162,13 +165,32 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                     System.out.println("Contactos actualizados");
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
-                        Platform.runLater(() -> {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
-                        });
+                        if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje());
+                            });
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL) {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": (" + mensaje.getDestinatario() + ") TU:  "
+                                                + mensaje.getMensaje());
+                            });
+                        }
+
+                        else {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
+                            });
+                        }
+
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                            listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": (privado) "
-                                    + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems().add(mensaje.getFechaHora() + ": (privado) "
+                                        + mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            });
                         } else {
                             Platform.runLater(() -> {
                                 listaChatGeneral.getItems().add(
@@ -222,7 +244,8 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL, Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
+                    Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat del canal

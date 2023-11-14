@@ -177,7 +177,15 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                                 listaChatGeneral.getItems()
                                         .add(mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje());
                             });
-                        } else {
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL) {
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems()
+                                        .add(mensaje.getFechaHora() + ": (" + mensaje.getDestinatario() + ") TU:  "
+                                                + mensaje.getMensaje());
+                            });
+                        }
+
+                        else {
                             Platform.runLater(() -> {
                                 listaChatGeneral.getItems()
                                         .add(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
@@ -241,7 +249,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL, Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
+                    Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
             mensajeAEnviar.setMensaje(mensaje);
 
             try {

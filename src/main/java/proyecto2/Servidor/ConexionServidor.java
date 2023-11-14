@@ -50,6 +50,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
                 // mensaje a un canal
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
+                    if (mensaje.getDestinatario() != canal.toString()) {
+                        servidor.enviarMensaje(mensaje, mensaje.getEmisor());
+                    }
                     servidor.notificar(Constantes.Canales.valueOf(mensaje.getDestinatario()), mensaje);
                     // ----------------------------------------------------------------------------
 
@@ -130,20 +133,19 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     servidor.CambiarContraseña(mensaje.getMensaje().split(":")[0], mensaje.getMensaje().split(":")[1]);
                 }
 
-                else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)){
+                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
                     System.out.println("Obtener usuarios");
-                    
+
                     ArrayList<String> usuarios = servidor.ObtenerUsuarios();
-                    
+
                     Usuarios respuesta = new Usuarios();
                     respuesta.setEmisor(Constantes.Nombres.SERVIDOR.toString());
                     respuesta.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, mensaje.getEmisor());
-                    
+
                     respuesta.setMensaje(usuarios);
                     salida.writeObject(respuesta);
 
                 }
-
 
                 // mensaje a un destinatario no reconocido
                 else {
@@ -205,7 +207,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
     public void actualizarContactos() {
         try {
-            if (canal == null || canal == Constantes.Canales.ADMINISTRADOR ) {
+            if (canal == null || canal == Constantes.Canales.ADMINISTRADOR) {
                 return;
             }
             Mensaje mensaje = new Mensaje();

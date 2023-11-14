@@ -50,7 +50,6 @@ public class MainServidor {
         }
     }
 
-    
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {
         if (getUsuario(usuario) != null) {
             return null;
@@ -123,10 +122,8 @@ public class MainServidor {
         }
 
         Connection connection = Connect.connect();
-        
+
         System.out.println(historial);
-
-
 
         try {
             // borrar historial si existe
@@ -208,9 +205,10 @@ public class MainServidor {
 
     public void notificar(Constantes.Canales tipo, Object valorNuevo) {
         this.observable.notificar(tipo, valorNuevo);
+        System.out.println("Notificando a observadores de canal " + tipo);
     }
 
-    public void CambiarContraseña(String nuevaContraseña,String usuario){
+    public void CambiarContraseña(String nuevaContraseña, String usuario) {
         Connection connection = Connect.connect();
 
         try {
@@ -230,7 +228,7 @@ public class MainServidor {
 
     }
 
-    public int primerinicio(String usuario){
+    public int primerinicio(String usuario) {
         System.out.println("consultar primer inicio");
         String rut = "";
         Connection connection = Connect.connect();
@@ -240,49 +238,45 @@ public class MainServidor {
             String sql = "select Usuario,rut,Contraseña FROM Usuarios where Usuario == ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
-            
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 rut = resultSet.getString("rut");
                 contraseña = resultSet.getString("Contraseña");
-                System.out.println("rut: "+rut+" contraseña: "+contraseña);
+                System.out.println("rut: " + rut + " contraseña: " + contraseña);
             }
-        
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             Connect.disconnect();
         }
 
-        if(rut.equals(contraseña)){
+        if (rut.equals(contraseña)) {
             System.out.println("primera vez");
             return 1;
-        }
-        else{
+        } else {
             System.out.println("no primer inicio");
             return 0;
         }
 
-        
-    } 
+    }
 
-    public ArrayList<String> ObtenerUsuarios(){
-       ArrayList<String> usuarios = new ArrayList<String>();
-        
+    public ArrayList<String> ObtenerUsuarios() {
+        ArrayList<String> usuarios = new ArrayList<String>();
+
         Connection connection = Connect.connect();
-        
 
         try {
             String sql = "select Usuario from Usuarios";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-           
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 usuarios.add(resultSet.getString("Usuario"));
             }
-        
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -291,7 +285,7 @@ public class MainServidor {
         }
         return usuarios;
     }
-    
+
     public String getMedicosConectados(Constantes.Canales canal) {
         if (canal == Constantes.Canales.AUXILIAR) {
             return null;
@@ -313,10 +307,10 @@ public class MainServidor {
             LocalDateTime fechaYHoraActual = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
-            
+
             // Insertar el mensaje en la base de datos
             String sql = "INSERT INTO Mensajes (mensaje, Usuario, fecha, tipoDestinatario, destinatario) " +
-                         "VALUES (?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, mensaje);
             preparedStatement.setString(2, idUsuario);
