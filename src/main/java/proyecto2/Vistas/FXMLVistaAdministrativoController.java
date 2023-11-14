@@ -222,7 +222,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL, Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat del canal
