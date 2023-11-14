@@ -2,6 +2,9 @@ package proyecto2.Servidor;
 
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.Constantes;
@@ -79,10 +82,19 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                         servidor.agregarUsuario(mensaje.getEmisor(), this);
                         servidor.agregarCanalUsuario(canal, mensaje.getEmisor());
                         this.historial = servidor.getHistorial(usuario);
+                        
+                        if(servidor.primerinicio(mensaje.getEmisor()) == 1){
+                            respuesta.setMensaje(Constantes.Respuestas.LOGIN_PRIMERO + ":" + canal + ":" + historial);
+                        }
+                        else{
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_EXITOSO + ":" + canal + ":" + historial);
+                        }
+
                         salida.writeObject(respuesta);
                         actualizarContactos();
-                    } else {
+                    }
+                    
+                    else {
                         respuesta.setMensaje(Constantes.Respuestas.LOGIN_FALLIDO + ":null" + ":null");
                         salida.writeObject(respuesta);
                     }
@@ -154,8 +166,14 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
     public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
         try {
+            LocalDateTime fechaYHoraActual = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
+            
+            historial+= fechaYHoraFormateada+": ";
+
             if (mensaje.getEmisor().equals(usuario)) {
-                historial += "TU: " + mensaje.getMensaje() + "\n";
+                historial += "TU: " + mensaje.getMensaje()+  "\n";
             } else {
                 historial += mensaje.getEmisor() + ": " + mensaje.getMensaje() + "\n";
             }

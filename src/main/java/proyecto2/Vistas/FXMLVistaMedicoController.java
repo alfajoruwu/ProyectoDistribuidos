@@ -184,6 +184,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             }
         }
     }
+    
     @FXML
     public void enviarMensajePrivado(ActionEvent event) {
         String mensaje = textoMensajePrivado.getText();

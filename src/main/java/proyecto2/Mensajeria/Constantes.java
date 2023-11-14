@@ -7,7 +7,7 @@ public class Constantes {
     }
 
     public static enum Respuestas {
-        LOGIN_EXITOSO, LOGIN_FALLIDO
+        LOGIN_EXITOSO, LOGIN_FALLIDO, LOGIN_PRIMERO
     }
 
     public static enum Canales {
