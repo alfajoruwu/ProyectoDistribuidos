@@ -87,13 +87,44 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     public void handleDoubleClickListaChatGeneral(MouseEvent event) {
         if (event.getClickCount() == 2) {
-            String selectedMessage = listaChatGeneral.getSelectionModel().getSelectedItem();
+            String selectedMessage = listaChatGeneral.getSelectionModel().getSelectedItem().getTexto();
             if (selectedMessage != null) {
                 System.out.println("Selected Message: " + selectedMessage);
             }
         }
     }
 
+    @FXML
+    public void responder(){
+        String selectedMessage = listaChatGeneral.getSelectionModel().getSelectedItem().getTexto();
+            if (selectedMessage != null) {
+                System.out.println("Selected Message: " + selectedMessage);
+                String destino = selectedMessage.split(" ",4)[2].replace(" ", "").replace(":", "");
+
+                String mensaje = messageField.getText();
+
+                // Verifica si se ha seleccionado un contacto de la lista
+                String usuarioSeleccionado = destino;
+
+            
+                Mensaje mensajeAEnviar = new Mensaje();
+                mensajeAEnviar.setEmisor(usuario);
+                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+                mensajeAEnviar.setMensaje(mensaje);
+
+            try {
+                salida.writeObject(mensajeAEnviar);
+            } catch (Exception e) {
+                System.err.println("Error al enviar el mensaje");
+                e.printStackTrace();
+            }
+
+            textoMensajePrivado.clear();
+        }
+    }
+
+            
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

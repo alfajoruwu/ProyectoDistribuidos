@@ -45,5 +45,6 @@
          </font>
       </Label>
       <Button fx:id="botonEnviarMensajeChat" layoutX="151.0" layoutY="549.0" mnemonicParsing="false" text="Mensaje chat select" />
+      <Button layoutX="367.0" layoutY="549.0" mnemonicParsing="false" onAction="#responder" text="Responder" />
    </children>
 </AnchorPane>
