@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,11 +47,10 @@ public class Login implements Initializable {
     public void irAVistaMedico(ActionEvent event) throws IOException {
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
-        Constantes.Canales canal = validarUsuario(usuario, contrasenna);
+        Constantes.Canales canal = validarUsuario(usuario, contrasenna, event );
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
-                PopUp(event);
-                irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
+                    irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
             } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
                     || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
                 irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal, historial);
@@ -74,11 +75,22 @@ public class Login implements Initializable {
 
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
-
-    private void PopUp(ActionEvent event) throws IOException {
+    
+    private void PopUp(ActionEvent event, String usuario) throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpSetearContraseña.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
+
+        FXMLPopUpSetearContraseñaController controladorVista = fxmlLoader.getController();
+        controladorVista.setInformacion(socket, salida, entrada, usuario);
+        
+
+
         Stage stage2 = new Stage();
         stage2.setScene(new Scene(root1));
         stage2.show();
@@ -108,9 +120,14 @@ public class Login implements Initializable {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
 
-    private Constantes.Canales validarUsuario(String usuario, String contraseña) {
+    private Constantes.Canales validarUsuario(String usuario, String contraseña,ActionEvent event) {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
@@ -140,6 +157,11 @@ public class Login implements Initializable {
                 return aux;
             } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
+            
+            } else if(respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())){
+                PopUp(event,usuario);
+                Constantes.Canales aux = Constantes.Canales.valueOf(canal);
+                return aux;
             } else {
                 mensajeError.setText("Respuesta inesperada del servidor");
             }
@@ -161,5 +183,10 @@ public class Login implements Initializable {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
 }

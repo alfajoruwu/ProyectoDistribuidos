@@ -249,6 +249,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         }
     }
 
+    
+
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
             Constantes.Canales canal, String historial) {

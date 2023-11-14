@@ -3,11 +3,11 @@ package proyecto2.Mensajeria;
 public class Constantes {
     // prefijos para los tipos de destinatario al enviar un mensaje
     public static enum TipoDestino {
-        CANAL, USUARIO, LOGIN, LOGOUT, AÑADIRUSUARIOS, ACTUALIZAR_CONTACTOS, BORRAR_HISTORIAL,TODOS
+        CANAL, USUARIO, LOGIN, LOGOUT, AÑADIRUSUARIOS, ACTUALIZAR_CONTACTOS, BORRAR_HISTORIAL,TODOS,ACTUALIZAR_CONTRASEÑA
     }
 
     public static enum Respuestas {
-        LOGIN_EXITOSO, LOGIN_FALLIDO
+        LOGIN_EXITOSO, LOGIN_FALLIDO, LOGIN_PRIMERO
     }
 
     public static enum Canales {

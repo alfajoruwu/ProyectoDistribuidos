@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -44,9 +45,13 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     }
 
     @FXML
-    public void ReiniciarContraseñaPopup(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpReiniciarContraseña.fxml"));
-        Parent root1 = (Parent) fxmlLoader.load();
+    public void ReiniciarContraseñaPopup(ActionEvent event) throws IOException{
+        FXMLLoader Loader = new FXMLLoader(getClass().getResource("FXMLPopUpReiniciarContraseña.fxml"));
+        Parent root1 = Loader.load();
+
+        FXMLPopUpReiniciarContraseñaController controladorVista = Loader.getController();
+        controladorVista.setInformacion(socket, salida, entrada, usuario);
+        
         Stage stage2 = new Stage();
         stage2.setScene(new Scene(root1));
         stage2.show();
@@ -105,6 +110,21 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     @Override
     public void run() {
-
+        try {
+            while (!hilo.isInterrupted()) {
+                Mensaje mensaje;
+                mensaje = (Mensaje) entrada.readObject();
+                
+                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    
+                    System.out.println("abrir ventana pop up");
+                }                   
+            
+            }
+        } catch (Exception e) {
+            if (!hilo.isInterrupted()) {
+                e.printStackTrace();
+            }
+        }
     }
 }
