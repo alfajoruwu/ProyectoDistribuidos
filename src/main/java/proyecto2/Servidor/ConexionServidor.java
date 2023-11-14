@@ -201,21 +201,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             mensaje.setFechaHora(fechaYHoraFormateada);
             historial += fechaYHoraFormateada + ": ";
-            if (mensaje.getEmisor().equals(usuario) && mensaje.getDestinatario().equals(usuario)) {
-                estilos += "-fx-fill: #ffff00; -fx-font-weight: bold;" + "\n";
-            } else if (mensaje.getEmisor().equals(usuario)
-                    && mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)
-                    && !mensaje.getDestinatario().equals(canal.toString())) {
-                estilos += "-fx-fill: #00ffff; -fx-font-weight: bold;" + "\n";
-            } else if (mensaje.getEmisor().equals(usuario)
-                    && mensaje.getDestinatario().equals(Constantes.TipoDestino.CANAL)) {
-                estilos += "-fx-fill: #ff0000; -fx-font-weight: bold;" + "\n";
-            } else if (mensaje.getDestinatario().equals(usuario)
-                    && mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                estilos += "-fx-fill: #00ff00; -fx-font-weight: bold;" + "\n";
-            } else {
-                estilos += "-fx-fill: #ff00ff; -fx-font-weight: bold;" + "\n";
-            }
+            
+            estilos += "-fx-fill: #444444; -fx-font-weight: bold;" + "\n";
+            
 
             if (mensaje.getEmisor().equals(usuario)) {
                 historial += "TU: " + mensaje.getMensaje() + "\n";
