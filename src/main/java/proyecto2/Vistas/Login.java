@@ -45,11 +45,10 @@ public class Login implements Initializable {
     public void irAVistaMedico(ActionEvent event) throws IOException { 
         String usuario = nombreUsuario.getText();
         String contrasenna = this.contraseña.getText();
-        Constantes.Canales canal = validarUsuario(usuario, contrasenna);
+        Constantes.Canales canal = validarUsuario(usuario, contrasenna, event );
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
-                PopUp(event);
-                irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
+                    irVista(event, "FXMLVistaMedico.fxml", usuario, canal, historial);
             } else if (canal.equals(Constantes.Canales.ADMISION) || canal.equals(Constantes.Canales.AUXILIAR)
                     || canal.equals(Constantes.Canales.EXAMENES) || canal.equals(Constantes.Canales.PABELLON)) {
                 irVista(event, "FXMLVistaAdministrativo.fxml", usuario, canal, historial);
@@ -111,7 +110,7 @@ public class Login implements Initializable {
         stage.show();
     }
 
-    private Constantes.Canales validarUsuario(String usuario, String contraseña) {
+    private Constantes.Canales validarUsuario(String usuario, String contraseña,ActionEvent event) {
         try {
             Mensaje mensaje = new Mensaje();
             mensaje.setEmisor(usuario);
@@ -141,6 +140,11 @@ public class Login implements Initializable {
                 return aux;
             } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
+            
+            } else if(respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())){
+                PopUp(event);
+                Constantes.Canales aux = Constantes.Canales.valueOf(canal);
+                return aux;
             } else {
                 mensajeError.setText("Respuesta inesperada del servidor");
             }

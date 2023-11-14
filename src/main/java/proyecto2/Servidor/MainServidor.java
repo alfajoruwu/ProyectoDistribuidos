@@ -200,6 +200,44 @@ public class MainServidor {
         this.observable.notificar(tipo, valorNuevo);
     }
 
+    public int primerinicio(String usuario){
+        System.out.println("consultar primer inicio");
+        String rut = "";
+        Connection connection = Connect.connect();
+        String contraseña = "";
+
+        try {
+            String sql = "select Usuario,rut,Contraseña FROM Usuarios where Usuario == ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario);
+            
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                rut = resultSet.getString("rut");
+                contraseña = resultSet.getString("Contraseña");
+                System.out.println("rut: "+rut+" contraseña: "+contraseña);
+            }
+        
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+
+        if(rut.equals(contraseña)){
+            System.out.println("primera vez");
+            return 1;
+        }
+        else{
+            System.out.println("no primer inicio");
+            return 0;
+        }
+
+        
+    } 
+
+    
     public String getMedicosConectados(Constantes.Canales canal) {
         if (canal == Constantes.Canales.AUXILIAR) {
             return null;
