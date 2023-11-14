@@ -54,35 +54,13 @@ public class MainServidor {
         Connection connection = Connect.connect();
     
         try {
+            System.out.println("rut si");
             // Obtener el rut del usuario de la base de datos
-            String rut = obtenerRutUsuario(usuario);
+            String rut="";
+           
             
             // Verificar si se encontró el rut
-            if (rut != null) {
-                // Actualizar la contraseña en la base de datos
-                String sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1, rut);
-                preparedStatement.setString(2, usuario);
-                preparedStatement.executeUpdate();
-    
-                System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
-            } else {
-                System.out.println("No se encontró el rut para el usuario: " + usuario);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            Connect.disconnect();
-        }
-    }
-    
-    private String obtenerRutUsuario(String usuario) {
-        Connection connection = Connect.connect();
-        String rut = null;
-    
-        try {
-            String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
+                String sql = "SELECT rut FROM Usuarios WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -90,14 +68,23 @@ public class MainServidor {
             if (resultSet.next()) {
                 rut = resultSet.getString("rut");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            Connect.disconnect();
-        }
+
+                // Actualizar la contraseña en la base de datos
+                 sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+                 preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1,rut);
+                preparedStatement.setString(2,usuario);
+                preparedStatement.executeUpdate();
     
-        return rut;
+                System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
+            }
+        catch (Exception e) {
+            // TODO: handle exception
+        }
+        
     }
+    
+    
 
     
     public Constantes.Canales validarUsuario(String usuario, String contraseña) {

@@ -126,7 +126,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 else if(mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)){
                     System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
                     System.out.println(mensaje.getMensaje());
-
+                    servidor.ReiniciarContraseña(mensaje.getMensaje());
                 }
                 // ----------------------------------------------------------------------------
 
