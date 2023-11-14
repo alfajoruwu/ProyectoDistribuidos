@@ -8,8 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import proyecto2.BaseDatos.Connect;
@@ -134,13 +132,20 @@ public class MainServidor {
         Connection connection = Connect.connect();
         String historial = "";
         try {
-            String sql = "SELECT mensaje FROM Mensajes WHERE Usuario = ?";
+            String sql = "SELECT fecha,hora,emisor,mensaje FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
-                historial = resultSet.getString("mensaje");
+            while (resultSet.next()) {
+                historial += resultSet.getString("fecha");
+                historial += " ";
+                historial += resultSet.getString("hora");
+                historial += " ";
+                historial += resultSet.getString("emisor");
+                historial += " ";
+                historial += resultSet.getString("mensaje");
+                historial += "\n";
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -159,10 +164,8 @@ public class MainServidor {
         }
 
         Connection connection = Connect.connect();
-        
+
         System.out.println(historial);
-
-
 
         try {
             // borrar historial si existe
@@ -172,11 +175,23 @@ public class MainServidor {
             preparedStatement.executeUpdate();
 
             // agregar historial
-            sql = "INSERT INTO Mensajes (Usuario, mensaje) VALUES (?, ?)";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, usuario);
-            preparedStatement.setString(2, historial);
-            preparedStatement.executeUpdate();
+            String[] mensajes = historial.split("\n");
+            String fecha;
+            String hora;
+            String emisor;
+            String mensajew;
+            if (mensajes.length == 0 || mensajes[0].isEmpty()) {
+                return;
+            }
+            for (String mensaje : mensajes) {
+                System.out.println(mensaje);
+                String[] partes = mensaje.split(" ", 4);
+                fecha = partes[0];
+                hora = partes[1];
+                emisor = partes[2];
+                mensajew = partes[3];
+                ingresarMensajeBD(connection, usuario, fecha, hora, emisor, mensajew);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -246,7 +261,7 @@ public class MainServidor {
         this.observable.notificar(tipo, valorNuevo);
     }
 
-    public void CambiarContraseña(String nuevaContraseña,String usuario){
+    public void CambiarContraseña(String nuevaContraseña, String usuario) {
         Connection connection = Connect.connect();
 
         try {
@@ -266,7 +281,7 @@ public class MainServidor {
 
     }
 
-    public int primerinicio(String usuario){
+    public int primerinicio(String usuario) {
         System.out.println("consultar primer inicio");
         String rut = "";
         Connection connection = Connect.connect();
@@ -276,49 +291,45 @@ public class MainServidor {
             String sql = "select Usuario,rut,Contraseña FROM Usuarios where Usuario == ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
-            
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 rut = resultSet.getString("rut");
                 contraseña = resultSet.getString("Contraseña");
-                System.out.println("rut: "+rut+" contraseña: "+contraseña);
+                System.out.println("rut: " + rut + " contraseña: " + contraseña);
             }
-        
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             Connect.disconnect();
         }
 
-        if(rut.equals(contraseña)){
+        if (rut.equals(contraseña)) {
             System.out.println("primera vez");
             return 1;
-        }
-        else{
+        } else {
             System.out.println("no primer inicio");
             return 0;
         }
 
-        
-    } 
+    }
 
-    public ArrayList<String> ObtenerUsuarios(){
-       ArrayList<String> usuarios = new ArrayList<String>();
-        
+    public ArrayList<String> ObtenerUsuarios() {
+        ArrayList<String> usuarios = new ArrayList<String>();
+
         Connection connection = Connect.connect();
-        
 
         try {
             String sql = "select Usuario from Usuarios";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-           
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 usuarios.add(resultSet.getString("Usuario"));
             }
-        
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -327,7 +338,7 @@ public class MainServidor {
         }
         return usuarios;
     }
-    
+
     public String getMedicosConectados(Constantes.Canales canal) {
         if (canal == Constantes.Canales.AUXILIAR) {
             return null;
@@ -341,31 +352,24 @@ public class MainServidor {
         return usuariosConectados;
     }
 
-    public void ingresarMensajeBD(String mensaje, String idUsuario, String tipoDestinatario, String destinatario) {
-        Connection connection = Connect.connect();
+    public void ingresarMensajeBD(Connection connection, String usuario, String fecha, String hora, String emisor,
+            String mensaje) {
 
         try {
-            // Obtener la fecha y hora actual
-            LocalDateTime fechaYHoraActual = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
-            
             // Insertar el mensaje en la base de datos
-            String sql = "INSERT INTO Mensajes (mensaje, Usuario, fecha, tipoDestinatario, destinatario) " +
-                         "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Mensajes (usuario, fecha, hora, emisor, mensaje) " +
+                    "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, mensaje);
-            preparedStatement.setString(2, idUsuario);
-            preparedStatement.setString(3, fechaYHoraFormateada);
-            preparedStatement.setString(4, tipoDestinatario);
-            preparedStatement.setString(5, destinatario);
+            preparedStatement.setString(1, usuario);
+            preparedStatement.setString(2, fecha);
+            preparedStatement.setString(3, hora);
+            preparedStatement.setString(4, emisor);
+            preparedStatement.setString(5, mensaje);
             preparedStatement.executeUpdate();
 
             System.out.println("Mensaje ingresado en la base de datos correctamente.");
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            Connect.disconnect();
         }
     }
 

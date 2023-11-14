@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
@@ -17,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -27,6 +31,7 @@ import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.Usuarios;
+import proyecto2.BaseDatos.Connect;
 
 /**
  * FXML Controller class
@@ -35,15 +40,19 @@ import proyecto2.Mensajeria.Usuarios;
  */
 public class FXMLPopUpMonitorearController implements Initializable {
 
-
-    private  String usuario;
+    private String usuario;
     protected Socket socket;
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
 
-
     @FXML
     private TextField BuscarUsuario;
+
+    @FXML
+    private TextField HoraInicio;
+
+    @FXML
+    private TextField HoraTermino;
 
     @FXML
     private ListView<String> ListaUsuarios;
@@ -60,50 +69,49 @@ public class FXMLPopUpMonitorearController implements Initializable {
     @FXML
     private DatePicker fechaTermino;
 
-    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList(
-            "Usuario 1",
-            "Usuario 2",
-            "Usuario 3");
+    @FXML
+    private Button Buscar;
+
+    private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList();
 
     private ObservableList<String> MensajesEnviadosObserbable = FXCollections.observableArrayList();
 
-     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
+    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
 
-        //mensaje para llenar lista
-       
+        // mensaje para llenar lista
+
         Mensaje mensaje = new Mensaje();
         mensaje.setEmisor(usuario);
         mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje("uwu");
-        
+
         try {
             salida.writeObject(mensaje);
             Usuarios respuesta;
-            
-                
+
             respuesta = (Usuarios) entrada.readObject();
-            
+
             if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
                 System.out.println("wuwuuwuw");
-                System.out.println("usuarios:"+respuesta.getsMensaje().toString());
+                System.out.println("usuarios:" + respuesta.getsMensaje().toString());
                 String usuarios = respuesta.getsMensaje().toString();
                 System.out.println(usuarios);
                 usuarios = usuarios.replaceAll("\\[", "").replaceAll("]", "");
                 String[] contactos = usuarios.split(",");
-                
+
                 Platform.runLater(() -> {
                     ListaUsuariosObserbable.clear();
                     for (String contacto : contactos) {
-                        
-                        ListaUsuariosObserbable.add(contacto);
-                        
-                    }});
-            }  
-            else{
+
+                        ListaUsuariosObserbable.add(contacto.trim());
+
+                    }
+                });
+            } else {
                 System.out.println("jaja funaste");
             }
 
@@ -112,8 +120,6 @@ public class FXMLPopUpMonitorearController implements Initializable {
             e.printStackTrace();
         }
     }
-
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -127,8 +133,6 @@ public class FXMLPopUpMonitorearController implements Initializable {
         // filtro de busqueda de mensajes
         MensajesEnviados.setCellFactory(TextFieldListCell.forListView());
         MensajesEnviados.setItems(MensajesEnviadosObserbable);
-
-        // filtro de busqueda de usuarios
 
         // quitar numero de semana
         fechaInicio.setShowWeekNumbers(false);
@@ -156,9 +160,40 @@ public class FXMLPopUpMonitorearController implements Initializable {
 
         fechaInicio.setValue(LocalDate.now());
         fechaTermino.setValue(LocalDate.now());
-
-        System.out.println("fecha inicio: " + fechaInicio.getValue());
-        System.out.println("fecha termino: " + fechaTermino.getValue());
     }
 
+    @FXML
+    private void actualizarListaMensajes() {
+        String fecha1 = fechaInicio.getValue().toString();
+        String fecha2 = fechaTermino.getValue().toString();
+        if (HoraInicio.getText().matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")
+                && HoraTermino.getText().matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")) {
+            fecha1 += " " + HoraInicio.getText();
+            fecha2 += " " + HoraTermino.getText();
+        }
+        // obtener mensajes de la base de datos
+        MensajesEnviadosObserbable.clear();
+
+        Connection connection = Connect.connect();
+        try {
+            String sql = "SELECT * FROM Mensajes WHERE Usuario = ? AND Fecha BETWEEN ? AND ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, ListaUsuarios.getSelectionModel().getSelectedItem());
+            preparedStatement.setString(2, fecha1);
+            preparedStatement.setString(3, fecha2);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println("Mensajes obtenidos");
+            System.out.println("consulta: " + preparedStatement.toString());
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("Mensaje"));
+                MensajesEnviadosObserbable.add(resultSet.getString("Mensaje"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al obtener mensajes de la base de datos");
+            e.printStackTrace();
+        } finally {
+            Connect.disconnect();
+        }
+    }
 }
