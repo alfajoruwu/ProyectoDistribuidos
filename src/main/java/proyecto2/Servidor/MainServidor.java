@@ -138,8 +138,8 @@ public class MainServidor {
         }
     }
 
-    //incert 
-    public void CrearUsuario(String Nombre,String Rut,String Correo,String Rol){
+    // incert
+    public void CrearUsuario(String Nombre, String Rut, String Correo, String Rol) {
         String sql = "INSERT INTO Usuarios(Usuario,Contraseña,rol,rut,Correo) VALUES(?,?,?,?,?)";
 
         try (Connection conn = Connect.connect();
@@ -237,10 +237,14 @@ public class MainServidor {
         
     } 
 
-    public String getUsuariosConectados(Constantes.Canales canal) {
+    
+    public String getMedicosConectados(Constantes.Canales canal) {
+        if (canal == Constantes.Canales.AUXILIAR) {
+            return null;
+        }
         String usuariosConectados = "";
         for (String usuario : usuarios.keySet()) {
-            if (usuarios.get(usuario).getCanal() == canal) {
+            if (usuarios.get(usuario).getCanal() == Constantes.Canales.MEDICO) {
                 usuariosConectados += usuario + ",";
             }
         }

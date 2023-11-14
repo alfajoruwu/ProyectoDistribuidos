@@ -12,6 +12,9 @@ import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -90,9 +93,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             public String fromString(String string) {
                 return string;
             }
-        
+
         }
-        
+
         ));
 
         listaContactosCanal.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
@@ -100,7 +103,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             public String toString(String contact) {
                 return contact;
             }
-    
+
             @Override
             public String fromString(String string) {
                 return string;
@@ -108,9 +111,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         }));
 
         listaContactosCanal.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> handleSeleccionAuxiliar(new ActionEvent()));
+                (observable, oldValue, newValue) -> handleSeleccionAuxiliar(new ActionEvent()));
 
-    
         textoBuscarContacto.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
             ObservableList<String> filteredList = FXCollections.observableArrayList();
@@ -125,16 +127,16 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         textoBuscadorCanal.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchTerm = newValue.toLowerCase();
             ObservableList<String> filteredList = FXCollections.observableArrayList();
-        
+
             for (String contact : contactListCanal) {
                 if (contact.toLowerCase().contains(searchTerm)) {
                     filteredList.add(contact);
                 }
             }
-        
+
             listaContactosCanal.setItems(filteredList);
         });
-        
+
         hilo = new Thread(this);
         hilo.start();
     }
@@ -146,7 +148,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         alert.setContentText(contenido);
         alert.showAndWait();
     }
-    
+
     @Override
     public void run() {
         try {
@@ -159,7 +161,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                     Platform.runLater(() -> {
                         contactList.clear();
                         for (String contacto : contactos) {
-                            contactList.add(contacto);
+                            if (!contacto.equals(usuario)) {
+                                contactList.add(contacto);
+                            }
                         }
                     });
                     System.out.println("Contactos actualizados");
@@ -169,6 +173,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                             chatArea.appendText("TU: " + mensaje.getMensaje());
                         });
                     } else {
+                        if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                            chatArea.appendText("mensaje privado de ");
+                        }
                         Platform.runLater(() -> {
                             chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
@@ -184,14 +191,14 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             }
         }
     }
-    
+
     @FXML
     public void enviarMensajePrivado(ActionEvent event) {
         String mensaje = textoMensajePrivado.getText();
-        
+
         // Verifica si se ha seleccionado un contacto de la lista
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-        
+
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
@@ -200,28 +207,32 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
             // Muestra el mensaje en el área de chat
             chatArea.appendText("Privado para " + usuarioSeleccionado + ": " + mensaje + "\n");
-            
+
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
                 System.err.println("Error al enviar el mensaje");
                 e.printStackTrace();
             }
-            
+
             textoMensajePrivado.clear();
         }
     }
+
     @FXML
     public void enviarMensajePrivadoCanal(ActionEvent event) {
         String mensaje = textoMensajePrivadoCanal.getText(); // Utiliza el campo de entrada correcto
 
         // Verifica si se ha seleccionado un contacto del canal
-        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de canal
+        String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem(); // Utiliza la lista de
+                                                                                                // canal
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
             Mensaje mensajeAEnviar = new Mensaje();
             mensajeAEnviar.setEmisor(usuario);
-            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el destino sea un usuario
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado); // Asegúrate de que el
+                                                                                                 // destino sea un
+                                                                                                 // usuario
             mensajeAEnviar.setMensaje(mensaje);
 
             // Muestra el mensaje en el área de chat del canal
@@ -238,7 +249,10 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         }
     }
 
-
+    @Override
+    public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
+            Constantes.Canales canal, String historial) {
+        super.setInformacion(socket, salida, entrada, usuario, canal, historial);
+        tituloEncabezadoMedico.setText("Bienvenido " + usuario);
+    }
 }
-    
-
