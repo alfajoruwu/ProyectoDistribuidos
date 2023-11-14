@@ -1,11 +1,8 @@
-
 package proyecto2.Vistas;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import proyecto2.Mensajeria.Constantes;
@@ -23,6 +21,9 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     @FXML
     private Label tituloEncabezadoAdministrador;
+
+    @FXML
+    private ListView<String> listaChatGeneral;
 
     @FXML
     private Button botonCrearUsuario;
@@ -105,7 +106,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        chatArea.setEditable(false);
+        listaChatGeneral.setEditable(false);
     }
 
     @Override
