@@ -162,11 +162,12 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
                         Platform.runLater(() -> {
-                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                            chatArea.appendText(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
                         });
                     } else {
                         Platform.runLater(() -> {
-                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            chatArea.appendText(
+                                    mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
                     }
                     Platform.runLater(() -> {

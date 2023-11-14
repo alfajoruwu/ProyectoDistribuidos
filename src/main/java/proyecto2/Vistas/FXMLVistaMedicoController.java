@@ -170,14 +170,15 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 } else {
                     if (mensaje.getEmisor().equals(this.usuario)) {
                         Platform.runLater(() -> {
-                            chatArea.appendText("TU: " + mensaje.getMensaje());
+                            chatArea.appendText(mensaje.getFechaHora() + ": TU: " + mensaje.getMensaje());
                         });
                     } else {
                         if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
                             chatArea.appendText("mensaje privado de ");
                         }
                         Platform.runLater(() -> {
-                            chatArea.appendText(mensaje.getEmisor() + ": " + mensaje.getMensaje());
+                            chatArea.appendText(
+                                    mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": " + mensaje.getMensaje());
                         });
                     }
                     Platform.runLater(() -> {
@@ -248,8 +249,6 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             textoMensajePrivadoCanal.clear(); // Utiliza el campo de entrada correcto
         }
     }
-
-    
 
     @Override
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario,
