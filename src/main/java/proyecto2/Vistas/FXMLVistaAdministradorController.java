@@ -82,6 +82,10 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     public void Monitoreo(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpMonitorear.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
+
+        FXMLPopUpMonitorearController controladorVista = fxmlLoader.getController();
+        controladorVista.setInformacion(socket, salida, entrada, usuario);
+
         Stage stage2 = new Stage();
         stage2.setScene(new Scene(root1));
         stage2.show();
