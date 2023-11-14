@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,6 +75,11 @@ public class Login implements Initializable {
 
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
     
     private void PopUp(ActionEvent event, String usuario) throws IOException{
@@ -116,6 +121,11 @@ public class Login implements Initializable {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
 
     private Constantes.Canales validarUsuario(String usuario, String contraseña,ActionEvent event) {
@@ -174,5 +184,10 @@ public class Login implements Initializable {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(jaja -> {
+            System.out.println("Cerrando...");
+            // Aquí puedes agregar cualquier código que necesites ejecutar antes de cerrar la aplicación
+            System.exit(0);
+        });
     }
 }

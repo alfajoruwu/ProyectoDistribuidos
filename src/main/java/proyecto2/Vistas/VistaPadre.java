@@ -3,6 +3,7 @@ package proyecto2.Vistas;
 import javafx.stage.Stage;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -104,6 +105,13 @@ public abstract class VistaPadre implements Runnable {
 
     private void setHistorial(String historial) {
         chatArea.setText(historial);
+    }
+
+    @FXML
+    private void cerrar(ActionEvent event) {
+        System.out.println("Cerrando la aplicación");
+        // Puedes agregar aquí cualquier lógica adicional antes de cerrar la aplicación si es necesario
+        Platform.exit();
     }
 
     @FXML
