@@ -125,7 +125,13 @@ public class MainServidor {
             }
             return;
         }
+
         Connection connection = Connect.connect();
+        
+        System.out.println(historial);
+
+
+
         try {
             // borrar historial si existe
             String sql = "DELETE FROM Mensajes WHERE Usuario = ?";
