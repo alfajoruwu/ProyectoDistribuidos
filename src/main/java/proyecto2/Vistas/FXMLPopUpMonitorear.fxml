@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
@@ -11,9 +12,14 @@
       <TextField fx:id="BuscarUsuario" layoutX="28.0" layoutY="72.0" prefHeight="26.0" prefWidth="262.0" />
       <Label layoutX="28.0" layoutY="45.0" prefHeight="26.0" prefWidth="290.0" text="Buscar Usuario" />
       <ListView fx:id="ListaUsuarios" layoutX="28.0" layoutY="110.0" prefHeight="383.0" prefWidth="262.0" />
-      <ListView fx:id="MensajesEnviados" layoutX="330.0" layoutY="71.0" prefHeight="235.0" prefWidth="506.0" />
-      <Label layoutX="330.0" layoutY="50.0" text="Mensajes Enviados a:" />
-      <Label layoutX="330.0" layoutY="325.0" text="Tiempo de uso:" />
-      <Label fx:id="tiempoUsoTotal" layoutX="417.0" layoutY="325.0" prefHeight="18.0" prefWidth="143.0" text="99:99:99" />
+      <ListView fx:id="MensajesEnviados" layoutX="333.0" layoutY="221.0" prefHeight="235.0" prefWidth="506.0" />
+      <Label layoutX="333.0" layoutY="200.0" text="Mensajes Enviados a:" />
+      <Label layoutX="333.0" layoutY="475.0" text="Tiempo de uso:" />
+      <Label fx:id="tiempoUsoTotal" layoutX="420.0" layoutY="475.0" prefHeight="18.0" prefWidth="143.0" text="99:99:99" />
+      <Label layoutX="328.0" layoutY="50.0" text="Filtar por fechas" />
+      <DatePicker fx:id="fechaInicio" editable="false" layoutX="328.0" layoutY="123.0" promptText="Desde" />
+      <Label layoutX="333.0" layoutY="90.0" text="Desde" />
+      <Label layoutX="586.0" layoutY="90.0" text="Hasta" />
+      <DatePicker fx:id="fechaTermino" editable="false" layoutX="579.0" layoutY="123.0" promptText="Hasta" />
    </children>
 </AnchorPane>
