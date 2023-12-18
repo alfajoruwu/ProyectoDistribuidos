@@ -16,28 +16,26 @@ import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.Constantes.Canales;
 
-
-
 public class FXMLPopUpCrearUsuarioController implements Initializable {
 
     @FXML
     private TextField Nombre;
-    
+
     @FXML
     private TextField Rut;
-    
+
     @FXML
     private TextField Correo;
-    
+
     @FXML
     private ChoiceBox<String> rol;
 
     @FXML
     private Label texto;
-    
-    private String[] roles; 
-    
-    private  String usuario;
+
+    private String[] roles;
+
+    private String usuario;
     protected Socket socket;
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
@@ -47,32 +45,28 @@ public class FXMLPopUpCrearUsuarioController implements Initializable {
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
-        
+
     }
 
-
-    
     @FXML
-    public void enviarCrearUsuario() throws IOException{
-        Mensaje mensaje = new Mensaje();
+    public void enviarCrearUsuario() throws IOException {
+        Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(usuario);
         mensaje.setDestinatario(Constantes.TipoDestino.AÑADIRUSUARIOS, Constantes.Nombres.SERVIDOR.toString());
-        mensaje.setMensaje(""+Nombre.getText()+":"+Rut.getText()+":"+Correo.getText()+":"+rol.getValue());
-        
+        mensaje.setMensaje("" + Nombre.getText() + ":" + Rut.getText() + ":" + Correo.getText() + ":" + rol.getValue());
+
         salida.writeObject(mensaje);
 
         texto.setText("Se Añadio al usuario");
-        
-    
+
     }
-    
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         String aux = "";
-        
+
         for (Canales canal : Canales.values()) {
-            aux+= canal+",";
+            aux += canal + ",";
         }
 
         roles = aux.split(",");
@@ -80,9 +74,4 @@ public class FXMLPopUpCrearUsuarioController implements Initializable {
         rol.getItems().addAll(roles);
 
     }
-
-
-
-    
-    
 }

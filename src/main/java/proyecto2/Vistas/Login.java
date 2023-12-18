@@ -131,7 +131,7 @@ public class Login implements Initializable {
 
     private Constantes.Canales validarUsuario(String usuario, String contraseña, ActionEvent event) {
         try {
-            Mensaje mensaje = new Mensaje();
+            Mensaje<Object> mensaje = new Mensaje<Object>();
             mensaje.setEmisor(usuario);
             // el destinatario da igual (solo si tiene el prefijo Login)
             mensaje.setDestinatario(Constantes.TipoDestino.LOGIN, "Servidor");
@@ -144,24 +144,24 @@ public class Login implements Initializable {
                 System.err.println("El objeto de entrada no se ha inicializado");
                 return null;
             }
-            Mensaje respuesta = (Mensaje) this.entrada.readObject();
+            Mensaje<?> respuesta = (Mensaje<?>) this.entrada.readObject();
 
             // quitar el prefijo de la respuesta
-            String canal = respuesta.getMensaje().split(":")[1];
-            if (respuesta.getMensaje().split(":").length > 2) {
-                historial = respuesta.getMensaje().split(":", 3)[2];
+            String canal = respuesta.getMensaje().toString().split(":")[1];
+            if (respuesta.getMensaje().toString().split(":").length > 2) {
+                historial = respuesta.getMensaje().toString().split(":", 3)[2];
                 estilos = respuesta.getEmisor();
             } else {
                 historial = "";
             }
 
-            if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_EXITOSO.toString())) {
+            if (respuesta.getMensaje().toString().startsWith(Constantes.Respuestas.LOGIN_EXITOSO.toString())) {
                 Constantes.Canales aux = Constantes.Canales.valueOf(canal);
                 return aux;
-            } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
+            } else if (respuesta.getMensaje().toString().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
                 mensajeError.setText("Usuario o contraseña incorrectos");
 
-            } else if (respuesta.getMensaje().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())) {
+            } else if (respuesta.getMensaje().toString().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())) {
                 PopUp(event, usuario);
                 Constantes.Canales aux = Constantes.Canales.valueOf(canal);
                 return aux;

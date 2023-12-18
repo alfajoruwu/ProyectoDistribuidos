@@ -25,45 +25,41 @@ import proyecto2.Mensajeria.Mensaje;
  */
 public class FXMLPopUpSetearContraseñaController implements Initializable {
 
-    
-    
     @FXML
     private TextField nuevaClave;
-    
+
     @FXML
     private TextField ConfirmarClave;
-    
-private  String usuario;
+
+    private String usuario;
     protected Socket socket;
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
-
-
 
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
         this.socket = socket;
         this.salida = salida;
         this.entrada = entrada;
         this.usuario = usuario;
-        
-    }    
-    
-    @FXML
-    public void primeraContraseña() throws IOException{
-        if(nuevaClave.getText().equals(ConfirmarClave.getText())){
-            Mensaje mensaje = new Mensaje();
-            mensaje.setEmisor(usuario);
-            mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA, Constantes.Nombres.SERVIDOR.toString());
-            mensaje.setMensaje(nuevaClave.getText()+":"+usuario);
-            salida.writeObject(mensaje);
-        }
-        else{System.out.println("jaja te equivocaste");}
+
     }
-    
-    
+
+    @FXML
+    public void primeraContraseña() throws IOException {
+        if (nuevaClave.getText().equals(ConfirmarClave.getText())) {
+            Mensaje<Object> mensaje = new Mensaje<Object>();
+            mensaje.setEmisor(usuario);
+            mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA,
+                    Constantes.Nombres.SERVIDOR.toString());
+            mensaje.setMensaje(nuevaClave.getText() + ":" + usuario);
+            salida.writeObject(mensaje);
+        } else {
+            System.out.println("jaja te equivocaste");
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
-    
+    }
+
 }

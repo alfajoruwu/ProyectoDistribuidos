@@ -57,7 +57,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     private TextField textoBuscadorCanal;
 
-
     @FXML
     private Label tituloEncabezadoMedico;
 
@@ -83,7 +82,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private ObservableList<String> contactListCanal = FXCollections.observableArrayList(
             "Auxiliar");
 
-
     @FXML
     public void handleDoubleClickListaChatGeneral(MouseEvent event) {
         if (event.getClickCount() == 2) {
@@ -95,22 +93,21 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     }
 
     @FXML
-    public void responder(){
+    public void responder() {
         String selectedMessage = listaChatGeneral.getSelectionModel().getSelectedItem().getTexto();
-            if (selectedMessage != null) {
-                System.out.println("Selected Message: " + selectedMessage);
-                String destino = selectedMessage.split(" ",4)[2].replace(" ", "").replace(":", "");
+        if (selectedMessage != null) {
+            System.out.println("Selected Message: " + selectedMessage);
+            String destino = selectedMessage.split(" ", 4)[2].replace(" ", "").replace(":", "");
 
-                String mensaje = messageField.getText();
+            String mensaje = messageField.getText();
 
-                // Verifica si se ha seleccionado un contacto de la lista
-                String usuarioSeleccionado = destino;
+            // Verifica si se ha seleccionado un contacto de la lista
+            String usuarioSeleccionado = destino;
 
-            
-                Mensaje mensajeAEnviar = new Mensaje();
-                mensajeAEnviar.setEmisor(usuario);
-                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
-                mensajeAEnviar.setMensaje(mensaje);
+            Mensaje<Object> mensajeAEnviar = new Mensaje<Object>();
+            mensajeAEnviar.setEmisor(usuario);
+            mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+            mensajeAEnviar.setMensaje(mensaje);
 
             try {
                 salida.writeObject(mensajeAEnviar);
@@ -123,16 +120,12 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         }
     }
 
-            
-    
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         listaChatGeneral.setEditable(false);
         listaContactos.setItems(contactList);
         listaContactosCanal.setItems(contactListCanal);
         listaChatGeneral.setOnMouseClicked(this::handleDoubleClickListaChatGeneral);
-
 
         listaContactos.setCellFactory(TextFieldListCell.forListView(new StringConverter<String>() {
             @Override
@@ -215,13 +208,13 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     public void run() {
         try {
             while (!hilo.isInterrupted()) {
-                Mensaje mensaje;
-                mensaje = (Mensaje) entrada.readObject();
+                Mensaje<?> mensaje;
+                mensaje = (Mensaje<?>) entrada.readObject();
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
                     if (mensaje.getMensaje() == null) {
                         continue;
                     }
-                    String[] contactos = mensaje.getMensaje().split(",");
+                    String[] contactos = mensaje.getMensaje().toString().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
                     Platform.runLater(() -> {
                         contactList.clear();
@@ -309,7 +302,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
-            Mensaje mensajeAEnviar = new Mensaje();
+            Mensaje<Object> mensajeAEnviar = new Mensaje<Object>();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
@@ -333,7 +326,7 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
-            Mensaje mensajeAEnviar = new Mensaje();
+            Mensaje<Object> mensajeAEnviar = new Mensaje<Object>();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
                     Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));

@@ -33,22 +33,19 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
 
     @FXML
     private TextField BuscarUsuario;
-    
+
     @FXML
-    private ListView<String> ListarUsuarios;    
-    
+    private ListView<String> ListarUsuarios;
+
     private ObservableList<String> ListaUsuariosObserbable = FXCollections.observableArrayList(
             "Usuario 1",
             "Usuario 2",
             "Usuario 3");
-    
-    private  String usuario;
+
+    private String usuario;
     protected Socket socket;
     protected ObjectOutputStream salida;
     protected ObjectInputStream entrada;
- 
-    
-
 
     public void setInformacion(Socket socket, ObjectOutputStream salida, ObjectInputStream entrada, String usuario) {
         this.socket = socket;
@@ -56,52 +53,50 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
         this.entrada = entrada;
         this.usuario = usuario;
 
-        //mensaje para llenar lista
-       
-        Mensaje mensaje = new Mensaje();
+        // mensaje para llenar lista
+
+        Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(usuario);
         mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje("uwu");
-        
+
         try {
             salida.writeObject(mensaje);
             Usuarios respuesta;
-            
-                
+
             respuesta = (Usuarios) entrada.readObject();
-            
+
             if (respuesta.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
                 System.out.println("wuwuuwuw");
-                System.out.println("usuarios:"+respuesta.getsMensaje().toString());
+                System.out.println("usuarios:" + respuesta.getsMensaje().toString());
                 String usuarios = respuesta.getsMensaje().toString();
                 System.out.println(usuarios);
                 usuarios = usuarios.replaceAll("\\[", "").replaceAll("]", "").replaceAll(" ", "");
                 String[] contactos = usuarios.split(",");
-                
+
                 Platform.runLater(() -> {
                     ListaUsuariosObserbable.clear();
                     for (String contacto : contactos) {
-                        
+
                         ListaUsuariosObserbable.add(contacto);
-                        
-                    }});
-            }  
-            else{
+
+                    }
+                });
+            } else {
                 System.out.println("jaja funaste");
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
     @FXML
-    public void reiniciarContra(){
+    public void reiniciarContra() {
         String usuarioElegido = ListarUsuarios.getSelectionModel().getSelectedItem();
         System.out.println(usuarioElegido);
 
-        Mensaje mensaje = new Mensaje();
+        Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(usuario);
         mensaje.setDestinatario(Constantes.TipoDestino.REINICIAR_CONTRASEÑA, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje(ListarUsuarios.getSelectionModel().getSelectedItem());
@@ -111,8 +106,7 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
             e.printStackTrace();
         }
     }
-    
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ListarUsuarios.setCellFactory(TextFieldListCell.forListView());
@@ -120,6 +114,6 @@ public class FXMLPopUpReiniciarContraseñaController implements Initializable {
         BuscarUsuario.textProperty().addListener((observable, oldValue, newValue) -> {
             ListarUsuarios.setItems(ListaUsuariosObserbable.filtered(s -> s.contains(newValue)));
         });
-    }    
-    
+    }
+
 }

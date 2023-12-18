@@ -262,7 +262,7 @@ public class MainServidor {
     }
 
     // mensaje privado
-    public void enviarMensaje(Mensaje mensaje, String usuario) {
+    public void enviarMensaje(Mensaje<?> mensaje, String usuario) {
         ConexionServidor conexion = usuarios.get(usuario);
         if (conexion != null) {
             conexion.recibirMensaje(mensaje);

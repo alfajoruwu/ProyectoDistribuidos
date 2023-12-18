@@ -95,7 +95,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     public void MensajeUrgente(ActionEvent event) {
         String message = messageField.getText();
         if (!message.isEmpty()) {
-            Mensaje mensaje = new Mensaje();
+            Mensaje<Object> mensaje = new Mensaje<Object>();
             mensaje.setEmisor(this.usuario);
             mensaje.setMensaje(message);
             mensaje.setDestinatario(Constantes.TipoDestino.TODOS, canal);
@@ -131,7 +131,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
             Constantes.Canales canal, String historial, String estilos) {
         super.setInformacion(socket, salida, entrada, usuario, canal, historial, estilos);
 
-        Mensaje mensaje = new Mensaje();
+        Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(usuario);
         mensaje.setDestinatario(Constantes.TipoDestino.OBTENER_USUARIOS, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje("uwu");
@@ -151,7 +151,6 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

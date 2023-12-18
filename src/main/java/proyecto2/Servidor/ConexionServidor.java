@@ -3,7 +3,6 @@ package proyecto2.Servidor;
 import java.net.Socket;
 import java.net.SocketException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -45,10 +44,9 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     @Override
     public void run() {
         try {
-            Mensaje mensaje;
+            Mensaje<?> mensaje;
             while (true) {
-                mensaje = (Mensaje) entrada.readObject();
-
+                mensaje = (Mensaje<?>) entrada.readObject();
                 // mensaje a un canal
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.CANAL)) {
                     if (mensaje.getDestinatario() != canal.toString()) {
@@ -76,9 +74,10 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
 
                     // mensaje al servidor para login
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.LOGIN)) {
-                    Mensaje respuesta = new Mensaje();
+                    Mensaje<String> respuesta = new Mensaje<String>();
                     System.out.println(mensaje.getEmisor() + " -> login ");
-                    Constantes.Canales canal = servidor.validarUsuario(mensaje.getEmisor(), mensaje.getMensaje());
+                    Constantes.Canales canal = servidor.validarUsuario(mensaje.getEmisor(),
+                            mensaje.getMensaje().toString());
                     respuesta.setDestinatario(Constantes.TipoDestino.USUARIO, mensaje.getEmisor());
                     if (canal != null) {
                         this.canal = canal;
@@ -118,7 +117,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)) {
                     System.out.println("añadir usuarios");
                     System.out.println(mensaje.getMensaje());
-                    String[] aux = mensaje.getMensaje().split(":");
+                    String[] aux = mensaje.getMensaje().toString().split(":");
                     servidor.CrearUsuario(aux[0], aux[1], aux[2], aux[3]);
                     // ----------------------------------------------------------------------------
 
@@ -131,14 +130,15 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)) {
                     System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
                     System.out.println(mensaje.getMensaje());
-                    servidor.ReiniciarContraseña(mensaje.getMensaje());
+                    servidor.ReiniciarContraseña(mensaje.getMensaje().toString());
                 }
                 // ----------------------------------------------------------------------------
 
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA)) {
                     System.out.println("actualizar contraseñaaaaa");
                     System.out.println(mensaje.getMensaje());
-                    servidor.CambiarContraseña(mensaje.getMensaje().split(":")[0], mensaje.getMensaje().split(":")[1]);
+                    servidor.CambiarContraseña(mensaje.getMensaje().toString().split(":")[0],
+                            mensaje.getMensaje().toString().split(":")[1]);
                 }
 
                 else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.OBTENER_USUARIOS)) {
@@ -183,7 +183,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) { // notificacion a mi canal
         if (Constantes.Canales.valueOf(evt.getPropertyName()) == this.canal) {
             try {
-                Mensaje mensaje = (Mensaje) evt.getNewValue();
+                Mensaje<?> mensaje = (Mensaje<?>) evt.getNewValue();
                 recibirMensaje(mensaje);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -194,16 +194,15 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
         }
     }
 
-    public void recibirMensaje(Mensaje mensaje) { // mandar al usuario
+    public void recibirMensaje(Mensaje<?> mensaje) { // mandar al usuario
         try {
             LocalDateTime fechaYHoraActual = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String fechaYHoraFormateada = fechaYHoraActual.format(formatter);
             mensaje.setFechaHora(fechaYHoraFormateada);
             historial += fechaYHoraFormateada + ": ";
-            
+
             estilos += "-fx-fill: #444444; -fx-font-weight: bold;" + "\n";
-            
 
             if (mensaje.getEmisor().equals(usuario)) {
                 historial += "TU: " + mensaje.getMensaje() + "\n";
@@ -221,7 +220,7 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
             if (canal == null || canal == Constantes.Canales.ADMINISTRADOR) {
                 return;
             }
-            Mensaje mensaje = new Mensaje();
+            Mensaje<String> mensaje = new Mensaje<String>();
             mensaje.setEmisor(Constantes.Nombres.SERVIDOR.toString());
             mensaje.setDestinatario(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS, usuario);
             mensaje.setMensaje(servidor.getMedicosConectados(canal));

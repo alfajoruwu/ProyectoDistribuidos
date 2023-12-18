@@ -70,7 +70,7 @@ public abstract class VistaPadre implements Runnable {
         login.setInformacion("localhost", "5000");
 
         try {
-            Mensaje mensaje = new Mensaje();
+            Mensaje<Object> mensaje = new Mensaje<Object>();
             mensaje.setEmisor(usuario);
             mensaje.setDestinatario(Constantes.TipoDestino.LOGOUT, Constantes.Nombres.SERVIDOR.toString());
 
@@ -93,7 +93,7 @@ public abstract class VistaPadre implements Runnable {
 
     @FXML
     protected void borrarHistorial() {
-        Mensaje mensaje = new Mensaje();
+        Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(this.usuario);
         mensaje.setMensaje(null);
         mensaje.setDestinatario(Constantes.TipoDestino.BORRAR_HISTORIAL, Constantes.Nombres.SERVIDOR.toString());
@@ -126,7 +126,7 @@ public abstract class VistaPadre implements Runnable {
     protected void handleSendButtonAction() {
         String message = messageField.getText();
         if (!message.isEmpty()) {
-            Mensaje mensaje = new Mensaje();
+            Mensaje<Object> mensaje = new Mensaje<Object>();
             mensaje.setEmisor(this.usuario);
             mensaje.setMensaje(message);
             mensaje.setDestinatario(Constantes.TipoDestino.CANAL, canal);

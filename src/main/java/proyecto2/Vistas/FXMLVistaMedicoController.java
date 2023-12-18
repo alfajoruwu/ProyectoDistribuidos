@@ -169,10 +169,10 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     public void run() {
         try {
             while (!hilo.isInterrupted()) {
-                Mensaje mensaje;
-                mensaje = (Mensaje) entrada.readObject();
+                Mensaje<?> mensaje;
+                mensaje = (Mensaje<?>) entrada.readObject();
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
-                    String[] contactos = mensaje.getMensaje().split(",");
+                    String[] contactos = mensaje.getMensaje().toString().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
                     Platform.runLater(() -> {
                         contactList.clear();
@@ -260,7 +260,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
-            Mensaje mensajeAEnviar = new Mensaje();
+            Mensaje<Object> mensajeAEnviar = new Mensaje<Object>();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
             mensajeAEnviar.setMensaje(mensaje);
@@ -284,7 +284,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if (usuarioSeleccionado != null && !mensaje.isEmpty()) {
-            Mensaje mensajeAEnviar = new Mensaje();
+            Mensaje<Object> mensajeAEnviar = new Mensaje<Object>();
             mensajeAEnviar.setEmisor(usuario);
             mensajeAEnviar.setDestinatario(Constantes.TipoDestino.CANAL,
                     Constantes.Canales.valueOf(usuarioSeleccionado.toUpperCase()));
