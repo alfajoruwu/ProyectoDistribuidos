@@ -14,7 +14,7 @@
       <TextField fx:id="messageField" layoutX="44.0" layoutY="514.0" prefHeight="25.0" prefWidth="283.0" promptText="Enviar mensaje general" />
       <Button fx:id="botonEnviarMensaje" layoutX="365.0" layoutY="514.0" mnemonicParsing="false" onAction="#handleSendButtonAction" prefHeight="25.0" prefWidth="55.0" text="Enviar" />
       <TitledPane animated="false" layoutX="93.0" layoutY="-36.0" text="untitled" />
-      <ListView fx:id="listaContactos" layoutX="440.0" layoutY="326.0" prefHeight="169.0" prefWidth="343.0" />
+      <ListView fx:id="listaContactos" layoutX="440.0" layoutY="326.0" prefHeight="113.0" prefWidth="343.0" />
       <TextField fx:id="textoBuscarContacto" layoutX="612.0" layoutY="294.0" prefHeight="25.0" prefWidth="169.0" promptText="Buscar" />
       <Label fx:id="tituloBuscadorContacto" layoutX="443.0" layoutY="300.0" text="Usuarios conectados">
          <font>
@@ -32,8 +32,8 @@
          </font>
       </Label>
       <Button fx:id="botonSalidar" layoutX="20.0" layoutY="14.0" mnemonicParsing="false" onAction="#irAVistaLogin" prefHeight="41.0" prefWidth="85.0" text="Salir" />
-      <TextField fx:id="textoMensajePrivado" layoutX="446.0" layoutY="514.0" onAction="#enviarMensajePrivado" prefHeight="25.0" prefWidth="268.0" promptText="Enviar mensaje privado" />
-      <Button fx:id="botonEnviarMensajePrivado" layoutX="731.0" layoutY="514.0" mnemonicParsing="false" onAction="#enviarMensajePrivado" text="Enviar" />
+      <TextField fx:id="textoMensajePrivado" layoutX="439.0" layoutY="445.0" onAction="#enviarMensajePrivado" prefHeight="25.0" prefWidth="268.0" promptText="Enviar mensaje privado" />
+      <Button fx:id="botonEnviarMensajePrivado" layoutX="735.0" layoutY="445.0" mnemonicParsing="false" onAction="#enviarMensajePrivado" text="Enviar" />
       <Button fx:id="borrarHistorial" layoutX="44.0" layoutY="549.0" mnemonicParsing="false" onAction="#borrarHistorial" prefHeight="25.0" prefWidth="95.0" text="Borrar historial" />
       <ListView fx:id="listaContactosCanal" layoutX="440.0" layoutY="119.0" prefHeight="113.0" prefWidth="343.0" />
       <TextField fx:id="textoBuscadorCanal" layoutX="632.0" layoutY="87.0" promptText="Buscar" />
@@ -45,6 +45,8 @@
          </font>
       </Label>
       <Button fx:id="botonEnviarMensajeChat" layoutX="151.0" layoutY="549.0" mnemonicParsing="false" text="Mensaje chat select" />
-      <Button layoutX="367.0" layoutY="549.0" mnemonicParsing="false" onAction="#responder" text="Responder" />
+      <Button layoutX="347.0" layoutY="549.0" mnemonicParsing="false" onAction="#responder" text="Responder" />
+      <Label fx:id="labelNombreArchivo" layoutX="453.0" layoutY="518.0" onDragDetected="#enviarArchivo" prefHeight="17.0" prefWidth="188.0" text="Archivo seleccionado" />
+      <Button fx:id="botonEnviarArchivo" layoutX="650.0" layoutY="514.0" mnemonicParsing="false" onAction="#enviarArchivo" prefHeight="25.0" prefWidth="120.0" text="Seleccionar archivo" />
    </children>
 </AnchorPane>

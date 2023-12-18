@@ -8,13 +8,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.TextoEnriquecido;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,8 +26,17 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
+import javafx.scene.image.ImageView;
 
 public class FXMLVistaAdministrativoController extends VistaPadre implements Initializable {
+
+    private boolean esImagen(File file) {
+        // Implementación del método esImagen
+        String nombreArchivo = file.getName().toLowerCase();
+        return nombreArchivo.endsWith(".png") || nombreArchivo.endsWith(".jpg") || nombreArchivo.endsWith(".jpeg");
+    }
+
     @FXML
     private ListView<String> listaContactos;
 
@@ -73,6 +86,16 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     private Button botonSalidar;
 
     @FXML
+    private Label labelNombreArchivo;
+
+    @FXML
+    private ImageView imagenVistaPrevia;
+
+    @FXML
+    private Button botonEnviarArchivo;
+
+
+    @FXML
     public void irAVistaLogin(ActionEvent event) throws IOException {
         super.irAVistaLogin(event);
     }
@@ -89,6 +112,51 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             if (selectedMessage != null) {
                 System.out.println("Selected Message: " + selectedMessage);
             }
+        }
+    }
+
+        @FXML
+    public void enviarArchivo(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar Archivo");
+        File selectedFile = fileChooser.showOpenDialog(null);
+        
+    if (selectedFile != null) {
+        labelNombreArchivo.setText(selectedFile.getName());
+
+        if (esImagen(selectedFile)) {
+            try {
+                Image image = new Image(selectedFile.toURI().toString());
+                imagenVistaPrevia.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Error al cargar la imagen: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No se puede mostrar vista previa para este tipo de archivo.");
+        }
+    
+            // Aquí agregar la lógica para enviar el archivo
+            String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
+    
+            if (usuarioSeleccionado != null) {
+                Mensaje<Object> mensajeAEnviar = new Mensaje<>();
+                mensajeAEnviar.setEmisor(usuario);
+                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
+                mensajeAEnviar.setMensaje("Envío de archivo");
+                mensajeAEnviar.setArchivo(selectedFile);
+    
+                try {
+                    salida.writeObject(mensajeAEnviar);
+                    System.out.println("Archivo enviado correctamente");
+                } catch (IOException e) {
+                    System.err.println("Error al enviar el archivo");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Usuario no seleccionado");
+            }
+        } else {
+            System.out.println("Ningún archivo seleccionado");
         }
     }
 
