@@ -18,15 +18,18 @@ import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import proyecto2.Mensajeria.TextoEnriquecido;
-import javafx.stage.FileChooser;
 import javafx.scene.image.ImageView;
+import java.nio.file.Files;
 
 
 
@@ -107,7 +110,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         labelNombreArchivo.setText(selectedFile.getName());
 
         if (esImagen(selectedFile)) {
-            try {
+            try { 
                 Image image = new Image(selectedFile.toURI().toString());
                 imagenVistaPrevia.setImage(image);
             } catch (Exception e) {
@@ -119,12 +122,11 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     
             // Aquí agregar la lógica para enviar el archivo
             String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-    
+
             if (usuarioSeleccionado != null) {
                 Mensaje<Object> mensajeAEnviar = new Mensaje<>();
                 mensajeAEnviar.setEmisor(usuario);
                 mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
-                mensajeAEnviar.setMensaje("Envío de archivo");
                 mensajeAEnviar.setArchivo(selectedFile);
     
                 try {
@@ -139,6 +141,61 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             }
         } else {
             System.out.println("Ningún archivo seleccionado");
+        }
+    }
+
+    private void recibirArchivo(Mensaje<?> mensaje) {
+        String nombreArchivo = mensaje.getArchivo().getName();
+        String emisor = mensaje.getEmisor();
+    
+        // Verificar si el destinatario del mensaje es el usuario actual
+        String destinatario = mensaje.getDestinatario();
+        if (!destinatario.equals(usuario)) {
+            return;  // No mostrar el cuadro de diálogo si el destinatario no es el usuario actual
+        }
+    
+        // Muestra un cuadro de diálogo para que el usuario decida qué hacer con el archivo
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Recepción de Archivo");
+            alert.setHeaderText("Has recibido un archivo de " + emisor);
+            alert.setContentText("Nombre del archivo: " + nombreArchivo);
+    
+            ButtonType buttonTypeSave = new ButtonType("Guardar");
+            ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+    
+            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
+    
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == buttonTypeSave) {
+                // Guarda el archivo (puedes implementar esta lógica)
+                guardarArchivo(mensaje.getArchivo());
+            }
+        });
+    }
+    
+    
+    private void guardarArchivo(File archivo) {
+        // Implementa la lógica para guardar el archivo
+        // Puedes elegir la ubicación y el nombre para guardar el archivo
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar Archivo");
+        fileChooser.setInitialFileName(archivo.getName());
+
+        File destino = fileChooser.showSaveDialog(null);
+        if (destino != null) {
+            try (FileInputStream fis = new FileInputStream(archivo);
+                 FileOutputStream fos = new FileOutputStream(destino)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+                System.out.println("Archivo guardado con éxito en: " + destino.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Error al guardar el archivo.");
+            }
         }
     }
 
@@ -239,6 +296,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             while (!hilo.isInterrupted()) {
                 Mensaje<?> mensaje;
                 mensaje = (Mensaje<?>) entrada.readObject();
+                if (mensaje.getArchivo() != null) {
+                    recibirArchivo(mensaje);
+                } else {
                 if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
                     String[] contactos = mensaje.getMensaje().toString().split(",");
                     System.out.println("Contactos recibidos: " + mensaje.getMensaje());
@@ -310,9 +370,12 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                                 listaChatGeneral.getItems().add(textoEnriquecido);
                             });
                         }
+                        
                     }
                 }
             }
+        }
+
         } catch (Exception e) {
             if (!hilo.isInterrupted()) {
                 e.printStackTrace();
