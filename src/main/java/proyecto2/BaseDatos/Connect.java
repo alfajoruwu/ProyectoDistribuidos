@@ -8,25 +8,31 @@ public class Connect {
     private static Connection conn = null;
 
     /**
-     * Connect to the database
+     * Conectar a la base de datos MySQL usando variables de entorno
      */
     public static Connection connect() {
         try {
-            // Check if the connection is already established
+            // Cargar el controlador JDBC de MySQL
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Obtener las variables de entorno para la conexión a MySQL
+            String dbUrl = System.getenv("DB_URL");
+            String usuario = System.getenv("DB_USER");
+            String contraseña = System.getenv("DB_PASSWORD");
+
+            // Verificar si la conexión ya está establecida
             if (conn == null || conn.isClosed()) {
-                // Database parameters
-                String dbUrl = "jdbc:sqlite:./src/main/java/proyecto2/BaseDatos/BaseDatos.db";
-                // Create a connection to the database
-                conn = DriverManager.getConnection(dbUrl);
+                // Crear la conexión a la base de datos MySQL
+                conn = DriverManager.getConnection(dbUrl, usuario, contraseña);
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
         }
         return conn;
     }
 
     /**
-     * Disconnect from the database
+     * Desconectar de la base de datos
      */
     public static void disconnect() {
         try {
@@ -34,7 +40,7 @@ public class Connect {
                 conn.close();
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }
