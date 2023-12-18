@@ -30,7 +30,7 @@ public class MainServidor {
             usuarios = new java.util.HashMap<String, ConexionServidor>();
             System.out.println("Servidor iniciado");
             while (true) {
-                ServerSocket socketServidor = new ServerSocket(5000);
+                ServerSocket socketServidor = new ServerSocket(1313);
 
                 Socket cliente = socketServidor.accept();
 
