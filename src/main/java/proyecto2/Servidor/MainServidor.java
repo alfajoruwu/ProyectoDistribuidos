@@ -48,7 +48,7 @@ public class MainServidor {
         }
     }
 
-    public void ReiniciarContraseña(String usuario) {
+    public void ReiniciarContrasenna(String usuario) {
         Connection connection = Connect.connect();
 
         try {
@@ -66,21 +66,21 @@ public class MainServidor {
                 rut = resultSet.getString("rut");
             }
 
-            // Actualizar la contraseña en la base de datos
-            sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+            // Actualizar la contrasenna en la base de datos
+            sql = "UPDATE Usuarios SET Contrasenna = ? WHERE Usuario = ?";
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, rut);
             preparedStatement.setString(2, usuario);
             preparedStatement.executeUpdate();
 
-            System.out.println("Contraseña reiniciada correctamente para el usuario: " + usuario);
+            System.out.println("Contrasenna reiniciada correctamente para el usuario: " + usuario);
         } catch (Exception e) {
             // TODO: handle exception
         }
 
     }
 
-    public Constantes.Canales validarUsuario(String usuario, String contraseña) {
+    public Constantes.Canales validarUsuario(String usuario, String contrasenna) {
         if (getUsuario(usuario) != null) {
             return null;
         }
@@ -88,10 +88,10 @@ public class MainServidor {
         String rol = null;
 
         try {
-            String sql = "SELECT rol FROM Usuarios WHERE rut = ? AND Contraseña = ?";
+            String sql = "SELECT rol FROM Usuarios WHERE rut = ? AND Contrasenna = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
-            preparedStatement.setString(2, contraseña);
+            preparedStatement.setString(2, contrasenna);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -228,7 +228,7 @@ public class MainServidor {
 
     // incert
     public void CrearUsuario(String Nombre, String Rut, String Correo, String Rol) {
-        String sql = "INSERT INTO Usuarios(Usuario,Contraseña,rol,rut,Correo) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO Usuarios(Usuario,Contrasenna,rol,rut,Correo) VALUES(?,?,?,?,?)";
 
         try (Connection conn = Connect.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -289,18 +289,18 @@ public class MainServidor {
         System.out.println("Notificando a observadores de canal " + tipo);
     }
 
-    public void CambiarContraseña(String nuevaContraseña, String usuario) {
+    public void CambiarContrasenna(String nuevaContrasenna, String usuario) {
         Connection connection = Connect.connect();
 
         try {
-            // Actualizar la contraseña en la base de datos
-            String sql = "UPDATE Usuarios SET Contraseña = ? WHERE Usuario = ?";
+            // Actualizar la contrasenna en la base de datos
+            String sql = "UPDATE Usuarios SET Contrasenna = ? WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, nuevaContraseña);
+            preparedStatement.setString(1, nuevaContrasenna);
             preparedStatement.setString(2, usuario);
             preparedStatement.executeUpdate();
 
-            System.out.println("Contraseña cambiada correctamente para el usuario: " + usuario);
+            System.out.println("Contrasenna cambiada correctamente para el usuario: " + usuario);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -313,10 +313,10 @@ public class MainServidor {
         System.out.println("consultar primer inicio");
         String rut = "";
         Connection connection = Connect.connect();
-        String contraseña = "";
+        String contrasenna = "";
 
         try {
-            String sql = "select Usuario,rut,Contraseña FROM Usuarios where Usuario == ?";
+            String sql = "select Usuario,rut,Contrasenna FROM Usuarios where Usuario == ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
 
@@ -324,8 +324,8 @@ public class MainServidor {
 
             if (resultSet.next()) {
                 rut = resultSet.getString("rut");
-                contraseña = resultSet.getString("Contraseña");
-                System.out.println("rut: " + rut + " contraseña: " + contraseña);
+                contrasenna = resultSet.getString("Contrasenna");
+                System.out.println("rut: " + rut + " contrasenna: " + contrasenna);
             }
 
         } catch (SQLException e) {
@@ -334,7 +334,7 @@ public class MainServidor {
             Connect.disconnect();
         }
 
-        if (rut.equals(contraseña)) {
+        if (rut.equals(contrasenna)) {
             System.out.println("primera vez");
             return 1;
         } else {

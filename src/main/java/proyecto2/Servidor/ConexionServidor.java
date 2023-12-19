@@ -114,8 +114,8 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     // ----------------------------------------------------------------------------
 
                     // mensaje al servidor para registrar usuario
-                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.AÑADIRUSUARIOS)) {
-                    System.out.println("añadir usuarios");
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ANNADIRUSUARIOS)) {
+                    System.out.println("annadir usuarios");
                     System.out.println(mensaje.getMensaje());
                     String[] aux = mensaje.getMensaje().toString().split(":");
                     servidor.CrearUsuario(aux[0], aux[1], aux[2], aux[3]);
@@ -127,17 +127,17 @@ public class ConexionServidor implements Runnable, PropertyChangeListener {
                     this.estilos = "";
                 }
 
-                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASEÑA)) {
-                    System.out.println("reiniciaaaaaaaaaaa contraseñaaaaaaaaaaa");
+                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.REINICIAR_CONTRASENNA)) {
+                    System.out.println("reiniciaaaaaaaaaaa contrasennaaaaaaaaaaa");
                     System.out.println(mensaje.getMensaje());
-                    servidor.ReiniciarContraseña(mensaje.getMensaje().toString());
+                    servidor.ReiniciarContrasenna(mensaje.getMensaje().toString());
                 }
                 // ----------------------------------------------------------------------------
 
-                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASEÑA)) {
-                    System.out.println("actualizar contraseñaaaaa");
+                else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTRASENNA)) {
+                    System.out.println("actualizar contrasennaaaaa");
                     System.out.println(mensaje.getMensaje());
-                    servidor.CambiarContraseña(mensaje.getMensaje().toString().split(":")[0],
+                    servidor.CambiarContrasenna(mensaje.getMensaje().toString().split(":")[0],
                             mensaje.getMensaje().toString().split(":")[1]);
                 }
 

@@ -2,7 +2,7 @@ package proyecto2.BaseDatos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
+import javsa.sql.SQLException;
 
 public class Connect {
     private static Connection conn = null;
@@ -18,12 +18,12 @@ public class Connect {
             // Obtener las variables de entorno para la conexión a MySQL
             String dbUrl = System.getenv("DB_URL");
             String usuario = System.getenv("DB_USER");
-            String contraseña = System.getenv("DB_PASSWORD");
+            String contrasenna = System.getenv("DB_PASSWORD");
 
             // Verificar si la conexión ya está establecida
             if (conn == null || conn.isClosed()) {
                 // Crear la conexión a la base de datos MySQL
-                conn = DriverManager.getConnection(dbUrl, usuario, contraseña);
+                conn = DriverManager.getConnection(dbUrl, usuario, contrasenna);
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
