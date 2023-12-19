@@ -31,8 +31,6 @@ import proyecto2.Mensajeria.TextoEnriquecido;
 import javafx.scene.image.ImageView;
 import java.nio.file.Files;
 
-
-
 public class FXMLVistaMedicoController extends VistaPadre implements Initializable {
 
     private boolean esImagen(File file) {
@@ -96,7 +94,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if ("Auxiliar".equals(usuarioSeleccionado)) {
-            mostrarMensajeEmergente("Mensaje para Auxiliar", "Recuerda añadir un motivo al mensaje");
+            mostrarMensajeEmergente("Mensaje para Auxiliar", "Recuerda annadir un motivo al mensaje");
         }
     }
 
@@ -105,21 +103,21 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Archivo");
         File selectedFile = fileChooser.showOpenDialog(null);
-        
-    if (selectedFile != null) {
-        labelNombreArchivo.setText(selectedFile.getName());
 
-        if (esImagen(selectedFile)) {
-            try { 
-                Image image = new Image(selectedFile.toURI().toString());
-                imagenVistaPrevia.setImage(image);
-            } catch (Exception e) {
-                System.err.println("Error al cargar la imagen: " + e.getMessage());
+        if (selectedFile != null) {
+            labelNombreArchivo.setText(selectedFile.getName());
+
+            if (esImagen(selectedFile)) {
+                try {
+                    Image image = new Image(selectedFile.toURI().toString());
+                    imagenVistaPrevia.setImage(image);
+                } catch (Exception e) {
+                    System.err.println("Error al cargar la imagen: " + e.getMessage());
+                }
+            } else {
+                System.out.println("No se puede mostrar vista previa para este tipo de archivo.");
             }
-        } else {
-            System.out.println("No se puede mostrar vista previa para este tipo de archivo.");
-        }
-    
+
             // Aquí agregar la lógica para enviar el archivo
             String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
 
@@ -128,7 +126,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 mensajeAEnviar.setEmisor(usuario);
                 mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
                 mensajeAEnviar.setArchivo(selectedFile);
-    
+
                 try {
                     salida.writeObject(mensajeAEnviar);
                     System.out.println("Archivo enviado correctamente");
@@ -147,25 +145,26 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     private void recibirArchivo(Mensaje<?> mensaje) {
         String nombreArchivo = mensaje.getArchivo().getName();
         String emisor = mensaje.getEmisor();
-    
+
         // Verificar si el destinatario del mensaje es el usuario actual
         String destinatario = mensaje.getDestinatario();
         if (!destinatario.equals(usuario)) {
-            return;  // No mostrar el cuadro de diálogo si el destinatario no es el usuario actual
+            return; // No mostrar el cuadro de diálogo si el destinatario no es el usuario actual
         }
-    
-        // Muestra un cuadro de diálogo para que el usuario decida qué hacer con el archivo
+
+        // Muestra un cuadro de diálogo para que el usuario decida qué hacer con el
+        // archivo
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Recepción de Archivo");
             alert.setHeaderText("Has recibido un archivo de " + emisor);
             alert.setContentText("Nombre del archivo: " + nombreArchivo);
-    
+
             ButtonType buttonTypeSave = new ButtonType("Guardar");
             ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
-    
+
             alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
-    
+
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == buttonTypeSave) {
                 // Guarda el archivo (puedes implementar esta lógica)
@@ -173,8 +172,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             }
         });
     }
-    
-    
+
     private void guardarArchivo(File archivo) {
         // Implementa la lógica para guardar el archivo
         // Puedes elegir la ubicación y el nombre para guardar el archivo
@@ -185,7 +183,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         File destino = fileChooser.showSaveDialog(null);
         if (destino != null) {
             try (FileInputStream fis = new FileInputStream(archivo);
-                 FileOutputStream fos = new FileOutputStream(destino)) {
+                    FileOutputStream fos = new FileOutputStream(destino)) {
                 byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = fis.read(buffer)) != -1) {
@@ -299,82 +297,89 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                 if (mensaje.getArchivo() != null) {
                     recibirArchivo(mensaje);
                 } else {
-                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
-                    String[] contactos = mensaje.getMensaje().toString().split(",");
-                    System.out.println("Contactos recibidos: " + mensaje.getMensaje());
-                    Platform.runLater(() -> {
-                        contactList.clear();
-                        for (String contacto : contactos) {
-                            if (!contacto.equals(usuario)) {
-                                contactList.add(contacto);
+                    if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                        String[] contactos = mensaje.getMensaje().toString().split(",");
+                        System.out.println("Contactos recibidos: " + mensaje.getMensaje());
+                        Platform.runLater(() -> {
+                            contactList.clear();
+                            for (String contacto : contactos) {
+                                if (!contacto.equals(usuario)) {
+                                    contactList.add(contacto);
+                                }
                             }
-                        }
-                    });
-                    System.out.println("Contactos actualizados");
-                } else {
-                    if (mensaje.getEmisor().equals(this.usuario)) {
-                        if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
-                            Platform.runLater(() -> {
-                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                        mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
-                                        "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
-                                                                                      // (esto es cuando yo mando un
-                                                                                      // mensaje privado)
-                                listaChatGeneral.getItems()
-                                        .add(textoEnriquecido);
-                            });
-                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
-                                && mensaje.getDestinatario() != canal.toString()) {
-                            Platform.runLater(() -> {
-                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                        mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
-                                        "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
-                                                                                      // (esto es cuando yo mando un
-                                                                                      // mensaje a un canal externo)
-                                listaChatGeneral.getItems()
-                                        .add(textoEnriquecido);
-                            });
-                        }
-
-                        else {
-                            Platform.runLater(() -> {
-                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                        mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
-                                        "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
-                                                                                      // (esto es cuando yo mando un
-                                                                                      // mensaje a mi canal)
-                                listaChatGeneral.getItems()
-                                        .add(textoEnriquecido);
-                            });
-                        }
-
+                        });
+                        System.out.println("Contactos actualizados");
                     } else {
-                        if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                    mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
-                                            + mensaje.getMensaje(),
-                                    "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo (esto
-                                                                                  // es cuando yo recibo un mensaje
-                                                                                  // privado)
-                            Platform.runLater(() -> {
-                                listaChatGeneral.getItems().add(textoEnriquecido);
-                            });
+                        if (mensaje.getEmisor().equals(this.usuario)) {
+                            if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
+                                Platform.runLater(() -> {
+                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                            mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
+                                            "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                          // definitivo
+                                                                                          // (esto es cuando yo mando un
+                                                                                          // mensaje privado)
+                                    listaChatGeneral.getItems()
+                                            .add(textoEnriquecido);
+                                });
+                            } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
+                                    && mensaje.getDestinatario() != canal.toString()) {
+                                Platform.runLater(() -> {
+                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                            mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
+                                            "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                          // definitivo
+                                                                                          // (esto es cuando yo mando un
+                                                                                          // mensaje a un canal externo)
+                                    listaChatGeneral.getItems()
+                                            .add(textoEnriquecido);
+                                });
+                            }
+
+                            else {
+                                Platform.runLater(() -> {
+                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                            mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
+                                            "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                          // definitivo
+                                                                                          // (esto es cuando yo mando un
+                                                                                          // mensaje a mi canal)
+                                    listaChatGeneral.getItems()
+                                            .add(textoEnriquecido);
+                                });
+                            }
+
                         } else {
-                            Platform.runLater(() -> {
+                            if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
                                 TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                        mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
+                                        mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
                                                 + mensaje.getMensaje(),
-                                        "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
-                                                                                      // (esto es cuando yo recibo un
-                                                                                      // mensaje de un canal externo)
-                                listaChatGeneral.getItems().add(textoEnriquecido);
-                            });
+                                        "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                      // (esto
+                                                                                      // es cuando yo recibo un mensaje
+                                                                                      // privado)
+                                Platform.runLater(() -> {
+                                    listaChatGeneral.getItems().add(textoEnriquecido);
+                                });
+                            } else {
+                                Platform.runLater(() -> {
+                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                            mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
+                                                    + mensaje.getMensaje(),
+                                            "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                          // definitivo
+                                                                                          // (esto es cuando yo recibo
+                                                                                          // un
+                                                                                          // mensaje de un canal
+                                                                                          // externo)
+                                    listaChatGeneral.getItems().add(textoEnriquecido);
+                                });
+                            }
+
                         }
-                        
                     }
                 }
             }
-        }
 
         } catch (Exception e) {
             if (!hilo.isInterrupted()) {

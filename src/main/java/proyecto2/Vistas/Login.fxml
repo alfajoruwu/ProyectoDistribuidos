@@ -11,7 +11,7 @@
     <children>
       <Button fx:id="ingresar" layoutX="171.0" layoutY="222.0" mnemonicParsing="false" onAction="#irAVistaMedico" text="Ingresar" />
       <TextField fx:id="nombreUsuario" layoutX="133.0" layoutY="109.0" promptText="Usuario" />
-      <PasswordField fx:id="contraseña" layoutX="133.0" layoutY="160.0" promptText="Contraseña" />
+      <PasswordField fx:id="contrasenna" layoutX="133.0" layoutY="160.0" promptText="Contrasenna" />
       <Label layoutX="161.0" layoutY="36.0" text="Bienvenido">
          <font>
             <Font size="19.0" />

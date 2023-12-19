@@ -21,7 +21,7 @@ public class MainCliente extends Application {
         Login loginController = loader.getController();
 
         try {
-            loginController.setInformacion("localhost", "5000"); // Pasar el objeto Socket a la clase Login
+            loginController.setInformacion("34.72.209.178", "80"); // Pasar el objeto Socket a la clase Login
             Scene scene = new Scene(root);
 
             stage.setScene(scene);

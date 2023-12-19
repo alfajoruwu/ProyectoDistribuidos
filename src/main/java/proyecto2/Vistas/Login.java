@@ -42,12 +42,12 @@ public class Login implements Initializable {
     private TextField nombreUsuario;
 
     @FXML
-    private PasswordField contraseña;
+    private PasswordField contrasenna;
 
     @FXML
     public void irAVistaMedico(ActionEvent event) throws IOException {
         String usuario = nombreUsuario.getText();
-        String contrasenna = this.contraseña.getText();
+        String contrasenna = this.contrasenna.getText();
         Constantes.Canales canal = validarUsuario(usuario, contrasenna, event);
         if (canal != null) {
             if (canal.equals(Constantes.Canales.MEDICO)) {
@@ -86,10 +86,10 @@ public class Login implements Initializable {
     }
 
     private void PopUp(ActionEvent event, String usuario) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpSetearContraseña.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLPopUpSetearContrasenna.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
 
-        FXMLPopUpSetearContraseñaController controladorVista = fxmlLoader.getController();
+        FXMLPopUpSetearContrasennaController controladorVista = fxmlLoader.getController();
         controladorVista.setInformacion(socket, salida, entrada, usuario);
 
         Stage stage2 = new Stage();
@@ -129,13 +129,13 @@ public class Login implements Initializable {
         });
     }
 
-    private Constantes.Canales validarUsuario(String usuario, String contraseña, ActionEvent event) {
+    private Constantes.Canales validarUsuario(String usuario, String contrasenna, ActionEvent event) {
         try {
             Mensaje<Object> mensaje = new Mensaje<Object>();
             mensaje.setEmisor(usuario);
             // el destinatario da igual (solo si tiene el prefijo Login)
             mensaje.setDestinatario(Constantes.TipoDestino.LOGIN, "Servidor");
-            mensaje.setMensaje(contraseña);
+            mensaje.setMensaje(contrasenna);
 
             this.salida.writeObject(mensaje);
 
@@ -159,7 +159,7 @@ public class Login implements Initializable {
                 Constantes.Canales aux = Constantes.Canales.valueOf(canal);
                 return aux;
             } else if (respuesta.getMensaje().toString().startsWith(Constantes.Respuestas.LOGIN_FALLIDO.toString())) {
-                mensajeError.setText("Usuario o contraseña incorrectos");
+                mensajeError.setText("Usuario o contrasenna incorrectos");
 
             } else if (respuesta.getMensaje().toString().startsWith(Constantes.Respuestas.LOGIN_PRIMERO.toString())) {
                 PopUp(event, usuario);

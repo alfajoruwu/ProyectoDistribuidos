@@ -36,7 +36,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     private Button botonMonitorearComunicaciones;
 
     @FXML
-    private Button botonReiniciarContraseña;
+    private Button botonReiniciarContrasenna;
 
     @FXML
     private Button sendButton;
@@ -50,11 +50,11 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     }
 
     @FXML
-    public void ReiniciarContraseñaPopup(ActionEvent event) throws IOException {
-        FXMLLoader Loader = new FXMLLoader(getClass().getResource("FXMLPopUpReiniciarContraseña.fxml"));
+    public void ReiniciarContrasennaPopup(ActionEvent event) throws IOException {
+        FXMLLoader Loader = new FXMLLoader(getClass().getResource("FXMLPopUpReiniciarContrasenna.fxml"));
         Parent root1 = Loader.load();
 
-        FXMLPopUpReiniciarContraseñaController controladorVista = Loader.getController();
+        FXMLPopUpReiniciarContrasennaController controladorVista = Loader.getController();
         controladorVista.setInformacion(socket, salida, entrada, usuario);
 
         Stage stage2 = new Stage();
@@ -63,7 +63,7 @@ public class FXMLVistaAdministradorController extends VistaPadre implements Init
     }
 
     @FXML
-    public void AñadirUsuario(ActionEvent event) throws IOException {
+    public void AnnadirUsuario(ActionEvent event) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopUpCrearUsuario.fxml"));
         Parent root = loader.load();

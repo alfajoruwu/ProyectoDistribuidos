@@ -18,7 +18,7 @@
       <TextField fx:id="Rut" layoutX="24.0" layoutY="136.0" prefHeight="26.0" prefWidth="242.0" />
       <TextField fx:id="Correo" layoutX="24.0" layoutY="206.0" prefHeight="26.0" prefWidth="242.0" />
       <Label layoutX="24.0" layoutY="179.0" text="Correo electronico" />
-      <Label layoutX="19.0" layoutY="344.0" text="La Contraseña por defecto es el rut del Usuario" />
+      <Label layoutX="19.0" layoutY="344.0" text="La Contrasenna por defecto es el rut del Usuario" />
       <Label fx:id="texto" layoutX="122.0" layoutY="380.0" />
    </children>
 </AnchorPane>

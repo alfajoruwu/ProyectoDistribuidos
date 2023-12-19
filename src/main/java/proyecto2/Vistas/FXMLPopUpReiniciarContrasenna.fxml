@@ -6,12 +6,12 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="421.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLPopUpReiniciarContraseñaController">
+<AnchorPane id="AnchorPane" prefHeight="421.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto2.Vistas.FXMLPopUpReiniciarContrasennaController">
    <children>
-      <Label layoutX="24.0" layoutY="26.0" prefHeight="18.0" prefWidth="276.0" text="Reiniciar Contraseñas a la por defecto" />
+      <Label layoutX="24.0" layoutY="26.0" prefHeight="18.0" prefWidth="276.0" text="Reiniciar Contrasennas a la por defecto" />
       <ListView fx:id="ListarUsuarios" layoutX="28.0" layoutY="122.0" prefHeight="200.0" prefWidth="374.0" />
       <Label layoutX="28.0" layoutY="104.0" text="Usuarios" />
-      <Button layoutX="31.0" layoutY="331.0" mnemonicParsing="false" onAction="#reiniciarContra" text="Reiniciar Contraseña" />
+      <Button layoutX="31.0" layoutY="331.0" mnemonicParsing="false" onAction="#reiniciarContra" text="Reiniciar Contrasenna" />
       <TextField fx:id="BuscarUsuario" layoutX="31.0" layoutY="72.0" prefHeight="26.0" prefWidth="374.0" />
       <Label layoutX="31.0" layoutY="55.0" text="Buscar usuario" />
    </children>

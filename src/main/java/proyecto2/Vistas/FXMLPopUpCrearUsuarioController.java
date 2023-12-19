@@ -52,12 +52,12 @@ public class FXMLPopUpCrearUsuarioController implements Initializable {
     public void enviarCrearUsuario() throws IOException {
         Mensaje<Object> mensaje = new Mensaje<Object>();
         mensaje.setEmisor(usuario);
-        mensaje.setDestinatario(Constantes.TipoDestino.AÑADIRUSUARIOS, Constantes.Nombres.SERVIDOR.toString());
+        mensaje.setDestinatario(Constantes.TipoDestino.ANNADIRUSUARIOS, Constantes.Nombres.SERVIDOR.toString());
         mensaje.setMensaje("" + Nombre.getText() + ":" + Rut.getText() + ":" + Correo.getText() + ":" + rol.getValue());
 
         salida.writeObject(mensaje);
 
-        texto.setText("Se Añadio al usuario");
+        texto.setText("Se Annadio al usuario");
 
     }
 
