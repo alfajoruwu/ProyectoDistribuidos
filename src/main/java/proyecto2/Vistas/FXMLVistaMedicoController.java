@@ -131,8 +131,8 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
                     salida.writeObject(mensajeAEnviar);
                     System.out.println("Archivo enviado correctamente");
                 } catch (IOException e) {
-                    System.err.println("Error al enviar el archivo");
-                    e.printStackTrace();
+                    this.botonSalidar.fire();
+
                 }
             } else {
                 System.out.println("Usuario no seleccionado");
@@ -383,6 +383,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
 
         } catch (Exception e) {
             if (!hilo.isInterrupted()) {
+                this.botonSalidar.fire();
                 e.printStackTrace();
             }
         }
@@ -404,8 +405,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
-                System.err.println("Error al enviar el mensaje");
-                e.printStackTrace();
+                this.botonSalidar.fire();
             }
 
             textoMensajePrivado.clear();
@@ -429,8 +429,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             try {
                 salida.writeObject(mensajeAEnviar);
             } catch (Exception e) {
-                System.err.println("Error al enviar el mensaje");
-                e.printStackTrace();
+                this.botonSalidar.fire();
             }
 
             textoMensajePrivadoCanal.clear();

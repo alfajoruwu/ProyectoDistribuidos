@@ -79,9 +79,6 @@ public abstract class VistaPadre implements Runnable {
 
         // Obtener el controlador para poder enviarle la información
         Login login = loader.getController();
-        while (login.conectar() == false) {
-            login.conectar();
-        }
 
         try {
             Mensaje<Object> mensaje = new Mensaje<Object>();
@@ -94,15 +91,23 @@ public abstract class VistaPadre implements Runnable {
             e.printStackTrace();
         }
 
-        this.entrada.close();
-        this.salida.close();
-        this.socket.close();
+        try {
+            this.entrada.close();
+            this.salida.close();
+            this.socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
 
         stage.setScene(scene);
         stage.show();
+
+        while (login.conectar() == false) {
+            login.conectar();
+        }
     }
 
     @FXML
@@ -137,7 +142,7 @@ public abstract class VistaPadre implements Runnable {
     }
 
     @FXML
-    protected void handleSendButtonAction() {
+    protected void handleSendButtonAction(ActionEvent event) {
         String message = messageField.getText();
         if (!message.isEmpty()) {
             Mensaje<Object> mensaje = new Mensaje<Object>();
@@ -148,7 +153,11 @@ public abstract class VistaPadre implements Runnable {
             try {
                 salida.writeObject(mensaje);
             } catch (Exception excepcion) {
-                excepcion.printStackTrace();
+                try {
+                    irAVistaLogin(event);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }
