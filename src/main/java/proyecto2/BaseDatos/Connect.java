@@ -2,7 +2,7 @@ package proyecto2.BaseDatos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import javsa.sql.SQLException;
+import java.sql.SQLException;
 
 public class Connect {
     private static Connection conn = null;
