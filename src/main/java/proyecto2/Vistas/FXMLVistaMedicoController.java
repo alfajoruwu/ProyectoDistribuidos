@@ -94,7 +94,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         String usuarioSeleccionado = listaContactosCanal.getSelectionModel().getSelectedItem();
 
         if ("Auxiliar".equals(usuarioSeleccionado)) {
-            mostrarMensajeEmergente("Mensaje para Auxiliar", "Recuerda annadir un motivo al mensaje");
+            mostrarMensajeEmergente("Mensaje para Auxiliar", "Recuerda añadir un motivo al mensaje");
         }
     }
 

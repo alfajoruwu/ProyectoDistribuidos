@@ -54,6 +54,18 @@ public abstract class VistaPadre implements Runnable {
         }
     }
 
+    public boolean conectar() {
+        try {
+            this.socket = new Socket(Constantes.host, Constantes.puerto);
+            this.salida = new ObjectOutputStream(socket.getOutputStream());
+            this.entrada = new ObjectInputStream(socket.getInputStream());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public void irAVistaLogin(ActionEvent event) throws IOException {
         try {
             hilo.interrupt();
@@ -67,7 +79,9 @@ public abstract class VistaPadre implements Runnable {
 
         // Obtener el controlador para poder enviarle la información
         Login login = loader.getController();
-        login.setInformacion("localhost", "5000");
+        while (login.conectar() == false) {
+            login.conectar();
+        }
 
         try {
             Mensaje<Object> mensaje = new Mensaje<Object>();

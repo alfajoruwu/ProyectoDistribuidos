@@ -104,13 +104,15 @@ public class Login implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
-    public void setInformacion(String ip, String puerto) {
+    public boolean conectar() {
         try {
-            this.socket = new Socket(ip, Integer.parseInt(puerto));
+            this.socket = new Socket(Constantes.host, Constantes.puerto);
             this.salida = new ObjectOutputStream(socket.getOutputStream());
             this.entrada = new ObjectInputStream(socket.getInputStream());
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 

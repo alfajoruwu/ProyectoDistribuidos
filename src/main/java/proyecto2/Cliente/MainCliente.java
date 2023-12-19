@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import proyecto2.Vistas.Login;
 
 public class MainCliente extends Application {
@@ -21,7 +20,9 @@ public class MainCliente extends Application {
         Login loginController = loader.getController();
 
         try {
-            loginController.setInformacion("34.72.209.178", "80"); // Pasar el objeto Socket a la clase Login
+            while (loginController.conectar() == false) {
+                loginController.conectar();
+            }
             Scene scene = new Scene(root);
 
             stage.setScene(scene);
