@@ -12,20 +12,23 @@ public class Connect {
      */
     public static Connection connect() {
         try {
-            // Cargar el controlador JDBC de MySQL
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            String dbHost = System.getenv("DB_HOST");
+            String dbPort = System.getenv("DB_PORT");
+            String dbName = System.getenv("DB_NAME");
+            String dbUser = System.getenv("DB_USER");
+            String dbPassword = System.getenv("DB_PASSWORD");
+            System.out.println("variables de entorno:");
+            System.out.println("DB_HOST: " + dbHost);
+            System.out.println("DB_PORT: " + dbPort);
+            System.out.println("DB_NAME: " + dbName);
+            System.out.println("DB_USER: " + dbUser);
+            System.out.println("DB_PASSWORD: " + dbPassword);
 
-            // Obtener las variables de entorno para la conexión a MySQL
-            String dbUrl = System.getenv("DB_URL");
-            String usuario = System.getenv("DB_USER");
-            String contraseña = System.getenv("DB_PASSWORD");
+            String url = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
 
-            // Verificar si la conexión ya está establecida
-            if (conn == null || conn.isClosed()) {
-                // Crear la conexión a la base de datos MySQL
-                conn = DriverManager.getConnection(dbUrl, usuario, contraseña);
-            }
-        } catch (ClassNotFoundException | SQLException e) {
+            conn = DriverManager.getConnection(url, dbUser, dbPassword);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return conn;
