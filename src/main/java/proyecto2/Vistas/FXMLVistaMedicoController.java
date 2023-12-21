@@ -295,89 +295,120 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             while (!hilo.isInterrupted()) {
                 Mensaje<?> mensaje;
                 mensaje = (Mensaje<?>) entrada.readObject();
-                if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.ARCHIVO) {
-                    recibirArchivo(mensaje);
-                } else {
-                    if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
-                        String[] contactos = mensaje.getMensaje().toString().split(",");
-                        System.out.println("Contactos recibidos: " + mensaje.getMensaje());
-                        Platform.runLater(() -> {
-                            contactList.clear();
-                            for (String contacto : contactos) {
-                                if (!contacto.equals(usuario)) {
-                                    contactList.add(contacto);
-                                }
+                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                    String[] contactos = mensaje.getMensaje().toString().split(",");
+                    System.out.println("Contactos recibidos: " + mensaje.getMensaje());
+                    Platform.runLater(() -> {
+                        contactList.clear();
+                        for (String contacto : contactos) {
+                            if (!contacto.equals(usuario)) {
+                                contactList.add(contacto);
                             }
-                        });
-                        System.out.println("Contactos actualizados");
-                    } else {
-                        if (mensaje.getEmisor().equals(this.usuario)) {
-                            if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
-                                Platform.runLater(() -> {
-                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                            mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
-                                            "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo
-                                                                                          // definitivo
-                                                                                          // (esto es cuando yo mando un
-                                                                                          // mensaje privado)
-                                    listaChatGeneral.getItems()
-                                            .add(textoEnriquecido);
-                                });
-                            } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
-                                    && mensaje.getDestinatario() != canal.toString()) {
-                                Platform.runLater(() -> {
-                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                            mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
-                                            "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo
-                                                                                          // definitivo
-                                                                                          // (esto es cuando yo mando un
-                                                                                          // mensaje a un canal externo)
-                                    listaChatGeneral.getItems()
-                                            .add(textoEnriquecido);
-                                });
-                            }
-
-                            else {
-                                Platform.runLater(() -> {
-                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                            mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
-                                            "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo
-                                                                                          // definitivo
-                                                                                          // (esto es cuando yo mando un
-                                                                                          // mensaje a mi canal)
-                                    listaChatGeneral.getItems()
-                                            .add(textoEnriquecido);
-                                });
-                            }
-
-                        } else {
-                            if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
-                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                        mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
-                                                + mensaje.getMensaje(),
-                                        "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
-                                                                                      // (esto
-                                                                                      // es cuando yo recibo un mensaje
-                                                                                      // privado)
-                                Platform.runLater(() -> {
-                                    listaChatGeneral.getItems().add(textoEnriquecido);
-                                });
-                            } else {
-                                Platform.runLater(() -> {
-                                    TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
-                                            mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
-                                                    + mensaje.getMensaje(),
-                                            "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo
-                                                                                          // definitivo
-                                                                                          // (esto es cuando yo recibo
-                                                                                          // un
-                                                                                          // mensaje de un canal
-                                                                                          // externo)
-                                    listaChatGeneral.getItems().add(textoEnriquecido);
-                                });
-                            }
-
                         }
+                    });
+                    System.out.println("Contactos actualizados");
+                } else {
+                    if (mensaje.getEmisor().equals(this.usuario)) {
+                        if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.ARCHIVO) {
+                            recibirArchivo(mensaje);
+                            Object[] aux = (Object[]) mensaje.getMensaje();
+                            String nombreArchivo = (String) aux[1];
+
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (archivo) TU:  " + nombreArchivo,
+                                        "-fx-fill: #ffff00; -fx-font-weight: bold; -fx-font-style: italic;"); // TODO:
+                                                                                                              // fijar
+                                                                                                              // estilo
+                                // definitivo
+                                // (esto es cuando yo mando un
+                                // mensaje privado)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.USUARIO) {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (privado) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ffff00; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                      // definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje privado)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        } else if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.CANAL
+                                && mensaje.getDestinatario() != canal.toString()) {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (canal) TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #00ffff; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                      // definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a un canal externo)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        }
+
+                        else {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": TU:  " + mensaje.getMensaje(),
+                                        "-fx-fill: #ff0000; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                      // definitivo
+                                                                                      // (esto es cuando yo mando un
+                                                                                      // mensaje a mi canal)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        }
+
+                    } else {
+                        if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ARCHIVO)) {
+                            recibirArchivo(mensaje);
+                            Object[] aux = (Object[]) mensaje.getMensaje();
+                            String nombreArchivo = (String) aux[1];
+
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": (archivo) " + mensaje.getEmisor() + ": "
+                                                + nombreArchivo,
+                                        "-fx-fill: #00ff00; -fx-font-weight: bold; -fx-font-style: italic;"); // TODO:
+                                                                                                              // fijar
+                                                                                                              // estilo
+                                // definitivo
+                                // (esto es cuando yo recibo un
+                                // mensaje privado)
+                                listaChatGeneral.getItems()
+                                        .add(textoEnriquecido);
+                            });
+                        } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.USUARIO)) {
+                            TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                    mensaje.getFechaHora() + ": (privado) " + mensaje.getEmisor() + ": "
+                                            + mensaje.getMensaje(),
+                                    "-fx-fill: #00ff00; -fx-font-weight: bold;"); // TODO: fijar estilo definitivo
+                                                                                  // (esto
+                                                                                  // es cuando yo recibo un mensaje
+                                                                                  // privado)
+                            Platform.runLater(() -> {
+                                listaChatGeneral.getItems().add(textoEnriquecido);
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                TextoEnriquecido textoEnriquecido = new TextoEnriquecido(
+                                        mensaje.getFechaHora() + ": " + mensaje.getEmisor() + ": "
+                                                + mensaje.getMensaje(),
+                                        "-fx-fill: #0000ff; -fx-font-weight: bold;"); // TODO: fijar estilo
+                                                                                      // definitivo
+                                                                                      // (esto es cuando yo recibo
+                                                                                      // un
+                                                                                      // mensaje de un canal
+                                                                                      // externo)
+                                listaChatGeneral.getItems().add(textoEnriquecido);
+                            });
+                        }
+
                     }
                 }
             }
