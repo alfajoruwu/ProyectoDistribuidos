@@ -9,7 +9,5 @@ module proyecto2 {
 
     exports proyecto2.Cliente;
     exports proyecto2.Vistas;
-    exports proyecto2.BaseDatos;
     exports proyecto2.Mensajeria;
-    exports proyecto2.Servidor;
 }

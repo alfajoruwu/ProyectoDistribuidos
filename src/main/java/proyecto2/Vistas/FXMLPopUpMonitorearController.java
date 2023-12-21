@@ -31,7 +31,6 @@ import javafx.util.StringConverter;
 import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.Usuarios;
-import proyecto2.BaseDatos.Connect;
 
 /**
  * FXML Controller class
@@ -172,29 +171,5 @@ public class FXMLPopUpMonitorearController implements Initializable {
         }
         // obtener mensajes de la base de datos
         MensajesEnviadosObserbable.clear();
-
-        Connection connection = Connect.connect();
-        try {
-            String sql = "SELECT Emisor, count(Emisor) as veces FROM Mensajes WHERE Usuario = ? AND Fecha BETWEEN ? AND ? GROUP BY Emisor";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, ListaUsuarios.getSelectionModel().getSelectedItem());
-            preparedStatement.setString(2, fecha1);
-            preparedStatement.setString(3, fecha2);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println("Mensajes obtenidos");
-            System.out.println("consulta: " + preparedStatement.toString());
-            while (resultSet.next()) {
-
-                MensajesEnviadosObserbable.add(resultSet.getString("Emisor").replace("TU:",
-                        ListaUsuarios.getSelectionModel().getSelectedItem() + ":") + " "
-                        + resultSet.getString("veces"));
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error al obtener mensajes de la base de datos");
-            e.printStackTrace();
-        } finally {
-            Connect.disconnect();
-        }
     }
 }
