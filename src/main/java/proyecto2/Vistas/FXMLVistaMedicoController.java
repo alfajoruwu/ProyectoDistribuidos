@@ -169,7 +169,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Recepción de Archivo");
             alert.setHeaderText("Has recibido un archivo de " + emisor);
-            alert.setContentText("Nombre del archivo: " + bytes);
+            alert.setContentText("Nombre del archivo: " + nombreArchivo);
 
             ButtonType buttonTypeSave = new ButtonType("Guardar");
             ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
