@@ -180,10 +180,17 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             if (result.isPresent() && result.get() == buttonTypeSave) {
                 // Guarda el archivo (puedes implementar esta lógica)
                 try {
-                    FileOutputStream fos = new FileOutputStream(nombreArchivo);
-                    fos.write(bytes);
-                    fos.flush();
-                    fos.close();
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Guardar Archivo");
+                    fileChooser.setInitialFileName(nombreArchivo);
+
+                    File destino = fileChooser.showSaveDialog(null);
+                    if (destino != null) {
+                        FileOutputStream fos = new FileOutputStream(destino);
+                        fos.write(bytes);
+                        fos.flush();
+                        fos.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
