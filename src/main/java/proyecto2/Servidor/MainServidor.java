@@ -308,7 +308,7 @@ public class MainServidor {
         String contrasenna = "";
 
         try {
-            String sql = "select Usuario,rut,Contrasenna FROM Usuarios where Usuario == ?";
+            String sql = "select Usuario,rut,Contrasenna FROM Usuarios where Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
 
