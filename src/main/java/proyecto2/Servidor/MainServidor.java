@@ -127,15 +127,13 @@ public class MainServidor {
         Connection connection = Connect.connect();
         String historial = "";
         try {
-            String sql = "SELECT fecha,hora,emisor,mensaje FROM Mensajes WHERE Usuario = ?";
+            String sql = "SELECT fecha_hora, emisor, mensaje FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                historial += resultSet.getString("fecha");
-                historial += " ";
-                historial += resultSet.getString("hora");
+                historial += resultSet.getString("fecha_hora");
                 historial += " ";
                 historial += resultSet.getString("emisor");
                 historial += " ";
@@ -188,20 +186,15 @@ public class MainServidor {
 
         Connection connection = Connect.connect();
 
-        System.out.println(historial);
-
         try {
-            // borrar historial si existe
             String sql = "DELETE FROM Mensajes WHERE Usuario = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, usuario);
             preparedStatement.executeUpdate();
 
-            // agregar historial
             String[] mensajes = historial.split("\n");
             String[] estilosMensajes = estilos.split("\n");
-            String fecha;
-            String hora;
+            String fechaHoraConcatenada;
             String emisor;
             String mensajew;
 
@@ -209,16 +202,14 @@ public class MainServidor {
                 return;
             }
 
-            for (int i = 0; i < estilosMensajes.length; i++) {
+            for (int i = 0; i < mensajes.length; i++) {
                 String mensaje = mensajes[i];
                 String estilo = estilosMensajes[i];
-                System.out.println(mensaje);
-                String[] partes = mensaje.split(" ", 4);
-                fecha = partes[0];
-                hora = partes[1];
+                String[] partes = mensaje.split(" ", 3);
+                fechaHoraConcatenada = partes[0] + " " + partes[1];
                 emisor = partes[2];
                 mensajew = partes[3];
-                ingresarMensajeBD(connection, usuario, fecha, hora, emisor, mensajew, estilo);
+                ingresarMensajeBD(connection, usuario, fechaHoraConcatenada, emisor, mensajew, estilo);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -381,7 +372,7 @@ public class MainServidor {
         return usuariosConectados;
     }
 
-    public void ingresarMensajeBD(Connection connection, String usuario, String fecha, String hora, String emisor,
+    public void ingresarMensajeBD(Connection connection, String usuario, String fechaHoraConcatenada, String emisor,
             String mensaje, String estilo) {
         try {
             // Insertar el mensaje en la base de datos
@@ -389,8 +380,7 @@ public class MainServidor {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             // Aquí estoy asumiendo que fecha y hora ya están concatenados y en el formato
-            // "YYYY-MM-DD HH:MM:SS"
-            String fechaHoraConcatenada = fecha + " " + hora;
+            // "YYYY-MM-DD HH:MM:SS";
 
             preparedStatement.setString(1, usuario);
             preparedStatement.setString(2, fechaHoraConcatenada);
