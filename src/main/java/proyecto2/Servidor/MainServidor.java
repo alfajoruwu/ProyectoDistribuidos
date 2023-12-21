@@ -205,15 +205,6 @@ public class MainServidor {
             String emisor;
             String mensajew;
 
-            //quitar los : finales de hora
-            for (int i = 0; i < mensajes.length; i++) {
-                String mensaje = mensajes[i];
-                if (mensaje.endsWith(":")) {
-                    mensajes[i] = mensaje.substring(0, mensaje.length() - 1);
-                }
-             
-            }
-
             if (mensajes.length == 0 || mensajes[0].isEmpty()) {
                 return;
             }
@@ -390,23 +381,25 @@ public class MainServidor {
         return usuariosConectados;
     }
 
-    public void ingresarMensajeBD(Connection connection, String usuario, String fecha, String hora, String emisor, String mensaje, String estilo) {
+    public void ingresarMensajeBD(Connection connection, String usuario, String fecha, String hora, String emisor,
+            String mensaje, String estilo) {
         try {
             // Insertar el mensaje en la base de datos
             String sql = "INSERT INTO Mensajes (usuario, fecha_hora, emisor, mensaje, estilo) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            
-            // Aquí estoy asumiendo que fecha y hora ya están concatenados y en el formato "YYYY-MM-DD HH:MM:SS"
+
+            // Aquí estoy asumiendo que fecha y hora ya están concatenados y en el formato
+            // "YYYY-MM-DD HH:MM:SS"
             String fechaHoraConcatenada = fecha + " " + hora;
-            
+
             preparedStatement.setString(1, usuario);
             preparedStatement.setString(2, fechaHoraConcatenada);
             preparedStatement.setString(3, emisor);
             preparedStatement.setString(4, mensaje);
             preparedStatement.setString(5, estilo);
-            
+
             preparedStatement.executeUpdate();
-            
+
             System.out.println("Mensaje ingresado en la base de datos correctamente.");
         } catch (SQLException e) {
             e.printStackTrace();
