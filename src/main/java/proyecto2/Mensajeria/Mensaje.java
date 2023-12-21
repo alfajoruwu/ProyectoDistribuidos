@@ -1,15 +1,11 @@
 package proyecto2.Mensajeria;
 
-import java.io.File;
-
 public class Mensaje<tipo> implements java.io.Serializable {
     private tipo mensaje;
     private String emisor;
     private String fechaHora;
     // el destinatario es un arreglo de Constantes.TipoDestino y String
     private Object[] destinatario = new Object[2];
-    private String infoDestinatario;
-    private File archivo;
 
     public tipo getMensaje() {
         return mensaje;
@@ -25,14 +21,6 @@ public class Mensaje<tipo> implements java.io.Serializable {
 
     public void setMensaje(tipo mensaje) {
         this.mensaje = mensaje;
-    }
-
-    public String getInfoDestinatario() {
-        return infoDestinatario;
-    }
-
-    public void setInfoDestinatario(String infoDestinatario) {
-        this.infoDestinatario = infoDestinatario;
     }
 
     public String getEmisor() {
@@ -64,13 +52,4 @@ public class Mensaje<tipo> implements java.io.Serializable {
         this.destinatario[0] = tipo;
         this.destinatario[1] = destinatario;
     }
-
-    public File getArchivo() {
-        return archivo;
-    }
-
-    public void setArchivo(File archivo) {
-        this.archivo = archivo;
-    }
-
 }

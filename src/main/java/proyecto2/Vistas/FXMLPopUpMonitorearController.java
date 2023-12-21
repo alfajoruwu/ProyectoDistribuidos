@@ -116,7 +116,6 @@ public class FXMLPopUpMonitorearController implements Initializable {
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

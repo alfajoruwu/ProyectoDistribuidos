@@ -4,7 +4,7 @@ public class Constantes {
     // prefijos para los tipos de destinatario al enviar un mensaje
     public static enum TipoDestino {
         CANAL, USUARIO, LOGIN, LOGOUT, ANNADIRUSUARIOS, ACTUALIZAR_CONTACTOS, BORRAR_HISTORIAL, TODOS,
-        ACTUALIZAR_CONTRASENNA, OBTENER_USUARIOS, REINICIAR_CONTRASENNA
+        ACTUALIZAR_CONTRASENNA, OBTENER_USUARIOS, REINICIAR_CONTRASENNA, ARCHIVO
     }
 
     public static enum Respuestas {

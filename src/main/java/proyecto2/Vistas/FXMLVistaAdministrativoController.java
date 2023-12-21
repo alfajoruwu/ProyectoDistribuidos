@@ -19,11 +19,14 @@ import proyecto2.Mensajeria.Mensaje;
 import proyecto2.Mensajeria.TextoEnriquecido;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -94,7 +97,6 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
     @FXML
     private Button botonEnviarArchivo;
 
-
     @FXML
     public void irAVistaLogin(ActionEvent event) throws IOException {
         super.irAVistaLogin(event);
@@ -115,42 +117,51 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         }
     }
 
-        @FXML
+    @FXML
     public void enviarArchivo(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Archivo");
         File selectedFile = fileChooser.showOpenDialog(null);
-        
-    if (selectedFile != null) {
-        labelNombreArchivo.setText(selectedFile.getName());
-
-        if (esImagen(selectedFile)) {
-            try {
-                Image image = new Image(selectedFile.toURI().toString());
-                imagenVistaPrevia.setImage(image);
-            } catch (Exception e) {
-                System.err.println("Error al cargar la imagen: " + e.getMessage());
-            }
-        } else {
-            System.out.println("No se puede mostrar vista previa para este tipo de archivo.");
+        byte[] fileContent = null;
+        try {
+            fileContent = Files.readAllBytes(selectedFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    
+        ;
+
+        if (fileContent != null) {
+            labelNombreArchivo.setText(selectedFile.getName());
+
+            if (esImagen(selectedFile)) {
+                try {
+                    Image image = new Image(selectedFile.toURI().toString());
+                    imagenVistaPrevia.setImage(image);
+                } catch (Exception e) {
+                    System.err.println("Error al cargar la imagen: " + e.getMessage());
+                }
+            } else {
+                System.out.println("No se puede mostrar vista previa para este tipo de archivo.");
+            }
+
             // Aquí agregar la lógica para enviar el archivo
             String usuarioSeleccionado = listaContactos.getSelectionModel().getSelectedItem();
-    
+
             if (usuarioSeleccionado != null) {
                 Mensaje<Object> mensajeAEnviar = new Mensaje<>();
                 mensajeAEnviar.setEmisor(usuario);
-                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
-                mensajeAEnviar.setMensaje("Envío de archivo");
-                mensajeAEnviar.setArchivo(selectedFile);
-    
+                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.ARCHIVO, usuarioSeleccionado);
+                Object[] archivo = new Object[2];
+                archivo[0] = fileContent;
+                archivo[1] = selectedFile.getName();
+                mensajeAEnviar.setMensaje(archivo);
+
                 try {
                     salida.writeObject(mensajeAEnviar);
                     System.out.println("Archivo enviado correctamente");
                 } catch (IOException e) {
-                    System.err.println("Error al enviar el archivo");
-                    e.printStackTrace();
+                    this.botonSalidar.fire();
+
                 }
             } else {
                 System.out.println("Usuario no seleccionado");
@@ -158,6 +169,46 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
         } else {
             System.out.println("Ningún archivo seleccionado");
         }
+    }
+
+    private void recibirArchivo(Mensaje<?> mensaje) {
+        Object[] archivo = (Object[]) mensaje.getMensaje();
+        byte bytes[] = (byte[]) archivo[0];
+        String nombreArchivo = (String) archivo[1];
+        String emisor = mensaje.getEmisor();
+
+        // Verificar si el destinatario del mensaje es el usuario actual
+        String destinatario = mensaje.getDestinatario();
+        if (!destinatario.equals(usuario)) {
+            return; // No mostrar el cuadro de diálogo si el destinatario no es el usuario actual
+        }
+
+        // Muestra un cuadro de diálogo para que el usuario decida qué hacer con el
+        // archivo
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Recepción de Archivo");
+            alert.setHeaderText("Has recibido un archivo de " + emisor);
+            alert.setContentText("Nombre del archivo: " + bytes);
+
+            ButtonType buttonTypeSave = new ButtonType("Guardar");
+            ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == buttonTypeSave) {
+                // Guarda el archivo (puedes implementar esta lógica)
+                try {
+                    FileOutputStream fos = new FileOutputStream(nombreArchivo);
+                    fos.write(bytes);
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @FXML
@@ -278,7 +329,9 @@ public class FXMLVistaAdministrativoController extends VistaPadre implements Ini
             while (!hilo.isInterrupted()) {
                 Mensaje<?> mensaje;
                 mensaje = (Mensaje<?>) entrada.readObject();
-                if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
+                if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.ARCHIVO) {
+                    recibirArchivo(mensaje);
+                } else if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
                     if (mensaje.getMensaje() == null) {
                         continue;
                     }

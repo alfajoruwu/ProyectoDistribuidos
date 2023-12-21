@@ -140,7 +140,6 @@ public class Login implements Initializable {
             mensaje.setMensaje(contrasenna);
 
             this.salida.writeObject(mensaje);
-
             // Antes de leer el objeto, verifica que la conexión de red sigue siendo válida
             if (this.entrada == null) {
                 System.err.println("El objeto de entrada no se ha inicializado");

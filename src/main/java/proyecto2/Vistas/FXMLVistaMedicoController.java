@@ -18,7 +18,6 @@ import proyecto2.Mensajeria.Constantes;
 import proyecto2.Mensajeria.Mensaje;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -103,8 +102,15 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Archivo");
         File selectedFile = fileChooser.showOpenDialog(null);
+        byte[] fileContent = null;
+        try {
+            fileContent = Files.readAllBytes(selectedFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ;
 
-        if (selectedFile != null) {
+        if (fileContent != null) {
             labelNombreArchivo.setText(selectedFile.getName());
 
             if (esImagen(selectedFile)) {
@@ -124,8 +130,11 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             if (usuarioSeleccionado != null) {
                 Mensaje<Object> mensajeAEnviar = new Mensaje<>();
                 mensajeAEnviar.setEmisor(usuario);
-                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.USUARIO, usuarioSeleccionado);
-                mensajeAEnviar.setArchivo(selectedFile);
+                mensajeAEnviar.setDestinatario(Constantes.TipoDestino.ARCHIVO, usuarioSeleccionado);
+                Object[] archivo = new Object[2];
+                archivo[0] = fileContent;
+                archivo[1] = selectedFile.getName();
+                mensajeAEnviar.setMensaje(archivo);
 
                 try {
                     salida.writeObject(mensajeAEnviar);
@@ -143,7 +152,9 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
     }
 
     private void recibirArchivo(Mensaje<?> mensaje) {
-        String nombreArchivo = mensaje.getArchivo().getName();
+        Object[] archivo = (Object[]) mensaje.getMensaje();
+        byte bytes[] = (byte[]) archivo[0];
+        String nombreArchivo = (String) archivo[1];
         String emisor = mensaje.getEmisor();
 
         // Verificar si el destinatario del mensaje es el usuario actual
@@ -158,7 +169,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Recepción de Archivo");
             alert.setHeaderText("Has recibido un archivo de " + emisor);
-            alert.setContentText("Nombre del archivo: " + nombreArchivo);
+            alert.setContentText("Nombre del archivo: " + bytes);
 
             ButtonType buttonTypeSave = new ButtonType("Guardar");
             ButtonType buttonTypeCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -168,33 +179,16 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == buttonTypeSave) {
                 // Guarda el archivo (puedes implementar esta lógica)
-                guardarArchivo(mensaje.getArchivo());
+                try {
+                    FileOutputStream fos = new FileOutputStream(nombreArchivo);
+                    fos.write(bytes);
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
-    }
-
-    private void guardarArchivo(File archivo) {
-        // Implementa la lógica para guardar el archivo
-        // Puedes elegir la ubicación y el nombre para guardar el archivo
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar Archivo");
-        fileChooser.setInitialFileName(archivo.getName());
-
-        File destino = fileChooser.showSaveDialog(null);
-        if (destino != null) {
-            try (FileInputStream fis = new FileInputStream(archivo);
-                    FileOutputStream fos = new FileOutputStream(destino)) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = fis.read(buffer)) != -1) {
-                    fos.write(buffer, 0, bytesRead);
-                }
-                System.out.println("Archivo guardado con éxito en: " + destino.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Error al guardar el archivo.");
-            }
-        }
     }
 
     private ObservableList<String> contactList = FXCollections.observableArrayList();
@@ -294,7 +288,7 @@ public class FXMLVistaMedicoController extends VistaPadre implements Initializab
             while (!hilo.isInterrupted()) {
                 Mensaje<?> mensaje;
                 mensaje = (Mensaje<?>) entrada.readObject();
-                if (mensaje.getArchivo() != null) {
+                if (mensaje.getTipoDestinatario() == Constantes.TipoDestino.ARCHIVO) {
                     recibirArchivo(mensaje);
                 } else {
                     if (mensaje.getTipoDestinatario().equals(Constantes.TipoDestino.ACTUALIZAR_CONTACTOS)) {
